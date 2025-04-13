@@ -1,5 +1,5 @@
-const ChartTab: React.FC = ({ selectedTab, setSelectedTab }) => {
-  const getButtonClass = (option: "balance" | "equity") =>
+const ChartTab = ({ selectedTab, setSelectedTab }) => {
+  const getButtonClass = (option) =>
     selectedTab === option
       ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
       : "text-gray-500 dark:text-gray-400";

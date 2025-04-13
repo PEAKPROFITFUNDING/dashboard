@@ -42,7 +42,7 @@ export default function AccountChart() {
   const yAxisMin = Math.floor(minValue * 0.99); // 1% buffer below min
   const yAxisMax = Math.ceil(maxValue * 1.01); // 1% buffer above max
 
-  const options: ApexOptions = {
+  const options = {
     legend: {
       show: true,
       position: "top",
