@@ -24,16 +24,17 @@ export default function Home() {
           </div>
           <div className="space-y-4 col-span-12 md:col-span-8">
             <AverageMetrics />
-            <Charts />
+            {/* <Charts /> */}
           </div>
         </div>
 
-        <div className="col-span-12 space-y-4">
+        {/* <div className="col-span-12 space-y-4">
           <CurrentResults />
         </div>
         <div className="col-span-12 space-y-4">
           <TradingLogsTable />
-        </div>
+        </div> */}
+
         {/* <div className="col-span-12 xl:col-span-5">
           <MonthlyTarget />
           <DemographicCard />

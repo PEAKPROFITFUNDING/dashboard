@@ -1,5 +1,4 @@
 import Chart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
 import ChartTab from "../common/ChartTab";
 import { useState } from "react";
 
@@ -59,7 +58,7 @@ export default function AccountChart() {
         show: false,
       },
       zoom: {
-        enabled: true,
+        enabled: false,
       },
       animations: {
         enabled: true,
