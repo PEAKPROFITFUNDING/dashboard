@@ -18,49 +18,36 @@ export default function TradingLogsTable() {
   const bodyCellClasses =
     "px-4 py-3 text-gray-500 text-start dark:text-gray-400 whitespace-nowrap";
 
+  const tableHeaders = [
+    "Open",
+    "Symbol",
+    "Position ID",
+    "Type",
+    "Volume",
+    "Price",
+    "S/L",
+    "T/P",
+    "Close",
+    "Close Price",
+    "P/L",
+    "Change",
+  ];
+
   return (
     <div className="border border-gray-200 rounded-xl bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+      <div className="text-gray-800 text-2xl dark:text-white/90 font-semibold pl-4 pt-3">
+        Trading Logs
+      </div>
       <div className="overflow-x-auto">
         <div className="min-w-[1200px]">
           <Table>
             <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
               <TableRow>
-                <TableCell isHeader className={headerCellClasses}>
-                  Open
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  Symbol
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  Position ID
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  Type
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  Volume
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  Price
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  S/L
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  T/P
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  Close
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  Close Price
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  P/L
-                </TableCell>
-                <TableCell isHeader className={headerCellClasses}>
-                  Change
-                </TableCell>
+                {tableHeaders.map((header, index) => (
+                  <TableCell isHeader key={index} className={headerCellClasses}>
+                    {header}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHeader>
 
