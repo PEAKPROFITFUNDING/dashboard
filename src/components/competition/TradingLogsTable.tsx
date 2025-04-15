@@ -124,10 +124,7 @@ export default function TradingLogsTable() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={12}
-                    className="pl-4 py-4 text-center text-gray-500 dark:text-gray-400"
-                  >
+                  <TableCell className="pl-4 py-4 text-center text-gray-500 dark:text-gray-400">
                     No trading data available yet
                   </TableCell>
                 </TableRow>
