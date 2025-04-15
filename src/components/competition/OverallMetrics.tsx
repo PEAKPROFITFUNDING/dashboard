@@ -15,15 +15,18 @@ export default function OverallMetrics() {
   const accountData = [
     {
       title: "Overall Profit/Loss",
-      value: "+$10,000",
+      value: "+$0",
       info: "Total P/L represents only realized wins and losses.",
     },
     {
       title: "Daily Lowest Equity",
-      value: "$100,000",
+      value: "$0",
       info: "Daily lowest equity represents the accounts lowest value in the current 24 hour period",
     },
   ];
+
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString("en-GB"); // "DD/MM/YYYY"
   return (
     <div className="grid grid-cols-1 gap-4">
       {/* <!-- Metric Item Start --> */}
@@ -55,7 +58,7 @@ export default function OverallMetrics() {
         </div>
         <div className="flex items-end justify-center p-3">
           <div className="text-green-400 menu-item my-2 font-bold text-2xl w-fit px-4 ">
-            $100,000
+            $0
           </div>
         </div>
       </div>
@@ -66,7 +69,7 @@ export default function OverallMetrics() {
         </div>
         <div className="flex items-end justify-center p-3">
           <div className=" menu-item my-2 font-bold w-fit px-4 text-gray-800 text-2xl dark:text-white/90">
-            $105,000
+            $0
           </div>
         </div>
       </div>
@@ -78,7 +81,7 @@ export default function OverallMetrics() {
         </div>
         <div className="flex items-end justify-center p-3">
           <div className="menu-item menu-item-active my-2 font-bold text-2xl w-fit px-4">
-            +500
+            +0
           </div>
         </div>
       </div>
@@ -90,10 +93,10 @@ export default function OverallMetrics() {
         </div>
         <div className="flex items-center justify-center p-3 flex-col">
           <div className="text-green-400  my-2 font-semibold text-2xl w-fit px-4 ">
-            +$224
+            +$0
           </div>
           <div className="text-gray-800 text-lg dark:text-white/90 w-fit px-4 ">
-            09/01/2024
+            {formattedDate}
           </div>
         </div>
       </div>

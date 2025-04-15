@@ -21,37 +21,37 @@ const AverageMetrics = () => {
   const tradingStats = [
     {
       label: "Amount Of Trading Days",
-      value: "120 Days",
+      value: "0 Days",
       icon: LuCalendarDays,
       toolTip: "Total days traded",
     },
     {
       label: "Account Size",
-      value: "$105,000",
+      value: "$0",
       icon: MdTrendingUp,
       toolTip: "Account size as of now",
     },
     {
       label: "Win Rate",
-      value: "60%",
+      value: "0%",
       icon: SlBadge,
       toolTip: "Ratio of winning trades to losing trades",
     },
     {
       label: "Average Trade Duration",
-      value: "2h 30m",
+      value: "0m",
       icon: MdAccessTime,
       toolTip: "Average amount of time spent on each trade",
     },
     {
       label: "Profit Factor",
-      value: "1.5",
+      value: "0",
       icon: LuBadgeDollarSign,
       toolTip: "Amount of profit per unit of risk",
     },
     {
       label: "Lots",
-      value: "3.2",
+      value: "0",
       icon: MdOutlineWindow,
       toolTip:
         "Total loss traded througout competition. Chart shows daily volume",

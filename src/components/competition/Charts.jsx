@@ -6,16 +6,18 @@ export default function AccountChart() {
   const [tab, setTab] = useState("balance");
 
   // Hardcoded equity data for one month (30 days)
-  const equityData = Array.from(
-    { length: 30 },
-    () => Math.floor(Math.random() * (95000 - 90000 + 1)) + 95000
-  );
+  // const equityData = Array.from(
+  //   { length: 30 },
+  //   () => Math.floor(Math.random() * (95000 - 90000 + 1)) + 95000
+  // );
+  const equityData = [];
 
   // Hardcoded balance data for one month (30 days)
   // Balance will be slightly higher than equity to simulate unrealized profits
-  const balanceData = equityData.map(
-    (equity) => equity + Math.floor(Math.random() * 5000)
-  );
+  // const balanceData = equityData.map(
+  //   (equity) => equity + Math.floor(Math.random() * 5000)
+  // );
+  const balanceData = [];
 
   // Get the active data based on selected tab
   const activeData = tab === "equity" ? equityData : balanceData;
@@ -48,6 +50,16 @@ export default function AccountChart() {
       horizontalAlign: "left",
       fontSize: "14px",
       fontFamily: "Outfit, sans-serif",
+    },
+    noData: {
+      text: "No data available yet.", // Custom message to show when there's no data
+      align: "center",
+      verticalAlign: "middle",
+      style: {
+        color: "#8e8e8e", // Customize the text color
+        fontSize: "16px",
+        fontFamily: "Helvetica, Arial, sans-serif",
+      },
     },
     colors: ["#465FFF"],
     chart: {
