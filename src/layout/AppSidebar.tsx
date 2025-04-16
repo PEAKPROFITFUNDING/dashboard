@@ -337,6 +337,15 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
+            <button
+              onClick={() =>
+                (window.location.href =
+                  "https://peakprofit-frontend.vercel.app")
+              }
+              className="py-2 pl-3 rounded-lg text-start menu-item-active "
+            >
+              Start New Challenge
+            </button>
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
