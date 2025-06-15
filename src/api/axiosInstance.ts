@@ -20,13 +20,9 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const originalRequest = error.config;
     const status = error.response?.status;
-    const detail = error.response?.data?.detail;
+    const message = error.response?.data?.message;
 
-    if (
-      status === 401 &&
-      detail === "Given token not valid for any token type" &&
-      !originalRequest._retry
-    ) {
+    if (status === 400 || status === 401) {
       localStorage.removeItem("authToken");
       window.location.href = "/login";
       return;

@@ -4,11 +4,15 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
 import useLogout from "../../hooks/useLogout";
 import Button from "../ui/button/Button";
+import useFetchUser from "../../hooks/useFetchUser";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 
   const { logout, isLoggingOut } = useLogout();
+  const { user, loading, error } = useFetchUser();
+
+  console.log("user", user);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -49,7 +53,9 @@ export default function UserDropdown() {
           </div>
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">User Name</span>
+        <span className="block mr-1 font-medium text-theme-sm">
+          {user?.name}
+        </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -77,15 +83,40 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            username
+            {user?.name}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            useremail@gmail.com
+            {user?.email}
           </span>
         </div>
 
-        {/* <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+        <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
           <li>
+            <DropdownItem
+              onItemClick={closeDropdown}
+              tag="a"
+              to="/change-password"
+              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+            >
+              <svg
+                className="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 2C9.79086 2 8 3.79086 8 6V9H7C5.89543 9 5 9.89543 5 11V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V11C19 9.89543 18.1046 9 17 9H16V6C16 3.79086 14.2091 2 12 2ZM10 6C10 4.89543 10.8954 4 12 4C13.1046 4 14 4.89543 14 6V9H10V6ZM7 11H17V19H7V11Z"
+                  fill=""
+                />
+              </svg>
+              Change Password
+            </DropdownItem>
+          </li>
+          {/* <li>
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
@@ -159,8 +190,8 @@ export default function UserDropdown() {
               </svg>
               Support
             </DropdownItem>
-          </li>
-        </ul> */}
+          </li> */}
+        </ul>
         <Button
           onClick={logout}
           disabled={isLoggingOut}

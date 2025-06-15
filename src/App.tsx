@@ -22,6 +22,7 @@ import PublicRoute from "./components/auth/PublicRoute";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ResetPassword from "./pages/AuthPages/ResetPassword";
+import ChangePassword from "./pages/AuthPages/ChangePassword";
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
           {/* Private Routes */}
           <Route
