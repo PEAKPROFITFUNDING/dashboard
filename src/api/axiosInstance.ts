@@ -22,7 +22,11 @@ axiosInstance.interceptors.response.use(
     const status = error.response?.status;
     const message = error.response?.data?.message;
 
-    if (status === 400 || status === 401) {
+    if (
+      status === 400 &&
+      message === "Authentication Failed!" &&
+      !originalRequest._retry
+    ) {
       localStorage.removeItem("authToken");
       window.location.href = "/login";
       return;

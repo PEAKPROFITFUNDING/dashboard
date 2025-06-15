@@ -62,17 +62,15 @@ export default function SignUpForm() {
       const response = await axiosInstance.post("/auth/sign-up/", dataToSend);
 
       if (response.status === 200 || response.status === 201) {
-        setSuccess(true);
+        console.log(response);
+
+        setSuccess(response.data.message);
         setFormData({
           name: "",
           email: "",
           password: "",
           password2: "",
         });
-
-        setTimeout(() => {
-          navigate("/");
-        }, 1500);
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.data) {
@@ -113,7 +111,7 @@ export default function SignUpForm() {
           {success && (
             <div className="mb-5 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-900/20 dark:border-green-800">
               <p className="text-sm text-green-700 dark:text-green-400">
-                Account created successfully! You can now sign in.
+                Account created successfully! {success && success}.
               </p>
             </div>
           )}

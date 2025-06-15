@@ -12,8 +12,6 @@ export default function UserDropdown() {
   const { logout, isLoggingOut } = useLogout();
   const { user, loading, error } = useFetchUser();
 
-  console.log("user", user);
-
   function toggleDropdown() {
     setIsOpen(!isOpen);
   }
