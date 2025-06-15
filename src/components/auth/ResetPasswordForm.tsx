@@ -132,12 +132,7 @@ export default function ResetPasswordForm() {
                 </div>
               </div>
 
-              <Button
-                className="w-full"
-                size="sm"
-                type="submit"
-                disabled={loading}
-              >
+              <Button className="w-full" size="sm" disabled={loading}>
                 {loading ? "Resetting..." : "Reset Password"}
               </Button>
             </div>

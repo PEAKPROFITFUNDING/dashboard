@@ -72,12 +72,7 @@ export default function ForgotPasswordForm() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <Button
-                className="w-full"
-                size="sm"
-                type="submit"
-                disabled={loading}
-              >
+              <Button className="w-full" size="sm" disabled={loading}>
                 {loading ? "Sending..." : "Send Reset Link"}
               </Button>
             </div>
