@@ -1,9 +1,11 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 const useLogout = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate(); // Hook for programmatic navigation
+  const { clearUser } = useUser();
 
   // useCallback memoizes the logout function to prevent unnecessary re-renders
   const logout = useCallback(() => {
@@ -16,12 +18,16 @@ const useLogout = () => {
       localStorage.removeItem("authToken");
       console.log("authToken removed from localStorage.");
 
+      // 2. Clear user context
+      clearUser();
+      console.log("User context cleared.");
+
       setIsLoggingOut(false); // Reset logging out state
 
       navigate("/login", { replace: true });
       console.log("Logout successful and redirected to /login.");
     }, 500); // Simulated network delay
-  }, [navigate]); // navigate is a dependency of useCallback
+  }, [navigate, clearUser]); // navigate and clearUser are dependencies of useCallback
 
   return { logout, isLoggingOut };
 };

@@ -23,10 +23,11 @@ import PrivateRoute from "./components/auth/PrivateRoute";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ResetPassword from "./pages/AuthPages/ResetPassword";
 import ChangePassword from "./pages/AuthPages/ChangePassword";
+import { UserProvider } from "./context/UserContext";
 
 export default function App() {
   return (
-    <>
+    <UserProvider>
       <Router>
         <ScrollToTop />
         <Routes>
@@ -82,6 +83,6 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
-    </>
+    </UserProvider>
   );
 }

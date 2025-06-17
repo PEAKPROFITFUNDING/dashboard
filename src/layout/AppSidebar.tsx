@@ -17,6 +17,7 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
+import { useUser } from "../context/UserContext";
 
 type NavItem = {
   name: string;
@@ -25,7 +26,7 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-const navItems: NavItem[] = [
+const userNavItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Challenges",
@@ -59,6 +60,13 @@ const navItems: NavItem[] = [
   //     { name: "404 Error", path: "/error-404", pro: false },
   //   ],
   // },
+];
+const adminNavItems: NavItem[] = [
+  {
+    icon: <GridIcon />,
+    name: "Users",
+    path: "/users-list",
+  },
 ];
 
 const othersItems: NavItem[] = [
@@ -95,6 +103,7 @@ const othersItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+  const { userRole } = useUser();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -114,7 +123,7 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
+      const items = menuType === "main" ? userNavItems : othersItems;
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
@@ -285,7 +294,7 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-10 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed mt-16 flex flex-col lg:mt-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
           isExpanded || isMobileOpen
             ? "w-[290px]"
@@ -337,15 +346,18 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-            <button
-              onClick={() =>
-                (window.location.href =
-                  "https://peakprofit-frontend.vercel.app")
-              }
-              className="py-2 pl-3 rounded-lg text-start menu-item-active "
-            >
-              Start New Challenge
-            </button>
+            {userRole === "User" && (
+              <button
+                onClick={() =>
+                  (window.location.href =
+                    "https://peakprofit-frontend.vercel.app")
+                }
+                className="py-2 pl-3 rounded-lg text-start menu-item-active "
+              >
+                Start New Challenge
+              </button>
+            )}
+
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
@@ -360,7 +372,10 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(
+                userRole === "Admin" ? adminNavItems : userNavItems,
+                "main"
+              )}
             </div>
             {/* <div className="">
               <h2

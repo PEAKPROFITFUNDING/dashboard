@@ -7,9 +7,11 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import axiosInstance from "../../api/axiosInstance";
+import { useUser } from "../../context/UserContext";
 
 export default function SignInForm() {
   const navigate = useNavigate();
+  const { updateRole } = useUser();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [formData, setFormData] = useState({
@@ -48,6 +50,7 @@ export default function SignInForm() {
 
         if (result.token) {
           localStorage.setItem("authToken", result.token);
+          updateRole(result.role);
           navigate("/");
         } else {
           alert("Error logging in");
@@ -136,8 +139,8 @@ export default function SignInForm() {
                 </svg>
                 Sign in with X
               </button>
-            </div> */}
-            {/* <div className="relative py-3 sm:py-5">
+            </div>
+            <div className="relative py-3 sm:py-5">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
               </div>

@@ -10,7 +10,7 @@ const LayoutContent: React.FC = () => {
 
   return (
     <div>
-      <CountdownTimer />
+      {/* <CountdownTimer /> */}
       <div className="min-h-screen xl:flex">
         <div>
           <AppSidebar />

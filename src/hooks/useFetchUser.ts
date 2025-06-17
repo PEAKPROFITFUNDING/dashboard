@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { useUser } from "../context/UserContext";
 
 const useFetchUser = () => {
-  const [user, setUser] = useState(null);
+  const { userName, userEmail, setUser } = useUser();
+  console.log(userName, userEmail);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -10,7 +12,10 @@ const useFetchUser = () => {
     const fetchUser = async () => {
       try {
         const response = await axiosInstance.get("/user/get-user");
-        setUser(response.data);
+        const userData = response.data;
+
+        // Update the user context with fetched data
+        setUser(userData.name || userData.email, userData.email, userData.role);
       } catch (err) {
         const msg = err.response?.data?.error || "Failed to fetch user";
         setError(msg);
@@ -20,15 +25,19 @@ const useFetchUser = () => {
     };
 
     const token = localStorage.getItem("authToken");
-    if (token) {
+    // Only fetch if we have a token and no user data in context
+
+    if (token && (!userName || !userEmail)) {
       fetchUser();
     } else {
       setLoading(false);
-      setError("No auth token found");
+      if (!token) {
+        setError("No auth token found");
+      }
     }
-  }, []);
+  }, [userName, userEmail, setUser]);
 
-  return { user, loading, error };
+  return { loading, error };
 };
 
 export default useFetchUser;
