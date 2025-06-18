@@ -8,7 +8,7 @@ import {
 } from "../../../components/ui/table";
 import Badge from "../../../components/ui/badge/Badge";
 import axiosInstance from "../../../api/axiosInstance";
-import { User, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { User, ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 
 interface UserData {
   _id: string;
@@ -51,12 +51,21 @@ export default function UsersListTable() {
   });
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const fetchUsers = async (page: number = 1) => {
+  const [appliedSearchQuery, setAppliedSearchQuery] = useState("");
+
+  const fetchUsers = async (
+    page: number = 1,
+    search: string = appliedSearchQuery
+  ) => {
     try {
       setLoading(true);
+      const searchParam = search.trim()
+        ? `&search=${encodeURIComponent(search.trim())}`
+        : "";
       const response = await axiosInstance.get<ApiResponse>(
-        `/admin/users?page=${page}`
+        `/admin/users?pageNo=${page}${searchParam}`
       );
       setUsers(response.data.result.data);
       setPagination(response.data.result.pagination);
@@ -68,8 +77,8 @@ export default function UsersListTable() {
   };
 
   useEffect(() => {
-    fetchUsers(pagination.currentPage);
-  }, [pagination.currentPage]);
+    fetchUsers(pagination.currentPage, appliedSearchQuery);
+  }, [pagination.currentPage, appliedSearchQuery]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -144,6 +153,37 @@ export default function UsersListTable() {
     </TableCell>
   );
 
+  const handleSearch = () => {
+    setAppliedSearchQuery(searchQuery);
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+  };
+
+  const handleClearSearch = () => {
+    console.log("handleClearSearch called");
+    setSearchQuery("");
+    setAppliedSearchQuery("");
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+  };
+
+  // Handle when search input becomes empty
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    // If search input is cleared, immediately clear the applied search
+    if (value.trim() === "") {
+      setAppliedSearchQuery("");
+      setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    }
+  };
+
+  // Handle Enter key press in search input
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -156,6 +196,36 @@ export default function UsersListTable() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+      <div className="p-4 border-b border-gray-100 dark:border-white/[0.05]">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+              onKeyPress={handleKeyPress}
+              placeholder="Search users by name or email..."
+              className="w-full px-4 py-2 pl-10 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white/90"
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            {searchQuery && (
+              <button
+                onClick={handleClearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+
       <div className="max-w-full overflow-x-auto">
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
@@ -221,7 +291,6 @@ export default function UsersListTable() {
         </Table>
       </div>
 
-      {/* Pagination */}
       <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 dark:border-white/[0.05]">
         <div className="text-sm text-gray-500 dark:text-gray-400">
           Showing {pagination.from} to {pagination.to} of {pagination.total}{" "}
