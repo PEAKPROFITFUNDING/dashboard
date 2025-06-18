@@ -31,7 +31,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   const setUser = (name: string, email: string, role: UserRole) => {
     setUserName(name);
     setUserEmail(email);
-    if (role) setUserRole(role);
+    setUserRole(role);
   };
 
   const updateRole = (role: UserRole) => {

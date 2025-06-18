@@ -4,7 +4,6 @@ import { useUser } from "../context/UserContext";
 
 const useFetchUser = () => {
   const { userName, userEmail, setUser } = useUser();
-  console.log(userName, userEmail);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -14,7 +13,6 @@ const useFetchUser = () => {
         const response = await axiosInstance.get("/user/get-user");
         const userData = response.data;
 
-        // Update the user context with fetched data
         setUser(userData.name || userData.email, userData.email, userData.role);
       } catch (err) {
         const msg = err.response?.data?.error || "Failed to fetch user";

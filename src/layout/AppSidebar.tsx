@@ -18,6 +18,7 @@ import {
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
 import { useUser } from "../context/UserContext";
+import { Users } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -63,8 +64,8 @@ const userNavItems: NavItem[] = [
 ];
 const adminNavItems: NavItem[] = [
   {
-    icon: <GridIcon />,
-    name: "Users",
+    icon: <Users />,
+    name: "Users List",
     path: "/users-list",
   },
 ];
