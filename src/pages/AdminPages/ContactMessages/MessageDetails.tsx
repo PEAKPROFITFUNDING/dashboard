@@ -9,7 +9,7 @@ export default function MessageDetails() {
         title="Admin PeakProfit"
         description="Peak Profit Admin Contact Details Page"
       />
-      <PageBreadcrumb pageTitle="Contact Details" />
+      <PageBreadcrumb pageTitle="Message Details" />
       <MessageDetailsPage />
     </>
   );
