@@ -5,9 +5,9 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../../../components/ui/table";
-import Badge from "../../../components/ui/badge/Badge";
-import axiosInstance from "../../../api/axiosInstance";
+} from "../../../../components/ui/table";
+import Badge from "../../../../components/ui/badge/Badge";
+import axiosInstance from "../../../../api/axiosInstance";
 import { User, ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 
 interface UserData {

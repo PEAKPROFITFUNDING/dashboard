@@ -23,14 +23,24 @@ import PrivateRoute from "./components/auth/PrivateRoute";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ResetPassword from "./pages/AuthPages/ResetPassword";
 import ChangePassword from "./pages/AuthPages/ChangePassword";
-import { UserProvider, useUser } from "./context/UserContext";
+import { useUser } from "./context/UserContext";
 import useFetchUser from "./hooks/useFetchUser";
-import UsersList from "./pages/AdminPages/UsersList";
+import UsersList from "./pages/AdminPages/UsersList/UsersList";
+import ContactMessages from "./pages/AdminPages/ContactMessages/ContactMessages";
+import MessageDetails from "./pages/AdminPages/ContactMessages/MessageDetails";
 
 // Create a separate component for the routes
 const AppRoutes = () => {
-  useFetchUser();
+  const { loading } = useFetchUser();
   const { userRole } = useUser();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <Router>
@@ -68,6 +78,11 @@ const AppRoutes = () => {
             <>
               <Route index element={<Navigate to="/users-list" replace />} />
               <Route path="/users-list" element={<UsersList />} />
+              <Route path="/contact-messages" element={<ContactMessages />} />
+              <Route
+                path="/contact-messages/:id"
+                element={<MessageDetails />}
+              />
             </>
           ) : (
             <>
@@ -104,9 +119,5 @@ const AppRoutes = () => {
 
 // Main App component
 export default function App() {
-  return (
-    <UserProvider>
-      <AppRoutes />
-    </UserProvider>
-  );
+  return <AppRoutes />;
 }

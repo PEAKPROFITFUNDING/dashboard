@@ -18,7 +18,7 @@ import {
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
 import { useUser } from "../context/UserContext";
-import { Users } from "lucide-react";
+import { Users, MessageCircle } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -67,6 +67,11 @@ const adminNavItems: NavItem[] = [
     icon: <Users />,
     name: "Users List",
     path: "/users-list",
+  },
+  {
+    icon: <MessageCircle />,
+    name: "Contact Messages",
+    path: "/contact-messages",
   },
 ];
 
@@ -117,7 +122,7 @@ const AppSidebar: React.FC = () => {
 
   // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
-    (path: string) => location.pathname === path,
+    (path: string) => location.pathname.startsWith(path),
     [location.pathname]
   );
 
