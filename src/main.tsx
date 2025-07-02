@@ -6,13 +6,19 @@ import "flatpickr/dist/flatpickr.css";
 import App from "./App.tsx";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
+import { UserProvider } from "./context/UserContext.tsx";
+import { ContactMessagesProvider } from "./context/ContactMessagesContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
-      <AppWrapper>
-        <App />
-      </AppWrapper>
+      <UserProvider>
+        <ContactMessagesProvider>
+          <AppWrapper>
+            <App />
+          </AppWrapper>
+        </ContactMessagesProvider>
+      </UserProvider>
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
 );
