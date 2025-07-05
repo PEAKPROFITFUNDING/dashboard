@@ -9,6 +9,7 @@ import Button from "../ui/button/Button";
 import axiosInstance from "../../api/axiosInstance";
 import { useUser } from "../../context/UserContext";
 import { handleLoginResponse } from "../../utils/auth";
+import AdminRedirect from "../common/AdminRedirect";
 
 export default function SignInForm() {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ export default function SignInForm() {
 
         // Redirect based on user role
         if (userData.role === "Admin") {
-          navigate("/users-list");
+          return <AdminRedirect />;
         } else {
           navigate("/");
         }
