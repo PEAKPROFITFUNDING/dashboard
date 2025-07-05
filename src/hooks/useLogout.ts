@@ -4,30 +4,30 @@ import { useUser } from "../context/UserContext";
 
 const useLogout = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const navigate = useNavigate(); // Hook for programmatic navigation
+  const navigate = useNavigate();
   const { clearUser } = useUser();
 
-  // useCallback memoizes the logout function to prevent unnecessary re-renders
   const logout = useCallback(() => {
-    setIsLoggingOut(true); // Indicate that logout is in progress
+    setIsLoggingOut(true);
 
-    // Simulate an asynchronous logout process, e.g., an API call to invalidate a session.
-    // In a real application, you would replace this setTimeout with your actual API call.
+    // Simulate an asynchronous logout process
     setTimeout(() => {
-      // 1. Remove authToken from localStorage
-      localStorage.removeItem("authToken");
-      console.log("authToken removed from localStorage.");
+      try {
+        // 1. Remove authToken from localStorage
+        localStorage.removeItem("authToken");
 
-      // 2. Clear user context
-      clearUser();
-      console.log("User context cleared.");
+        // 2. Clear user context
+        clearUser();
 
-      setIsLoggingOut(false); // Reset logging out state
+        setIsLoggingOut(false);
 
-      navigate("/login", { replace: true });
-      console.log("Logout successful and redirected to /login.");
-    }, 500); // Simulated network delay
-  }, [navigate, clearUser]); // navigate and clearUser are dependencies of useCallback
+        // 3. Navigate to login page
+        navigate("/login", { replace: true });
+      } catch {
+        setIsLoggingOut(false);
+      }
+    }, 500);
+  }, [navigate, clearUser]);
 
   return { logout, isLoggingOut };
 };

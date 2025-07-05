@@ -1,40 +1,44 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
-import SignIn from "./pages/AuthPages/SignIn";
-import SignUp from "./pages/AuthPages/SignUp";
-import NotFound from "./pages/OtherPage/NotFound";
-import UserProfiles from "./pages/UserProfiles";
-import Videos from "./pages/UiElements/Videos";
-import Images from "./pages/UiElements/Images";
-import Alerts from "./pages/UiElements/Alerts";
-import Badges from "./pages/UiElements/Badges";
-import Avatars from "./pages/UiElements/Avatars";
-import Buttons from "./pages/UiElements/Buttons";
-import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
-import Calendar from "./pages/Calendar";
-import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
-import Blank from "./pages/Blank";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { useMemo } from "react";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Home from "./pages/Dashboard/Home";
 import PublicRoute from "./components/auth/PublicRoute";
 import PrivateRoute from "./components/auth/PrivateRoute";
-import ForgotPassword from "./pages/AuthPages/ForgotPassword";
-import ResetPassword from "./pages/AuthPages/ResetPassword";
-import ChangePassword from "./pages/AuthPages/ChangePassword";
 import { useUser } from "./context/UserContext";
 import useFetchUser from "./hooks/useFetchUser";
-import UsersList from "./pages/AdminPages/UsersList/UsersList";
-import ContactMessages from "./pages/AdminPages/ContactMessages/ContactMessages";
-import MessageDetails from "./pages/AdminPages/ContactMessages/MessageDetails";
+import { LazyRoute } from "./components/common/LazyRoute";
+import { RouteDebugger } from "./components/common/RouteDebugger";
+import {
+  publicRoutes,
+  getRoutesForRole,
+  getIndexRoute,
+  fallbackRoute,
+} from "./config/routes";
+
+// Initialize user data fetching
+const AppInitializer = () => {
+  useFetchUser();
+  return null;
+};
 
 // Create a separate component for the routes
 const AppRoutes = () => {
-  const { loading } = useFetchUser();
-  const { userRole } = useUser();
+  const { userRole, isUserLoaded } = useUser();
 
-  if (loading) {
+  // Memoize route calculations to prevent unnecessary re-renders
+  const { indexRoute, roleBasedRoutes } = useMemo(() => {
+    if (!isUserLoaded) {
+      return { indexRoute: null, roleBasedRoutes: [] };
+    }
+
+    const indexRoute = getIndexRoute(userRole);
+    const roleBasedRoutes = getRoutesForRole(userRole);
+
+    return { indexRoute, roleBasedRoutes };
+  }, [userRole, isUserLoaded]);
+
+  // Don't render routes until user data is loaded
+  if (!isUserLoaded) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
@@ -47,18 +51,19 @@ const AppRoutes = () => {
       <ScrollToTop />
       <Routes>
         {/* Public Routes */}
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <SignIn />
-            </PublicRoute>
-          }
-        />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/change-password" element={<ChangePassword />} />
+        {publicRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={
+              <PublicRoute>
+                <LazyRoute>
+                  <route.element />
+                </LazyRoute>
+              </PublicRoute>
+            }
+          />
+        ))}
 
         {/* Private Routes */}
         <Route
@@ -68,56 +73,53 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         >
-          {/* Common Routes */}
-          <Route path="/profile" element={<UserProfiles />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/blank" element={<Blank />} />
-
-          {/* Role-based Routes */}
-          {userRole === "Admin" ? (
-            <>
-              <Route index element={<Navigate to="/users-list" replace />} />
-              <Route path="/users-list" element={<UsersList />} />
-              <Route path="/contact-messages" element={<ContactMessages />} />
-              <Route
-                path="/contact-messages/:id"
-                element={<MessageDetails />}
-              />
-            </>
-          ) : (
-            <>
-              <Route index element={<Home />} />
-              <Route path="/challenges" element={<Home />} />
-            </>
+          {/* Index Route */}
+          {indexRoute && (
+            <Route
+              index
+              element={
+                <LazyRoute>
+                  <indexRoute.element />
+                </LazyRoute>
+              }
+            />
           )}
 
-          {/* UI Elements Routes */}
-          <Route path="/alerts" element={<Alerts />} />
-          <Route path="/avatars" element={<Avatars />} />
-          <Route path="/badge" element={<Badges />} />
-          <Route path="/buttons" element={<Buttons />} />
-          <Route path="/images" element={<Images />} />
-          <Route path="/videos" element={<Videos />} />
-
-          {/* Charts Routes */}
-          <Route path="/line-chart" element={<LineChart />} />
-          <Route path="/bar-chart" element={<BarChart />} />
-
-          {/* Forms Routes */}
-          <Route path="/form-elements" element={<FormElements />} />
-
-          {/* Tables Routes */}
-          <Route path="/basic-tables" element={<BasicTables />} />
+          {/* Role-based Routes */}
+          {roleBasedRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                <LazyRoute>
+                  <route.element />
+                </LazyRoute>
+              }
+            />
+          ))}
         </Route>
 
         {/* Fallback Route */}
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path={fallbackRoute.path}
+          element={
+            <LazyRoute>
+              <fallbackRoute.element />
+            </LazyRoute>
+          }
+        />
       </Routes>
+      {/* {import.meta.env.DEV && <RouteDebugger />} */}
     </Router>
   );
 };
 
 // Main App component
 export default function App() {
-  return <AppRoutes />;
+  return (
+    <>
+      <AppInitializer />
+      <AppRoutes />
+    </>
+  );
 }
