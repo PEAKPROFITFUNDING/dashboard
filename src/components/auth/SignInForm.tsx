@@ -8,10 +8,11 @@ import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import axiosInstance from "../../api/axiosInstance";
 import { useUser } from "../../context/UserContext";
+import { handleLoginResponse } from "../../utils/auth";
 
 export default function SignInForm() {
   const navigate = useNavigate();
-  const { updateRole } = useUser();
+  const { setUser } = useUser();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [formData, setFormData] = useState({
@@ -46,14 +47,21 @@ export default function SignInForm() {
       const response = await axiosInstance.post("/auth/login/", formData);
 
       if (response.status === 200 || response.status === 201) {
-        const { result } = response.data;
+        // Use the utility function to handle login response
+        const userData = handleLoginResponse(response);
 
-        if (result.token) {
-          localStorage.setItem("authToken", result.token);
-          updateRole(result.role);
-          navigate("/");
+        // Set complete user data
+        setUser(
+          userData.name,
+          userData.email,
+          userData.role as "Admin" | "User"
+        );
+
+        // Redirect based on user role
+        if (userData.role === "Admin") {
+          navigate("/users-list");
         } else {
-          alert("Error logging in");
+          navigate("/");
         }
       }
     } catch (err) {

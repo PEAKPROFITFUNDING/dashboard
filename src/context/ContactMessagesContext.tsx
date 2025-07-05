@@ -142,7 +142,11 @@ export const ContactMessagesProvider: React.FC<{
 
   // Pagination effect
   React.useEffect(() => {
-    fetchContactMessages(pagination.currentPage, appliedSearchQuery);
+    // Only fetch if we're in a private route (user is authenticated)
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      fetchContactMessages(pagination.currentPage, appliedSearchQuery);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.currentPage, appliedSearchQuery]);
 
