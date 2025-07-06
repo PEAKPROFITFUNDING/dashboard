@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { ContactData, PaginationData } from "../hooks/useContactMessages";
 import useContactMessages from "../hooks/useContactMessages";
-import { useUser } from "./UserContext";
 
 // Define SortField and SortOrder types locally
 export type SortField = "name" | "email" | "subject" | "status" | "createdAt";
@@ -62,12 +61,20 @@ export const ContactMessagesProvider: React.FC<{
 
   // Use the hook only for fetching
   const { fetchContacts: fetchContactMessagesApi } = useContactMessages();
-  const { userRole, isUserLoaded } = useUser();
-  // Only fetch if we're in a private route (user is authenticated)
 
   // Fetch contact messages and update context state
   const fetchContactMessages = useCallback(
     async (page: number = 1, search: string = appliedSearchQuery) => {
+      // If we already have data and it's the same page/search, return existing data
+      if (
+        contactMessages.length > 0 &&
+        page === 1 &&
+        search === appliedSearchQuery
+      ) {
+        console.log("Data already loaded, returning existing data");
+        return;
+      }
+
       setLoading(true);
       try {
         const { data, pagination: pag } = await fetchContactMessagesApi(
@@ -82,19 +89,8 @@ export const ContactMessagesProvider: React.FC<{
         setLoading(false);
       }
     },
-    [appliedSearchQuery, fetchContactMessagesApi]
+    [appliedSearchQuery, fetchContactMessagesApi, contactMessages.length]
   );
-
-  useEffect(() => {
-    fetchContactMessages(pagination.currentPage, appliedSearchQuery);
-  }, []);
-
-  // Listen for authentication changes
-  useEffect(() => {
-    if (isUserLoaded && userRole === "Admin") {
-      fetchContactMessages(pagination.currentPage, appliedSearchQuery);
-    }
-  }, [isUserLoaded, userRole]);
 
   // Handle pagination and search changes
   useEffect(() => {
