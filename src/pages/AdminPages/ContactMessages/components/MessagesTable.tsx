@@ -8,13 +8,16 @@ import {
 import Badge from "../../../../components/ui/badge/Badge";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 import {
   useContactMessagesContext,
   SortField,
 } from "../../../../context/ContactMessagesContext";
+import { useUser } from "../../../../context/UserContext";
 
 export default function MessagesTable() {
   const navigate = useNavigate();
+  const { userRole, isUserLoaded } = useUser();
   const {
     contactMessages,
     loading,
@@ -29,7 +32,16 @@ export default function MessagesTable() {
     handleSearchInputChange,
     handleKeyPress,
     sortContactMessages,
+    fetchContactMessages,
   } = useContactMessagesContext();
+
+  // Fetch data when component mounts and user is authenticated as Admin
+  useEffect(() => {
+    if (isUserLoaded && userRole === "Admin") {
+      console.log("MessagesTable mounted, fetching contact messages");
+      fetchContactMessages(pagination.currentPage, searchQuery);
+    }
+  }, [isUserLoaded, userRole]); // Only depend on auth state, not fetchContactMessages
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
