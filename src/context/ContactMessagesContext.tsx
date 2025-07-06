@@ -1,6 +1,13 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import { ContactData, PaginationData } from "../hooks/useContactMessages";
 import useContactMessages from "../hooks/useContactMessages";
+import { useUser } from "./UserContext";
 
 // Define SortField and SortOrder types locally
 export type SortField = "name" | "email" | "subject" | "status" | "createdAt";
@@ -55,6 +62,8 @@ export const ContactMessagesProvider: React.FC<{
 
   // Use the hook only for fetching
   const { fetchContacts: fetchContactMessagesApi } = useContactMessages();
+  const { userRole, isUserLoaded } = useUser();
+  // Only fetch if we're in a private route (user is authenticated)
 
   // Fetch contact messages and update context state
   const fetchContactMessages = useCallback(
@@ -75,6 +84,24 @@ export const ContactMessagesProvider: React.FC<{
     },
     [appliedSearchQuery, fetchContactMessagesApi]
   );
+
+  useEffect(() => {
+    fetchContactMessages(pagination.currentPage, appliedSearchQuery);
+  }, []);
+
+  // Listen for authentication changes
+  useEffect(() => {
+    if (isUserLoaded && userRole === "Admin") {
+      fetchContactMessages(pagination.currentPage, appliedSearchQuery);
+    }
+  }, [isUserLoaded, userRole]);
+
+  // Handle pagination and search changes
+  useEffect(() => {
+    if (pagination.currentPage > 1) {
+      fetchContactMessages(pagination.currentPage, appliedSearchQuery);
+    }
+  }, [pagination.currentPage, appliedSearchQuery]);
 
   // Sorting logic
   const handleSort = (field: SortField) => {
@@ -140,17 +167,6 @@ export const ContactMessagesProvider: React.FC<{
       handleSearch();
     }
   };
-
-  // Pagination effect
-  React.useEffect(() => {
-    // Only fetch if we're in a private route (user is authenticated)
-    const token = localStorage.getItem("authToken");
-
-    if (token) {
-      fetchContactMessages(pagination.currentPage, appliedSearchQuery);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.currentPage, appliedSearchQuery]);
 
   // Add a function to update a contact message's status in the context
   const setContactMessageStatus = (id: string, status: string) => {
