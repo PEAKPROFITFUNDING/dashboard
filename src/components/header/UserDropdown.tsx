@@ -38,12 +38,12 @@ export default function UserDropdown() {
                 cy="8"
                 r="4"
                 stroke="currentColor"
-                stroke-width="1.5"
+                strokeWidth="1.5"
               />
               <path
                 d="M5 18C5 15.7909 6.79086 14 9 14H15C17.2091 14 19 15.7909 19 18V18H5V18Z"
                 stroke="currentColor"
-                stroke-width="1.5"
+                strokeWidth="1.5"
               />
             </svg>
           </div>

@@ -7,13 +7,14 @@ import {
 } from "../../../../components/ui/table";
 import Badge from "../../../../components/ui/badge/Badge";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import {
   useContactMessagesContext,
   SortField,
 } from "../../../../context/ContactMessagesContext";
 
 export default function MessagesTable() {
+  const navigate = useNavigate();
   const {
     contactMessages,
     loading,
@@ -144,34 +145,32 @@ export default function MessagesTable() {
 
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {sortedContacts.map((contact) => (
-              <Link
+              <TableRow
                 key={contact._id}
-                to={`/contact-messages/${contact._id}`}
-                className="contents"
+                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => navigate(`/contact-messages/${contact._id}`)}
               >
-                <TableRow className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <TableCell className="px-5 py-4 sm:px-6 text-start">
-                    <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                      {contact.name}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {contact.email}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {trimSubject(contact.subject)}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    <Badge size="sm" color={getStatusColor(contact.status)}>
-                      {contact.status.charAt(0).toUpperCase() +
-                        contact.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {formatDate(contact.createdAt)}
-                  </TableCell>
-                </TableRow>
-              </Link>
+                <TableCell className="px-5 py-4 sm:px-6 text-start">
+                  <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                    {contact.name}
+                  </span>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {contact.email}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {trimSubject(contact.subject)}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  <Badge size="sm" color={getStatusColor(contact.status)}>
+                    {contact.status.charAt(0).toUpperCase() +
+                      contact.status.slice(1)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {formatDate(contact.createdAt)}
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>

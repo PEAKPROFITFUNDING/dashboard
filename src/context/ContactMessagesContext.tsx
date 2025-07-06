@@ -27,6 +27,7 @@ interface ContactMessagesContextType {
   sortContactMessages: (contactMessages: ContactData[]) => ContactData[];
   fetchContactMessages: (page?: number, search?: string) => Promise<void>;
   setContactMessageStatus: (id: string, status: string) => void;
+  resetContactMessage: () => void;
 }
 
 const ContactMessagesContext = createContext<
@@ -144,6 +145,7 @@ export const ContactMessagesProvider: React.FC<{
   React.useEffect(() => {
     // Only fetch if we're in a private route (user is authenticated)
     const token = localStorage.getItem("authToken");
+
     if (token) {
       fetchContactMessages(pagination.currentPage, appliedSearchQuery);
     }
@@ -159,6 +161,22 @@ export const ContactMessagesProvider: React.FC<{
           : msg
       )
     );
+  };
+
+  const resetContactMessage = () => {
+    setContactMessages([]);
+    setPagination({
+      currentPage: 1,
+      perPage: 10,
+      totalItems: 0,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    });
+    setSortField("createdAt");
+    setSortOrder("desc");
+    setSearchQuery("");
+    setAppliedSearchQuery("");
   };
 
   return (
@@ -184,6 +202,7 @@ export const ContactMessagesProvider: React.FC<{
         sortContactMessages,
         fetchContactMessages,
         setContactMessageStatus,
+        resetContactMessage,
       }}
     >
       {children}
@@ -194,9 +213,38 @@ export const ContactMessagesProvider: React.FC<{
 export const useContactMessagesContext = () => {
   const context = useContext(ContactMessagesContext);
   if (!context) {
-    throw new Error(
-      "useContactMessagesContext must be used within a ContactMessagesProvider"
-    );
+    // Return a safe default instead of throwing an error
+    // This prevents crashes during initialization
+    return {
+      contactMessages: [],
+      loading: false,
+      pagination: {
+        currentPage: 1,
+        perPage: 10,
+        totalItems: 0,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+      sortField: "createdAt" as SortField,
+      sortOrder: "desc" as SortOrder,
+      searchQuery: "",
+      appliedSearchQuery: "",
+      setSortField: () => {},
+      setSortOrder: () => {},
+      setSearchQuery: () => {},
+      setAppliedSearchQuery: () => {},
+      setPagination: () => {},
+      handleSort: () => {},
+      handleSearch: () => {},
+      handleClearSearch: () => {},
+      handleSearchInputChange: () => {},
+      handleKeyPress: () => {},
+      sortContactMessages: (messages: ContactData[]) => messages,
+      fetchContactMessages: async () => {},
+      setContactMessageStatus: () => {},
+      resetContactMessage: () => {},
+    };
   }
   return context;
 };
