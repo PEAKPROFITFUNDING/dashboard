@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import AdminRedirect from "../components/common/AdminRedirect";
+import NewRequests from "../pages/AdminPages/Affiliate/NewRequests/NewRequests";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -62,6 +63,11 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/users-list", element: UsersList, roles: ["Admin"] },
   { path: "/contact-messages", element: ContactMessages, roles: ["Admin"] },
   { path: "/contact-messages/:id", element: MessageDetails, roles: ["Admin"] },
+  {
+    path: "/affiliate/new-Requests",
+    element: NewRequests,
+    roles: ["Admin"],
+  },
 ];
 
 export const userRoutes: RouteConfig[] = [

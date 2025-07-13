@@ -12,7 +12,12 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useUser } from "../context/UserContext";
-import { Users, MessageCircle, MessageCircleQuestion } from "lucide-react";
+import {
+  Users,
+  MessageCircle,
+  MessageCircleQuestion,
+  NetworkIcon,
+} from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -67,6 +72,20 @@ const adminNavItems: NavItem[] = [
     icon: <MessageCircle />,
     name: "Contact Messages",
     path: "/contact-messages",
+  },
+  {
+    icon: <NetworkIcon />,
+    name: "Affiliate",
+    subItems: [
+      { name: "New Requests", path: "/affiliate/new-requests" },
+      { name: "Manage Affiliates", path: "/affiliate/manage-affiliates" },
+      { name: "Referral Tracking", path: "/affiliate/referral-tracking" },
+      {
+        name: "Commission Management",
+        path: "/affiliate/commission-management",
+      },
+      { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
+    ],
   },
 ];
 
