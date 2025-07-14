@@ -1,6 +1,8 @@
 import { lazy } from "react";
 import AdminRedirect from "../components/common/AdminRedirect";
 import NewRequests from "../pages/AdminPages/Affiliate/NewRequests/NewRequests";
+import ManageAffiliates from "../pages/AdminPages/Affiliate/ManageAffiliates/ManageAffiliates";
+import AffiliateDetails from "../pages/AdminPages/Affiliate/ManageAffiliates/AffiliateDetails/AffiliateDetails";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -66,6 +68,16 @@ export const adminRoutes: RouteConfig[] = [
   {
     path: "/affiliate/new-Requests",
     element: NewRequests,
+    roles: ["Admin"],
+  },
+  {
+    path: "/affiliate/manage-affiliates",
+    element: ManageAffiliates,
+    roles: ["Admin"],
+  },
+  {
+    path: "/affiliate/manage-affiliates/:id",
+    element: AffiliateDetails,
     roles: ["Admin"],
   },
 ];

@@ -79,12 +79,11 @@ const adminNavItems: NavItem[] = [
     subItems: [
       { name: "New Requests", path: "/affiliate/new-requests" },
       { name: "Manage Affiliates", path: "/affiliate/manage-affiliates" },
-      { name: "Referral Tracking", path: "/affiliate/referral-tracking" },
-      {
-        name: "Commission Management",
-        path: "/affiliate/commission-management",
-      },
-      { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
+      // {
+      //   name: "Commission Management",
+      //   path: "/affiliate/commission-management",
+      // },
+      // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
     ],
   },
 ];

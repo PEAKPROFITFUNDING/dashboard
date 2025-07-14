@@ -1,7 +1,33 @@
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-export default function LineChartOne() {
+interface LineChartOneProps {
+  series: Array<{
+    name: string;
+    data: number[];
+  }>;
+  categories?: string[];
+  title?: string;
+}
+
+export default function LineChartOne({
+  series,
+  categories = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+  title,
+}: LineChartOneProps) {
   const options: ApexOptions = {
     legend: {
       show: false, // Hide legend
@@ -60,20 +86,7 @@ export default function LineChartOne() {
     },
     xaxis: {
       type: "category", // Category-based x-axis
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories: categories,
       axisBorder: {
         show: false, // Hide x-axis border
       },
@@ -100,18 +113,13 @@ export default function LineChartOne() {
     },
   };
 
-  const series = [
-    {
-      name: "Sales",
-      data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
-    },
-    {
-      name: "Revenue",
-      data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
-    },
-  ];
   return (
     <div className="max-w-full overflow-x-auto custom-scrollbar">
+      {title && (
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          {title}
+        </h3>
+      )}
       <div id="chartEight" className="min-w-[1000px]">
         <Chart options={options} series={series} type="area" height={310} />
       </div>
