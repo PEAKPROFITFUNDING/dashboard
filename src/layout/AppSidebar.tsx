@@ -2,17 +2,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 
 // Assume these icons are imported from an icon library
-import {
-  BoxCubeIcon,
-  ChevronDownIcon,
-  GridIcon,
-  HorizontaLDots,
-  PieChartIcon,
-  PlugInIcon,
-} from "../icons";
+import { ChevronDownIcon, GridIcon, HorizontaLDots } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useUser } from "../context/UserContext";
-import { Users, MessageCircle, MessageCircleQuestion } from "lucide-react";
+import {
+  Users,
+  MessageCircle,
+  MessageCircleQuestion,
+  NetworkIcon,
+} from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -67,6 +65,19 @@ const adminNavItems: NavItem[] = [
     icon: <MessageCircle />,
     name: "Contact Messages",
     path: "/contact-messages",
+  },
+  {
+    icon: <NetworkIcon />,
+    name: "Affiliate",
+    subItems: [
+      { name: "New Requests", path: "/affiliate/new-requests" },
+      { name: "Manage Affiliates", path: "/affiliate/manage-affiliates" },
+      // {
+      //   name: "Commission Management",
+      //   path: "/affiliate/commission-management",
+      // },
+      // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
+    ],
   },
 ];
 
