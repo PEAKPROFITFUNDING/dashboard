@@ -60,9 +60,9 @@ export default function AffiliateReferralList({
       case "signed_up":
         return "info";
       case "pending":
-        return "neutral";
+        return "primary";
       default:
-        return "neutral";
+        return "primary";
     }
   };
 
@@ -180,7 +180,7 @@ export default function AffiliateReferralList({
               <span className="text-gray-500 dark:text-gray-400">Status:</span>
               <span className="ml-2">
                 <Badge
-                  size="xs"
+                  size="md"
                   color={
                     challenge.status === "completed"
                       ? "success"
