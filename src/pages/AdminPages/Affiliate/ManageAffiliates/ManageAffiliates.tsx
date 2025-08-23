@@ -10,39 +10,51 @@ import {
   type FilterType,
   type SortField,
 } from "./components";
+import { Link } from "react-router";
+import { useAffiliates } from "../../../../context/AffiliateContext";
 
 export default function ManageAffiliates() {
-  const [affiliates] = useState<Affiliate[]>(dummyAffiliates);
+  const { affiliates, setAffiliates } = useAffiliates();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [sortField, setSortField] = useState<SortField>("commissionsEarned");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
+  const simpleAffiliates: Affiliate[] = useMemo(() => {
+    return affiliates.map((a) => ({
+      id: a.id,
+      fullName: a.fullName,
+      email: a.email,
+      status: a.status,
+      clicks: a.performance.totalClicks,
+      signups: a.performance.totalSignups,
+      fundedAccounts: a.performance.totalFundedAccounts,
+      commissionsEarned: a.performance.totalCommissionEarned,
+    }));
+  }, [affiliates]);
+
   // Filter and sort logic
   const filteredAndSortedAffiliates = useMemo(() => {
-    let filtered = affiliates;
+    let filtered = simpleAffiliates;
 
-    // Apply filter
     if (activeFilter !== "all") {
-      filtered = affiliates.filter(
+      filtered = filtered.filter(
         (affiliate) => affiliate.status === activeFilter
       );
     }
 
-    // Apply sorting
     return filtered.sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
-
       if (typeof aValue === "string" && typeof bValue === "string") {
-        const comparison = aValue.localeCompare(bValue);
-        return sortDirection === "asc" ? comparison : -comparison;
+        return sortDirection === "asc"
+          ? (aValue as string).localeCompare(bValue as string)
+          : (bValue as string).localeCompare(aValue as string);
       } else if (typeof aValue === "number" && typeof bValue === "number") {
         return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
       }
-
       return 0;
     });
-  }, [affiliates, activeFilter, sortField, sortDirection]);
+  }, [simpleAffiliates, activeFilter, sortField, sortDirection]);
 
   // Handle sorting
   const handleSort = (field: SortField) => {
@@ -60,13 +72,20 @@ export default function ManageAffiliates() {
         title="Admin PeakProfit"
         description="Peak Profit Admin Manage Affiliates Page"
       />
-      <PageBreadcrumb pageTitle="Manage Affiliates" />
 
+      <Link
+        to={"/affiliate/manage-affiliates/new-affiliate"}
+        className="fixed bottom-6 right-6 flex items-center justify-center w-16 h-16 bg-brand-700 text-white text-3xl rounded-full shadow-3xl cursor-pointer hover:bg-brand-800 transition"
+      >
+        +
+      </Link>
+
+      <PageBreadcrumb pageTitle="Manage Affiliates" />
       <div>
         <FilterBar
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
-          affiliates={affiliates}
+          affiliates={simpleAffiliates}
         />
 
         <AffiliatesTable

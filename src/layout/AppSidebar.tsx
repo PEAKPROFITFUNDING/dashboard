@@ -10,6 +10,8 @@ import {
   MessageCircle,
   MessageCircleQuestion,
   NetworkIcon,
+  Banknote,
+  Briefcase,
 } from "lucide-react";
 
 type NavItem = {
@@ -25,6 +27,11 @@ const userNavItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Challenges",
     subItems: [{ name: "Challenge #1", path: "/", pro: false }],
+  },
+  {
+    icon: <Banknote />,
+    name: "Payouts",
+    path: "/payout",
   },
   // {
   //   icon: <CalenderIcon />,
@@ -61,6 +68,7 @@ const adminNavItems: NavItem[] = [
     name: "Users List",
     path: "/users-list",
   },
+
   {
     icon: <MessageCircle />,
     name: "Contact Messages",
@@ -77,6 +85,14 @@ const adminNavItems: NavItem[] = [
       //   path: "/affiliate/commission-management",
       // },
       // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
+    ],
+  },
+  {
+    icon: <Briefcase />,
+    name: "Funded Traders",
+    subItems: [
+      { name: "Traders List", path: "/funded-traders" },
+      { name: "Payout Requests", path: "/trader-payout-requests" },
     ],
   },
 ];

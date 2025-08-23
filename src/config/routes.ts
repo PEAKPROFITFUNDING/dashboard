@@ -3,6 +3,10 @@ import AdminRedirect from "../components/common/AdminRedirect";
 import NewRequests from "../pages/AdminPages/Affiliate/NewRequests/NewRequests";
 import ManageAffiliates from "../pages/AdminPages/Affiliate/ManageAffiliates/ManageAffiliates";
 import AffiliateDetails from "../pages/AdminPages/Affiliate/ManageAffiliates/AffiliateDetails/AffiliateDetails";
+import NewAffiliate from "../pages/AdminPages/Affiliate/ManageAffiliates/NewAffiliate/NewAffiliate";
+import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
+import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
+
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -22,6 +26,8 @@ const MessageDetails = lazy(
   () => import("../pages/AdminPages/ContactMessages/MessageDetails")
 );
 const NotFound = lazy(() => import("../pages/OtherPage/NotFound"));
+const PayoutPage = lazy(() => import("../pages/client/payout/PayoutPage"));
+const FundedTradersPage = lazy(() => import("../pages/AdminPages/FundedTraders/FundedTradersPage"));
 
 // UI Elements
 const Alerts = lazy(() => import("../pages/UiElements/Alerts"));
@@ -66,24 +72,17 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/contact-messages", element: ContactMessages, roles: ["Admin"] },
   { path: "/contact-messages/:id", element: MessageDetails, roles: ["Admin"] },
   {
-    path: "/affiliate/new-Requests",
-    element: NewRequests,
+    path: "/affiliate/*",
+    element: AffiliateRoutesWrapper,
     roles: ["Admin"],
   },
-  {
-    path: "/affiliate/manage-affiliates",
-    element: ManageAffiliates,
-    roles: ["Admin"],
-  },
-  {
-    path: "/affiliate/manage-affiliates/:id",
-    element: AffiliateDetails,
-    roles: ["Admin"],
-  },
+  { path: "/funded-traders", element: FundedTradersPage, roles: ["Admin"] },
+  { path: "/trader-payout-requests", element: TraderPayoutRequests, roles: ["Admin"] },
 ];
 
 export const userRoutes: RouteConfig[] = [
   { path: "/challenges", element: Home, roles: ["User"] },
+  { path: "/payout", element: PayoutPage, roles: ["User"] },
 ];
 
 export const uiRoutes: RouteConfig[] = [
