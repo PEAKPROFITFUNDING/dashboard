@@ -29,7 +29,7 @@ export default function Earnings() {
   return (
     <>
       <PageMeta
-        title="Client PeakProfit"
+        title="PeakProfit - Affiliate Earnings"
         description="Peak Profit Affiliate Earnings Page"
       />
       <PageBreadcrumb pageTitle={`Affiliate Earnings Overview`} />

@@ -80,7 +80,7 @@ export default function Account() {
   return (
     <>
       <PageMeta
-        title="Client PeakProfit"
+        title="PeakProfit - Affiliate Account"
         description="Peak Profit Affiliate Account Page"
       />
       <PageBreadcrumb pageTitle={`Affiliate Account`} />

@@ -167,7 +167,7 @@ export default function TierStatus() {
   return (
     <>
       <PageMeta
-        title="Client PeakProfit - Tier Status"
+        title="PeakProfit - Affilite Tier Status"
         description="Peak Profit Affiliate Tier Status Page"
       />
       <PageBreadcrumb pageTitle={`Tier Status & Benefits`} />
