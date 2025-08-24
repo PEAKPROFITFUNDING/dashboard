@@ -32,7 +32,7 @@ const userNavItems: NavItem[] = [
     subItems: [
       { name: "Account", path: "/affiliate/account" },
       { name: "Earnings", path: "/affiliate/earnings" },
-      { name: "Comissions", path: "/affiliate/comissions" },
+      { name: "Tier Status", path: "/affiliate/tier" },
       { name: "Withdrawal", path: "/affiliate/withdrawal" },
       // { name: "Manage Affiliates", path: "/affiliate/manage-affiliates" },
       // {

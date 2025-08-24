@@ -4,6 +4,9 @@ import NewRequests from "../pages/AdminPages/Affiliate/NewRequests/NewRequests";
 import ManageAffiliates from "../pages/AdminPages/Affiliate/ManageAffiliates/ManageAffiliates";
 import AffiliateDetails from "../pages/AdminPages/Affiliate/ManageAffiliates/AffiliateDetails/AffiliateDetails";
 import Account from "../pages/ClientPages/Affiliate/Account/Account";
+import Earnings from "../pages/ClientPages/Affiliate/Earnings/Earnings";
+import Withdrawals from "../pages/ClientPages/Affiliate/Withdrawals/Wathdrawals";
+import TierStatus from "../pages/ClientPages/Affiliate/TierStatus/TierStatus";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -77,6 +80,9 @@ export const adminRoutes: RouteConfig[] = [
 export const userRoutes: RouteConfig[] = [
   { path: "/challenges", element: Home },
   { path: "/affiliate/account", element: Account },
+  { path: "/affiliate/earnings", element: Earnings },
+  { path: "/affiliate/withdrawal", element: Withdrawals },
+  { path: "/affiliate/tier", element: TierStatus },
 ];
 
 // UI Routes
