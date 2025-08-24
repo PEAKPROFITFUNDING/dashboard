@@ -3,10 +3,13 @@ import AdminRedirect from "../components/common/AdminRedirect";
 import NewRequests from "../pages/AdminPages/Affiliate/NewRequests/NewRequests";
 import ManageAffiliates from "../pages/AdminPages/Affiliate/ManageAffiliates/ManageAffiliates";
 import AffiliateDetails from "../pages/AdminPages/Affiliate/ManageAffiliates/AffiliateDetails/AffiliateDetails";
+import Account from "../pages/ClientPages/Affiliate/Account/Account";
+import Earnings from "../pages/ClientPages/Affiliate/Earnings/Earnings";
+import Withdrawals from "../pages/ClientPages/Affiliate/Withdrawals/Wathdrawals";
+import TierStatus from "../pages/ClientPages/Affiliate/TierStatus/TierStatus";
 import NewAffiliate from "../pages/AdminPages/Affiliate/ManageAffiliates/NewAffiliate/NewAffiliate";
 import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
 import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
-
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -48,11 +51,12 @@ const BasicTables = lazy(() => import("../pages/Tables/BasicTables"));
 export interface RouteConfig {
   path: string;
   element: React.ComponentType;
-  roles?: string[];
   isPublic?: boolean;
   isIndex?: boolean;
+  roles?: string[];
 }
 
+// Public Routes
 export const publicRoutes: RouteConfig[] = [
   { path: "/login", element: SignIn, isPublic: true },
   { path: "/signup", element: SignUp, isPublic: true },
@@ -61,16 +65,21 @@ export const publicRoutes: RouteConfig[] = [
   { path: "/change-password", element: ChangePassword, isPublic: true },
 ];
 
+// Common Routes (accessible by both Admin & User after login)
 export const commonRoutes: RouteConfig[] = [
   { path: "/profile", element: UserProfiles },
   { path: "/calendar", element: Calendar },
   { path: "/blank", element: Blank },
 ];
 
+// Admin-only Routes
 export const adminRoutes: RouteConfig[] = [
   { path: "/users-list", element: UsersList, roles: ["Admin"] },
   { path: "/contact-messages", element: ContactMessages, roles: ["Admin"] },
   { path: "/contact-messages/:id", element: MessageDetails, roles: ["Admin"] },
+  { path: "/affiliate/new-requests", element: NewRequests, roles: ["Admin"] },
+  { path: "/affiliate/manage-affiliates", element: ManageAffiliates, roles: ["Admin"] },
+  { path: "/affiliate/manage-affiliates/:id", element: AffiliateDetails, roles: ["Admin"] },
   {
     path: "/affiliate/*",
     element: AffiliateRoutesWrapper,
@@ -80,11 +89,17 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/trader-payout-requests", element: TraderPayoutRequests, roles: ["Admin"] },
 ];
 
+// User-only Routes
 export const userRoutes: RouteConfig[] = [
   { path: "/challenges", element: Home, roles: ["User"] },
   { path: "/payout", element: PayoutPage, roles: ["User"] },
+  { path: "/affiliate/account", element: Account, roles: ["User"] },
+  { path: "/affiliate/earnings", element: Earnings, roles: ["User"] },
+  { path: "/affiliate/withdrawal", element: Withdrawals, roles: ["User"] },
+  { path: "/affiliate/tier", element: TierStatus, roles: ["User"] },
 ];
 
+// UI Routes
 export const uiRoutes: RouteConfig[] = [
   { path: "/alerts", element: Alerts },
   { path: "/avatars", element: Avatars },
@@ -94,19 +109,23 @@ export const uiRoutes: RouteConfig[] = [
   { path: "/videos", element: Videos },
 ];
 
+// Chart Routes
 export const chartRoutes: RouteConfig[] = [
   { path: "/line-chart", element: LineChart },
   { path: "/bar-chart", element: BarChart },
 ];
 
+// Form Routes
 export const formRoutes: RouteConfig[] = [
   { path: "/form-elements", element: FormElements },
 ];
 
+// Table Routes
 export const tableRoutes: RouteConfig[] = [
   { path: "/basic-tables", element: BasicTables },
 ];
 
+// Fallback Route
 export const fallbackRoute: RouteConfig = {
   path: "*",
   element: NotFound,
@@ -134,7 +153,6 @@ export const getRoutesForRole = (userRole: string | null): RouteConfig[] => {
 // Helper function to get index route based on user role
 export const getIndexRoute = (userRole: string | null): RouteConfig => {
   if (userRole === "Admin") {
-    // For admin users, redirect from / to /users-list
     return {
       path: "/",
       element: AdminRedirect,

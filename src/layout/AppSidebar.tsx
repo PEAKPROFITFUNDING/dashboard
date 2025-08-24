@@ -19,7 +19,7 @@ type NavItem = {
   icon: React.ReactNode;
   path?: string;
   externalLink?: string;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+  subItems?: { name: string; path?: string; pro?: boolean; new?: boolean }[];
 };
 
 const userNavItems: NavItem[] = [
@@ -29,9 +29,26 @@ const userNavItems: NavItem[] = [
     subItems: [{ name: "Challenge #1", path: "/", pro: false }],
   },
   {
+
+    icon: <NetworkIcon />,
+    name: "Affiliate",
+    subItems: [
+      { name: "Account", path: "/affiliate/account" },
+      { name: "Earnings", path: "/affiliate/earnings" },
+      { name: "Tier Status", path: "/affiliate/tier" },
+      { name: "Withdrawal", path: "/affiliate/withdrawal" },
+      // { name: "Manage Affiliates", path: "/affiliate/manage-affiliates" },
+      // {
+      //   name: "Commission Management",
+      //   path: "/affiliate/commission-management",
+      // },
+      // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
+    ],
+
     icon: <Banknote />,
     name: "Payouts",
     path: "/payout",
+
   },
   // {
   //   icon: <CalenderIcon />,
