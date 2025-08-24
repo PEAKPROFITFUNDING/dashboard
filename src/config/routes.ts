@@ -7,6 +7,9 @@ import Account from "../pages/ClientPages/Affiliate/Account/Account";
 import Earnings from "../pages/ClientPages/Affiliate/Earnings/Earnings";
 import Withdrawals from "../pages/ClientPages/Affiliate/Withdrawals/Wathdrawals";
 import TierStatus from "../pages/ClientPages/Affiliate/TierStatus/TierStatus";
+import NewAffiliate from "../pages/AdminPages/Affiliate/ManageAffiliates/NewAffiliate/NewAffiliate";
+import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
+import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -26,6 +29,8 @@ const MessageDetails = lazy(
   () => import("../pages/AdminPages/ContactMessages/MessageDetails")
 );
 const NotFound = lazy(() => import("../pages/OtherPage/NotFound"));
+const PayoutPage = lazy(() => import("../pages/client/payout/PayoutPage"));
+const FundedTradersPage = lazy(() => import("../pages/AdminPages/FundedTraders/FundedTradersPage"));
 
 // UI Elements
 const Alerts = lazy(() => import("../pages/UiElements/Alerts"));
@@ -48,6 +53,7 @@ export interface RouteConfig {
   element: React.ComponentType;
   isPublic?: boolean;
   isIndex?: boolean;
+  roles?: string[];
 }
 
 // Public Routes
@@ -68,21 +74,29 @@ export const commonRoutes: RouteConfig[] = [
 
 // Admin-only Routes
 export const adminRoutes: RouteConfig[] = [
-  { path: "/users-list", element: UsersList },
-  { path: "/contact-messages", element: ContactMessages },
-  { path: "/contact-messages/:id", element: MessageDetails },
-  { path: "/affiliate/new-requests", element: NewRequests },
-  { path: "/affiliate/manage-affiliates", element: ManageAffiliates },
-  { path: "/affiliate/manage-affiliates/:id", element: AffiliateDetails },
+  { path: "/users-list", element: UsersList, roles: ["Admin"] },
+  { path: "/contact-messages", element: ContactMessages, roles: ["Admin"] },
+  { path: "/contact-messages/:id", element: MessageDetails, roles: ["Admin"] },
+  { path: "/affiliate/new-requests", element: NewRequests, roles: ["Admin"] },
+  { path: "/affiliate/manage-affiliates", element: ManageAffiliates, roles: ["Admin"] },
+  { path: "/affiliate/manage-affiliates/:id", element: AffiliateDetails, roles: ["Admin"] },
+  {
+    path: "/affiliate/*",
+    element: AffiliateRoutesWrapper,
+    roles: ["Admin"],
+  },
+  { path: "/funded-traders", element: FundedTradersPage, roles: ["Admin"] },
+  { path: "/trader-payout-requests", element: TraderPayoutRequests, roles: ["Admin"] },
 ];
 
 // User-only Routes
 export const userRoutes: RouteConfig[] = [
-  { path: "/challenges", element: Home },
-  { path: "/affiliate/account", element: Account },
-  { path: "/affiliate/earnings", element: Earnings },
-  { path: "/affiliate/withdrawal", element: Withdrawals },
-  { path: "/affiliate/tier", element: TierStatus },
+  { path: "/challenges", element: Home, roles: ["User"] },
+  { path: "/payout", element: PayoutPage, roles: ["User"] },
+  { path: "/affiliate/account", element: Account, roles: ["User"] },
+  { path: "/affiliate/earnings", element: Earnings, roles: ["User"] },
+  { path: "/affiliate/withdrawal", element: Withdrawals, roles: ["User"] },
+  { path: "/affiliate/tier", element: TierStatus, roles: ["User"] },
 ];
 
 // UI Routes

@@ -10,6 +10,8 @@ import {
   MessageCircle,
   MessageCircleQuestion,
   NetworkIcon,
+  Banknote,
+  Briefcase,
 } from "lucide-react";
 
 type NavItem = {
@@ -27,6 +29,7 @@ const userNavItems: NavItem[] = [
     subItems: [{ name: "Challenge #1", path: "/", pro: false }],
   },
   {
+
     icon: <NetworkIcon />,
     name: "Affiliate",
     subItems: [
@@ -41,6 +44,11 @@ const userNavItems: NavItem[] = [
       // },
       // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
     ],
+
+    icon: <Banknote />,
+    name: "Payouts",
+    path: "/payout",
+
   },
   // {
   //   icon: <CalenderIcon />,
@@ -77,6 +85,7 @@ const adminNavItems: NavItem[] = [
     name: "Users List",
     path: "/users-list",
   },
+
   {
     icon: <MessageCircle />,
     name: "Contact Messages",
@@ -93,6 +102,14 @@ const adminNavItems: NavItem[] = [
       //   path: "/affiliate/commission-management",
       // },
       // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
+    ],
+  },
+  {
+    icon: <Briefcase />,
+    name: "Funded Traders",
+    subItems: [
+      { name: "Traders List", path: "/funded-traders" },
+      { name: "Payout Requests", path: "/trader-payout-requests" },
     ],
   },
 ];
@@ -381,12 +398,7 @@ const AppSidebar: React.FC = () => {
               </div>
             </>
           ) : (
-            <img
-              src="/images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
+            <img src="/logo.jpg" alt="Logo" width={32} height={32} />
           )}
         </Link>
       </div>

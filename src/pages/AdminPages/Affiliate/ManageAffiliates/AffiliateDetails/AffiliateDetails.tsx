@@ -12,12 +12,15 @@ import {
   referralData,
   type AffiliateDetails,
 } from "./components";
+import { useAffiliates } from "../../../../../context/AffiliateContext";
+import { Affiliate } from "../components";
 
 export default function AffiliateDetails() {
   const { id } = useParams<{ id: string }>();
   const affiliateId = parseInt(id || "1");
+  const { affiliates, setAffiliates } = useAffiliates();
   const [affiliate, setAffiliate] = useState<AffiliateDetails | undefined>(
-    affiliateDetailsData[affiliateId]
+    affiliates.find((a) => a.id === affiliateId)
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<
@@ -40,11 +43,20 @@ export default function AffiliateDetails() {
   }
 
   const handleStatusChange = (newStatus: "active" | "inactive") => {
+    // Update local affiliate state
     setAffiliate((prev) => (prev ? { ...prev, status: newStatus } : undefined));
-    // Here you would typically make an API call to update the status
-    console.log(`Affiliate status changed to: ${newStatus}`);
+
+    // Update context (global list)
+    setAffiliates((prevAffiliates) =>
+      prevAffiliates.map((a) =>
+        a.id === affiliateId ? { ...a, status: newStatus } : a
+      )
+    );
+
     setIsModalOpen(false);
     setPendingAction(null);
+
+    console.log(`Affiliate status changed to: ${newStatus}`);
   };
 
   const openConfirmationModal = (action: "activate" | "deactivate") => {
