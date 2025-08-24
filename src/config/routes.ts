@@ -10,6 +10,7 @@ import TierStatus from "../pages/ClientPages/Affiliate/TierStatus/TierStatus";
 import NewAffiliate from "../pages/AdminPages/Affiliate/ManageAffiliates/NewAffiliate/NewAffiliate";
 import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
 import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
+import PayoutsPanel from "../pages/AdminPages/Affiliate/PayoutsPanel/PayoutsPanel";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -30,7 +31,9 @@ const MessageDetails = lazy(
 );
 const NotFound = lazy(() => import("../pages/OtherPage/NotFound"));
 const PayoutPage = lazy(() => import("../pages/client/payout/PayoutPage"));
-const FundedTradersPage = lazy(() => import("../pages/AdminPages/FundedTraders/FundedTradersPage"));
+const FundedTradersPage = lazy(
+  () => import("../pages/AdminPages/FundedTraders/FundedTradersPage")
+);
 
 // UI Elements
 const Alerts = lazy(() => import("../pages/UiElements/Alerts"));
@@ -78,15 +81,28 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/contact-messages", element: ContactMessages, roles: ["Admin"] },
   { path: "/contact-messages/:id", element: MessageDetails, roles: ["Admin"] },
   { path: "/affiliate/new-requests", element: NewRequests, roles: ["Admin"] },
-  { path: "/affiliate/manage-affiliates", element: ManageAffiliates, roles: ["Admin"] },
-  { path: "/affiliate/manage-affiliates/:id", element: AffiliateDetails, roles: ["Admin"] },
+  {
+    path: "/affiliate/manage-affiliates",
+    element: ManageAffiliates,
+    roles: ["Admin"],
+  },
+  {
+    path: "/affiliate/manage-affiliates/:id",
+    element: AffiliateDetails,
+    roles: ["Admin"],
+  },
+  { path: "/affiliate/payouts-panel", element: PayoutsPanel, roles: ["Admin"] },
   {
     path: "/affiliate/*",
     element: AffiliateRoutesWrapper,
     roles: ["Admin"],
   },
   { path: "/funded-traders", element: FundedTradersPage, roles: ["Admin"] },
-  { path: "/trader-payout-requests", element: TraderPayoutRequests, roles: ["Admin"] },
+  {
+    path: "/trader-payout-requests",
+    element: TraderPayoutRequests,
+    roles: ["Admin"],
+  },
 ];
 
 // User-only Routes

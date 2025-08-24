@@ -29,7 +29,6 @@ const userNavItems: NavItem[] = [
     subItems: [{ name: "Challenge #1", path: "/", pro: false }],
   },
   {
-
     icon: <NetworkIcon />,
     name: "Affiliate",
     subItems: [
@@ -44,11 +43,11 @@ const userNavItems: NavItem[] = [
       // },
       // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
     ],
-
+  },
+  {
     icon: <Banknote />,
     name: "Payouts",
     path: "/payout",
-
   },
   // {
   //   icon: <CalenderIcon />,
@@ -101,7 +100,7 @@ const adminNavItems: NavItem[] = [
       //   name: "Commission Management",
       //   path: "/affiliate/commission-management",
       // },
-      // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
+      { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
     ],
   },
   {
