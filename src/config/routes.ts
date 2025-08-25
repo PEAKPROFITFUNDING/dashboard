@@ -10,7 +10,8 @@ import TierStatus from "../pages/ClientPages/Affiliate/TierStatus/TierStatus";
 import NewAffiliate from "../pages/AdminPages/Affiliate/ManageAffiliates/NewAffiliate/NewAffiliate";
 import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
 import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
-import PayoutsPanel from "../pages/AdminPages/Affiliate/PayoutsPanel/PayoutsPanel";
+import AdminCommissions from "../pages/AdminPages/Affiliate/Comissions/AdminComissions";
+import AdminAffiliatePayoutsPanel from "../pages/AdminPages/Affiliate/PayoutsPanel/AdminAffiliatePayoutsPanel";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -91,7 +92,16 @@ export const adminRoutes: RouteConfig[] = [
     element: AffiliateDetails,
     roles: ["Admin"],
   },
-  { path: "/affiliate/payouts-panel", element: PayoutsPanel, roles: ["Admin"] },
+  {
+    path: "/affiliate/payouts-panel",
+    element: AdminAffiliatePayoutsPanel,
+    roles: ["Admin"],
+  },
+  {
+    path: "/affiliate/commission-management",
+    element: AdminCommissions,
+    roles: ["Admin"],
+  },
   {
     path: "/affiliate/*",
     element: AffiliateRoutesWrapper,
