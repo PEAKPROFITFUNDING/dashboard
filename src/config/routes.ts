@@ -12,6 +12,7 @@ import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
 import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
 import AdminCommissions from "../pages/AdminPages/Affiliate/Comissions/AdminComissions";
 import AdminAffiliatePayoutsPanel from "../pages/AdminPages/Affiliate/PayoutsPanel/AdminAffiliatePayoutsPanel";
+import BecomeAffiliate from "../pages/ClientPages/Affiliate/BecomeAffiliate/BecomeAffiliate";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -123,6 +124,7 @@ export const userRoutes: RouteConfig[] = [
   { path: "/affiliate/earnings", element: Earnings, roles: ["User"] },
   { path: "/affiliate/withdrawal", element: Withdrawals, roles: ["User"] },
   { path: "/affiliate/tier", element: TierStatus, roles: ["User"] },
+  { path: "/affiliate/become-affiliate", element: BecomeAffiliate },
 ];
 
 // UI Routes
