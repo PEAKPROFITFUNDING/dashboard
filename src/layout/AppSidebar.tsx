@@ -22,28 +22,13 @@ type NavItem = {
   subItems?: { name: string; path?: string; pro?: boolean; new?: boolean }[];
 };
 
-const userNavItems: NavItem[] = [
+const userBasicNavItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Challenges",
     subItems: [{ name: "Challenge #1", path: "/", pro: false }],
   },
-  {
-    icon: <NetworkIcon />,
-    name: "Affiliate",
-    subItems: [
-      { name: "Account", path: "/affiliate/account" },
-      { name: "Earnings", path: "/affiliate/earnings" },
-      { name: "Tier Status", path: "/affiliate/tier" },
-      { name: "Withdrawal", path: "/affiliate/withdrawal" },
-      // { name: "Manage Affiliates", path: "/affiliate/manage-affiliates" },
-      // {
-      //   name: "Commission Management",
-      //   path: "/affiliate/commission-management",
-      // },
-      // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
-    ],
-  },
+
   {
     icon: <Banknote />,
     name: "Payouts",
@@ -90,6 +75,7 @@ const adminNavItems: NavItem[] = [
     name: "Contact Messages",
     path: "/contact-messages",
   },
+
   {
     icon: <NetworkIcon />,
     name: "Affiliate",
@@ -103,6 +89,7 @@ const adminNavItems: NavItem[] = [
       { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
     ],
   },
+
   {
     icon: <Briefcase />,
     name: "Funded Traders",
@@ -110,6 +97,32 @@ const adminNavItems: NavItem[] = [
       { name: "Traders List", path: "/funded-traders" },
       { name: "Payout Requests", path: "/trader-payout-requests" },
     ],
+  },
+];
+const affiliatedUserNavItems: NavItem[] = [
+  {
+    icon: <NetworkIcon />,
+    name: "Affiliate",
+    subItems: [
+      { name: "Account", path: "/affiliate/account" },
+      { name: "Earnings", path: "/affiliate/earnings" },
+      { name: "Tier Status", path: "/affiliate/tier" },
+      { name: "Withdrawal", path: "/affiliate/withdrawal" },
+      // { name: "Manage Affiliates", path: "/affiliate/manage-affiliates" },
+      // {
+      //   name: "Commission Management",
+      //   path: "/affiliate/commission-management",
+      // },
+      // { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
+    ],
+  },
+];
+
+const userBecomeAffiliateNavItems: NavItem[] = [
+  {
+    icon: <NetworkIcon />,
+    name: "Become an Affiliate",
+    path: "/affiliate/become-affiliate",
   },
 ];
 
@@ -152,7 +165,7 @@ const othersItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
-  const { userRole } = useUser();
+  const { userRole, isAffiliate } = useUser();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -204,6 +217,11 @@ const AppSidebar: React.FC = () => {
       }
     }
   }, [openSubmenu]);
+
+  const userNavItems: NavItem[] = [
+    ...userBasicNavItems,
+    ...(isAffiliate() ? affiliatedUserNavItems : userBecomeAffiliateNavItems),
+  ];
 
   const handleSubmenuToggle = (index: number, menuType: "main" | "others") => {
     setOpenSubmenu((prevOpenSubmenu) => {
