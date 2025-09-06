@@ -33,6 +33,8 @@ const BecomeAffiliateForm = () => {
 
     try {
       const response = await axiosInstance.post("/affiliate/apply", formData);
+      console.log(response);
+
       setSuccess("Your affiliate application has been submitted successfully!");
       setFormData({
         name: "",

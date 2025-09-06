@@ -1,3 +1,30 @@
+type LoginResponse = {
+  result: {
+    _id: string;
+    email: string;
+    profilePicture: string;
+    role: "Admin" | "User";
+    token: string;
+    name: string;
+    affiliateId: string | null;
+    referredBy: string | null;
+    affiliateStatus: "active" | "inactive" | "pending" | null;
+  };
+  message: string;
+};
+
+type UserData = {
+  id: string;
+  name: string;
+  email: string;
+  role: "Admin" | "User";
+  profilePicture: string;
+  affiliateId: string | null;
+  referredBy: string | null;
+  affiliateStatus: "active" | "inactive" | "pending" | null;
+};
+import { AxiosResponse } from "axios";
+
 export const isAuthenticated = () => {
   const authToken = localStorage.getItem("authToken");
 
@@ -34,22 +61,23 @@ export const shouldFetchUserData = (
 };
 
 // Utility to handle login response
-export const handleLoginResponse = (response: {
-  data: {
-    result: { token: string; name?: string; email: string; role: string };
-  };
-}) => {
+export const handleLoginResponse = (
+  response: AxiosResponse<LoginResponse>
+): UserData => {
   const { result } = response.data;
 
-  if (result.token) {
-    setAuthToken(result.token);
-    return {
-      token: result.token,
-      name: result.name || result.email,
-      email: result.email,
-      role: result.role,
-    };
-  }
+  // Store the token
+  localStorage.setItem("authToken", result.token);
 
-  throw new Error("No token received from login response");
+  // Return normalized user data
+  return {
+    id: result._id,
+    name: result.name,
+    email: result.email,
+    role: result.role,
+    profilePicture: result.profilePicture,
+    affiliateId: result.affiliateId,
+    referredBy: result.referredBy,
+    affiliateStatus: result.affiliateStatus,
+  };
 };

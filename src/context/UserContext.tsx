@@ -8,16 +8,35 @@ import {
 } from "react";
 
 type UserRole = "Admin" | "User";
+type AffiliateStatus = "active" | "inactive" | "pending" | null;
+
+type UserData = {
+  name: string;
+  email: string;
+  role: UserRole;
+  affiliateId?: string | null;
+  referredBy?: string | null;
+  affiliateStatus?: AffiliateStatus;
+};
 
 type UserContextType = {
   userName: string | null;
   userEmail: string | null;
   userRole: UserRole | null;
+  affiliateId: string | null;
+  referredBy: string | null;
+  affiliateStatus: AffiliateStatus;
   isUserLoaded: boolean;
-  setUser: (name: string, email: string, role: UserRole) => void;
+  setUser: (userData: UserData) => void;
   updateRole: (role: UserRole) => void;
+  updateAffiliateStatus: (status: AffiliateStatus) => void;
+  updateAffiliateId: (affiliateId: string | null) => void;
   clearUser: () => void;
   setUserLoaded: (loaded: boolean) => void;
+  // Helper methods for affiliate functionality
+  isAffiliate: () => boolean;
+  canEarnCommissions: () => boolean;
+  hasReferrer: () => boolean;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -36,16 +55,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [affiliateId, setAffiliateId] = useState<string | null>(null);
+  const [referredBy, setReferredBy] = useState<string | null>(null);
+  const [affiliateStatus, setAffiliateStatus] = useState<AffiliateStatus>(null);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
 
   const setUserLoaded = useCallback((loaded: boolean) => {
     setIsUserLoaded(loaded);
   }, []);
 
-  const setUser = useCallback((name: string, email: string, role: UserRole) => {
-    setUserName(name);
-    setUserEmail(email);
-    setUserRole(role);
+  const setUser = useCallback((userData: UserData) => {
+    setUserName(userData.name);
+    setUserEmail(userData.email);
+    setUserRole(userData.role);
+    setAffiliateId(userData.affiliateId || null);
+    setReferredBy(userData.referredBy || null);
+    setAffiliateStatus(userData.affiliateStatus || null);
     setIsUserLoaded(true);
   }, []);
 
@@ -53,12 +78,36 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     setUserRole(role);
   }, []);
 
+  const updateAffiliateStatus = useCallback((status: AffiliateStatus) => {
+    setAffiliateStatus(status);
+  }, []);
+
+  const updateAffiliateId = useCallback((id: string | null) => {
+    setAffiliateId(id);
+  }, []);
+
   const clearUser = useCallback(() => {
     setUserName(null);
     setUserEmail(null);
     setUserRole(null);
+    setAffiliateId(null);
+    setReferredBy(null);
+    setAffiliateStatus(null);
     setIsUserLoaded(false);
   }, []);
+
+  // Helper methods
+  const isAffiliate = useCallback(() => {
+    return affiliateId !== null;
+  }, [affiliateId]);
+
+  const canEarnCommissions = useCallback(() => {
+    return affiliateId !== null && affiliateStatus === "active";
+  }, [affiliateId, affiliateStatus]);
+
+  const hasReferrer = useCallback(() => {
+    return referredBy !== null;
+  }, [referredBy]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(
@@ -66,21 +115,37 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
       userName,
       userEmail,
       userRole,
+      affiliateId,
+      referredBy,
+      affiliateStatus,
       isUserLoaded,
       setUser,
       updateRole,
+      updateAffiliateStatus,
+      updateAffiliateId,
       clearUser,
       setUserLoaded,
+      isAffiliate,
+      canEarnCommissions,
+      hasReferrer,
     }),
     [
       userName,
       userEmail,
       userRole,
+      affiliateId,
+      referredBy,
+      affiliateStatus,
       isUserLoaded,
       setUser,
       updateRole,
+      updateAffiliateStatus,
+      updateAffiliateId,
       clearUser,
       setUserLoaded,
+      isAffiliate,
+      canEarnCommissions,
+      hasReferrer,
     ]
   );
 

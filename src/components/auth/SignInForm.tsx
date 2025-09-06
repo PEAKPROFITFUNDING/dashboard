@@ -52,11 +52,14 @@ export default function SignInForm() {
         const userData = handleLoginResponse(response);
 
         // Set complete user data
-        setUser(
-          userData.name,
-          userData.email,
-          userData.role as "Admin" | "User"
-        );
+        setUser({
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          affiliateId: userData.affiliateId,
+          referredBy: userData.referredBy,
+          affiliateStatus: userData.affiliateStatus,
+        });
 
         // Redirect based on user role
         if (userData.role === "Admin") {

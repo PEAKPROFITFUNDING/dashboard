@@ -39,11 +39,15 @@ const useFetchUser = () => {
           const response = await axiosInstance.get("/user/get-user");
           const userData = response.data;
 
-          setUser(
-            userData.name || userData.email,
-            userData.email,
-            userData.role
-          );
+          // Set user data with affiliate details
+          setUser({
+            name: userData.name || userData.email,
+            email: userData.email,
+            role: userData.role,
+            affiliateId: userData.affiliateId,
+            referredBy: userData.referredBy,
+            affiliateStatus: userData.affiliateStatus,
+          });
         } catch (err: unknown) {
           const error = err as {
             response?: { data?: { error?: string }; status?: number };
