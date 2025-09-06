@@ -182,6 +182,11 @@ const AppSidebar: React.FC = () => {
     [location.pathname]
   );
 
+  const userNavItems: NavItem[] = [
+    ...userBasicNavItems,
+    ...(isAffiliate() ? affiliatedUserNavItems : userBecomeAffiliateNavItems),
+  ];
+
   useEffect(() => {
     let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
@@ -217,11 +222,6 @@ const AppSidebar: React.FC = () => {
       }
     }
   }, [openSubmenu]);
-
-  const userNavItems: NavItem[] = [
-    ...userBasicNavItems,
-    ...(isAffiliate() ? affiliatedUserNavItems : userBecomeAffiliateNavItems),
-  ];
 
   const handleSubmenuToggle = (index: number, menuType: "main" | "others") => {
     setOpenSubmenu((prevOpenSubmenu) => {
