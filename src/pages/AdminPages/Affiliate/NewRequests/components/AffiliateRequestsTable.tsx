@@ -14,12 +14,14 @@ interface AffiliateRequestsTableProps {
   requests: AffiliateRequest[];
   onViewDetails: (request: AffiliateRequest) => void;
   onStatusChange: (id: number, status: "approved" | "rejected") => void;
+  currentFilter: "pending" | "rejected";
 }
 
 export default function AffiliateRequestsTable({
   requests,
   onViewDetails,
   onStatusChange,
+  currentFilter,
 }: AffiliateRequestsTableProps) {
   const [sortField, setSortField] =
     useState<keyof AffiliateRequest>("appliedDate");
@@ -128,6 +130,7 @@ export default function AffiliateRequestsTable({
                   request={request}
                   onViewDetails={onViewDetails}
                   onStatusChange={onStatusChange}
+                  showActionButtons={currentFilter === "pending"}
                 />
               ))}
             </TableBody>

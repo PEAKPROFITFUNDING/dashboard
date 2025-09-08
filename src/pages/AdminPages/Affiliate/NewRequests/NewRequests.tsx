@@ -7,6 +7,7 @@ import ConfirmationModal from "./components/ConfirmationModal";
 import { AffiliateRequest, Comment } from "./components/types";
 import axiosInstance from "../../../../api/axiosInstance";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
+import FilterBar from "../../../../components/FilterBar";
 
 // Define the API response interface
 interface ApiAffiliateApplication {
@@ -38,6 +39,8 @@ interface ApiResponse {
   message: string;
 }
 
+type FilterType = "pending" | "rejected";
+
 // Transform API data to match your existing AffiliateRequest interface
 const transformApiData = (
   apiData: ApiAffiliateApplication[]
@@ -66,6 +69,11 @@ export default function NewRequests() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<FilterType>("pending");
+  const [counts, setCounts] = useState({
+    pending: 0,
+    rejected: 0,
+  });
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -85,14 +93,28 @@ export default function NewRequests() {
     loading: false,
   });
 
+  // Filter options for FilterBar
+  const filterOptions = [
+    { key: "pending", label: "Pending", color: "warning" as const },
+    { key: "rejected", label: "Rejected", color: "error" as const },
+  ];
+
+  const badgeConfig = [
+    { key: "pending", color: "warning" as const, label: "Pending" },
+    { key: "rejected", color: "error" as const, label: "Rejected" },
+  ];
+
   // Fetch affiliate requests from API
-  const fetchAffiliateRequests = async (pageNo: number = 1) => {
+  const fetchAffiliateRequests = async (
+    pageNo: number = 1,
+    status: FilterType = activeFilter
+  ) => {
     try {
       setLoading(true);
       setError(null);
 
       const response = await axiosInstance.get<ApiResponse>(
-        `/admin/affiliateApplications?status=pending&pageNo=${pageNo}`
+        `/admin/affiliateApplications?status=${status}&pageNo=${pageNo}`
       );
 
       const transformedData = transformApiData(response.data.result.data);
@@ -115,10 +137,40 @@ export default function NewRequests() {
     }
   };
 
+  // Fetch counts for all statuses
+  const fetchCounts = async () => {
+    try {
+      const [pendingResponse, rejectedResponse] = await Promise.all([
+        axiosInstance.get<ApiResponse>(
+          `/admin/affiliateApplications?status=pending&pageNo=1`
+        ),
+        axiosInstance.get<ApiResponse>(
+          `/admin/affiliateApplications?status=rejected&pageNo=1`
+        ),
+      ]);
+
+      setCounts({
+        pending: pendingResponse.data.result.pagination.totalItems,
+        rejected: rejectedResponse.data.result.pagination.totalItems,
+      });
+    } catch (err) {
+      console.error("Error fetching counts:", err);
+    }
+  };
+
   // Load data on component mount
   useEffect(() => {
     fetchAffiliateRequests();
+    fetchCounts();
   }, []);
+
+  // Handle filter change
+  const handleFilterChange = (filter: string) => {
+    const newFilter = filter as FilterType;
+    setActiveFilter(newFilter);
+    setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset to first page
+    fetchAffiliateRequests(1, newFilter);
+  };
 
   // API call to update status
   const updateAffiliateStatus = async (
@@ -132,36 +184,16 @@ export default function NewRequests() {
         status: status,
       });
 
-      // Update local state
-      setRequests((prev) =>
-        prev.map((request) =>
-          request._id === affiliateId
-            ? {
-                ...request,
-                status: status === "accepted" ? "approved" : "rejected",
-              }
-            : request
-        )
-      );
-
-      // Update selected request if it's the one being updated
-      if (selectedRequest && selectedRequest._id === affiliateId) {
-        setSelectedRequest((prev) =>
-          prev
-            ? {
-                ...prev,
-                status: status === "accepted" ? "approved" : "rejected",
-              }
-            : null
-        );
-      }
-
-      // Close confirmation modal
+      // Close confirmation modal first
       setConfirmationModal((prev) => ({
         ...prev,
         isOpen: false,
         loading: false,
       }));
+
+      // Close the details modal if open
+      setIsModalOpen(false);
+      setSelectedRequest(null);
 
       // Show success message
       alert(
@@ -169,6 +201,12 @@ export default function NewRequests() {
           status === "accepted" ? "approved" : "rejected"
         } successfully!`
       );
+
+      // Refresh the current page data and counts
+      await Promise.all([
+        fetchAffiliateRequests(pagination.currentPage, activeFilter),
+        fetchCounts(),
+      ]);
     } catch (err) {
       console.error("Error updating status:", err);
       setConfirmationModal((prev) => ({ ...prev, loading: false }));
@@ -244,7 +282,7 @@ export default function NewRequests() {
 
   // Handle page change
   const handlePageChange = (pageNo: number) => {
-    fetchAffiliateRequests(pageNo);
+    fetchAffiliateRequests(pageNo, activeFilter);
   };
 
   // Close confirmation modal
@@ -299,10 +337,19 @@ export default function NewRequests() {
       <PageBreadcrumb pageTitle="New Affiliate Requests" />
 
       <div>
+        {/* Filter Bar */}
+        <FilterBar
+          activeFilter={activeFilter}
+          onFilterChange={handleFilterChange}
+          filterOptions={filterOptions}
+          counts={counts}
+          badgeConfig={badgeConfig}
+        />
+
         {requests.length === 0 ? (
           <div className="flex justify-center items-center py-8">
             <div className="text-gray-600 dark:text-gray-400">
-              No pending affiliate requests found.
+              No {activeFilter} affiliate requests found.
             </div>
           </div>
         ) : (
@@ -312,6 +359,7 @@ export default function NewRequests() {
               requests={requests}
               onViewDetails={handleViewDetails}
               onStatusChange={handleStatusChange}
+              currentFilter={activeFilter}
             />
 
             {/* API-based Pagination Info */}
@@ -350,6 +398,7 @@ export default function NewRequests() {
           onStatusChange={handleStatusChange}
           onFlagChange={handleFlagChange}
           onCommentAdd={handleAddComment}
+          currentFilter={activeFilter}
         />
 
         {/* Confirmation Modal */}

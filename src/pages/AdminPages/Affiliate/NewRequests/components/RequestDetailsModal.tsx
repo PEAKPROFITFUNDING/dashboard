@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Modal } from "../../../../../components/ui/modal";
 import Button from "../../../../../components/ui/button/Button";
-import { AffiliateRequest, Comment } from "./types";
+import Select from "../../../../../components/form/Select";
+import { AffiliateRequest, Comment, flagOptions } from "./types";
+import CommentSection from "./CommentSection";
 
 interface RequestDetailsModalProps {
   isOpen: boolean;
@@ -10,6 +12,7 @@ interface RequestDetailsModalProps {
   onStatusChange: (id: number, status: "approved" | "rejected") => void;
   onFlagChange: (id: number, flag: string) => void;
   onCommentAdd: (id: number, comment: Comment) => void;
+  currentFilter: "pending" | "rejected";
 }
 
 export default function RequestDetailsModal({
@@ -17,9 +20,10 @@ export default function RequestDetailsModal({
   onClose,
   request,
   onStatusChange,
-}: // onFlagChange,
-// onCommentAdd,
-RequestDetailsModalProps) {
+  onFlagChange,
+  onCommentAdd,
+  currentFilter,
+}: RequestDetailsModalProps) {
   const [selectedFlag, setSelectedFlag] = useState("");
 
   // Update selected flag when request changes
@@ -27,12 +31,12 @@ RequestDetailsModalProps) {
     setSelectedFlag(request.flag || "");
   }
 
-  // const handleFlagChange = (flag: string) => {
-  //   setSelectedFlag(flag);
-  //   if (request) {
-  //     onFlagChange(request.id, flag);
-  //   }
-  // };
+  const handleFlagChange = (flag: string) => {
+    setSelectedFlag(flag);
+    if (request) {
+      onFlagChange(request.id, flag);
+    }
+  };
 
   const handleStatusChange = (status: "approved" | "rejected") => {
     if (request) {
@@ -40,6 +44,10 @@ RequestDetailsModalProps) {
       // Don't close modal here - let the parent component handle it after confirmation
     }
   };
+
+  // Don't show action buttons for rejected requests
+  const showActionButtons =
+    currentFilter === "pending" && request?.status === "pending";
 
   return (
     <Modal
@@ -162,7 +170,7 @@ RequestDetailsModalProps) {
               >
                 Close
               </Button>
-              {request.status === "pending" && (
+              {showActionButtons && (
                 <>
                   <button
                     onClick={() => handleStatusChange("approved")}
