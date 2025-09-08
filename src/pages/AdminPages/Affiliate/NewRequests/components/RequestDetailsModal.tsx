@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Modal } from "../../../../../components/ui/modal";
 import Button from "../../../../../components/ui/button/Button";
-import Select from "../../../../../components/form/Select";
-import { AffiliateRequest, Comment, flagOptions } from "./types";
-import CommentSection from "./CommentSection";
+import { AffiliateRequest, Comment } from "./types";
 
 interface RequestDetailsModalProps {
   isOpen: boolean;
@@ -20,8 +18,8 @@ export default function RequestDetailsModal({
   onClose,
   request,
   onStatusChange,
-  onFlagChange,
-  onCommentAdd,
+  // onFlagChange,
+  // onCommentAdd,
   currentFilter,
 }: RequestDetailsModalProps) {
   const [selectedFlag, setSelectedFlag] = useState("");
@@ -31,12 +29,12 @@ export default function RequestDetailsModal({
     setSelectedFlag(request.flag || "");
   }
 
-  const handleFlagChange = (flag: string) => {
-    setSelectedFlag(flag);
-    if (request) {
-      onFlagChange(request.id, flag);
-    }
-  };
+  // const handleFlagChange = (flag: string) => {
+  //   setSelectedFlag(flag);
+  //   if (request) {
+  //     onFlagChange(request.id, flag);
+  //   }
+  // };
 
   const handleStatusChange = (status: "approved" | "rejected") => {
     if (request) {

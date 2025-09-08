@@ -8,7 +8,7 @@ import {
 } from "react";
 
 type UserRole = "Admin" | "User";
-type AffiliateStatus = "active" | "inactive" | "pending" | null;
+type AffiliateStatus = "pending" | "rejected" | "accepted" | null;
 
 type UserData = {
   name: string;
@@ -102,7 +102,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   }, [affiliateId]);
 
   const canEarnCommissions = useCallback(() => {
-    return affiliateId !== null && affiliateStatus === "active";
+    return affiliateId !== null && affiliateStatus === "accepted";
   }, [affiliateId, affiliateStatus]);
 
   const hasReferrer = useCallback(() => {

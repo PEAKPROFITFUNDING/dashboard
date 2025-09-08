@@ -6,12 +6,12 @@ import axiosInstance from "../../../../../api/axiosInstance";
 import { Handshake, Clock } from "lucide-react";
 import { useUser } from "../../../../../context/UserContext";
 import useFetchUser from "../../../../../hooks/useFetchUser";
+import { useNavigate } from "react-router";
 
 const BecomeAffiliateForm = () => {
   const { userName, userEmail, affiliateStatus } = useUser();
   const { refetchUser } = useFetchUser();
-
-  console.log("affiliateStatus", affiliateStatus);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: userName || "",
@@ -27,12 +27,15 @@ const BecomeAffiliateForm = () => {
 
   // Keep formData in sync with user context if it changes
   useEffect(() => {
+    if (affiliateStatus === "accepted") {
+      navigate("/affiliate/account");
+    }
     setFormData((prev) => ({
       ...prev,
       name: userName || prev.name,
       email: userEmail || prev.email,
     }));
-  }, [userName, userEmail]);
+  }, [userName, userEmail, affiliateStatus]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
