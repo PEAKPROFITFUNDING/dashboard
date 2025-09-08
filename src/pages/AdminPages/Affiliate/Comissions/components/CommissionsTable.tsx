@@ -84,8 +84,8 @@ export function CommissionsTable({
       return true;
     })
     .sort((a, b) => {
-      let aValue: any = a[sortField as keyof Commission];
-      let bValue: any = b[sortField as keyof Commission];
+      let aValue = a[sortField as keyof Commission];
+      let bValue = b[sortField as keyof Commission];
 
       if (sortField === "date") {
         aValue = new Date(a.dateEarned).getTime();
@@ -153,18 +153,15 @@ export function CommissionsTable({
     setIsModalOpen(true);
   };
 
-  const handleApprove = (e: React.MouseEvent, commission: Commission) => {
-    e.stopPropagation();
+  const handleApprove = (commission: Commission) => {
     console.log("Approving commission:", commission.id);
   };
 
-  const handleReject = (e: React.MouseEvent, commission: Commission) => {
-    e.stopPropagation();
+  const handleReject = (commission: Commission) => {
     console.log("Rejecting commission:", commission.id);
   };
 
-  const handleMarkPaid = (e: React.MouseEvent, commission: Commission) => {
-    e.stopPropagation();
+  const handleMarkPaid = (commission: Commission) => {
     console.log("Marking as paid:", commission.id);
   };
 
@@ -344,21 +341,19 @@ export function CommissionsTable({
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRowClick(commission);
-                      }}
+                      onClick={() => handleRowClick(commission)}
                       className="text-xs"
                     >
                       <Eye className="w-3 h-3 mr-1" />
                       View
                     </Button>
+
                     {commission.status === "pending" && (
                       <>
                         <Button
                           size="sm"
                           variant="primary"
-                          onClick={(e) => handleApprove(e, commission)}
+                          onClick={() => handleApprove(commission)}
                           className="text-xs"
                         >
                           <CheckCircle className="w-3 h-3 mr-1" />
@@ -367,7 +362,7 @@ export function CommissionsTable({
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={(e) => handleReject(e, commission)}
+                          onClick={() => handleReject(commission)}
                           className="text-xs text-red-600 hover:text-red-700"
                         >
                           <XCircle className="w-3 h-3 mr-1" />
@@ -375,11 +370,12 @@ export function CommissionsTable({
                         </Button>
                       </>
                     )}
+
                     {commission.status === "approved" && (
                       <Button
                         size="sm"
                         variant="primary"
-                        onClick={(e) => handleMarkPaid(e, commission)}
+                        onClick={() => handleMarkPaid(commission)}
                         className="text-xs"
                       >
                         <CheckCircle className="w-3 h-3 mr-1" />

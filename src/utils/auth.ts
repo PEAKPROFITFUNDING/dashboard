@@ -8,7 +8,7 @@ type LoginResponse = {
     name: string;
     affiliateId: string | null;
     referredBy: string | null;
-    affiliateStatus: "active" | "inactive" | "pending" | null;
+    affiliateStatus: "pending" | "rejected" | "accepted" | null;
   };
   message: string;
 };
@@ -21,7 +21,7 @@ type UserData = {
   profilePicture: string;
   affiliateId: string | null;
   referredBy: string | null;
-  affiliateStatus: "active" | "inactive" | "pending" | null;
+  affiliateStatus: "pending" | "rejected" | "accepted" | null;
 };
 import { AxiosResponse } from "axios";
 

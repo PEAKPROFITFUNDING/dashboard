@@ -8,12 +8,10 @@ import {
   PerformanceChart,
   ReferralList,
   ConfirmationModal,
-  affiliateDetailsData,
   referralData,
   type AffiliateDetails,
 } from "./components";
 import { useAffiliates } from "../../../../../context/AffiliateContext";
-import { Affiliate } from "../components";
 
 export default function AffiliateDetails() {
   const { id } = useParams<{ id: string }>();

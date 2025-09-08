@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export type FilterOption = {
   key: string;
   label: string;
@@ -6,7 +8,7 @@ export type FilterOption = {
 
 interface FilterBarProps {
   activeFilter: string;
-  onFilterChange: (filter: string) => void;
+  onFilterChange: Dispatch<SetStateAction<string>>;
   filterOptions: FilterOption[];
   counts: Record<string, number>;
   badgeConfig?: {

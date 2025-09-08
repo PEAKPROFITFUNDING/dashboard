@@ -4,7 +4,6 @@ import Label from "../../../../../components/form/Label";
 import Input from "../../../../../components/form/input/InputField";
 import Select from "../../../../../components/form/Select";
 import Button from "../../../../../components/ui/button/Button";
-import { Affiliate } from "./types";
 import { AffiliateDetails } from "../AffiliateDetails/components";
 
 interface AddAffiliateFormData {

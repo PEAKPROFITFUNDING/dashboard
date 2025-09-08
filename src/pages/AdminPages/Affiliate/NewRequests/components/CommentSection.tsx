@@ -19,7 +19,8 @@ export default function CommentSection({
 
     const comment: Comment = {
       id: Date.now(),
-      text: newComment,
+      author: "Admin", // or pull from logged-in user
+      content: newComment,
       timestamp: new Date().toISOString(),
     };
 
@@ -67,7 +68,7 @@ export default function CommentSection({
                 className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg"
               >
                 <p className="text-gray-900 dark:text-white text-sm mb-1">
-                  {comment.text}
+                  {comment.content}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {new Date(comment.timestamp).toLocaleString()}
