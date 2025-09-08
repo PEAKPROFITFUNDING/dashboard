@@ -1,17 +1,11 @@
 import { lazy } from "react";
 import AdminRedirect from "../components/common/AdminRedirect";
-import NewRequests from "../pages/AdminPages/Affiliate/NewRequests/NewRequests";
-import ManageAffiliates from "../pages/AdminPages/Affiliate/ManageAffiliates/ManageAffiliates";
-import AffiliateDetails from "../pages/AdminPages/Affiliate/ManageAffiliates/AffiliateDetails/AffiliateDetails";
 import Account from "../pages/ClientPages/Affiliate/Account/Account";
 import Earnings from "../pages/ClientPages/Affiliate/Earnings/Earnings";
 import Withdrawals from "../pages/ClientPages/Affiliate/Withdrawals/Wathdrawals";
 import TierStatus from "../pages/ClientPages/Affiliate/TierStatus/TierStatus";
-import NewAffiliate from "../pages/AdminPages/Affiliate/ManageAffiliates/NewAffiliate/NewAffiliate";
 import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
 import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
-import AdminCommissions from "../pages/AdminPages/Affiliate/Comissions/AdminComissions";
-import AdminAffiliatePayoutsPanel from "../pages/AdminPages/Affiliate/PayoutsPanel/AdminAffiliatePayoutsPanel";
 import BecomeAffiliate from "../pages/ClientPages/Affiliate/BecomeAffiliate/BecomeAffiliate";
 
 // Lazy load components for better performance
@@ -79,43 +73,13 @@ export const commonRoutes: RouteConfig[] = [
 
 // Admin-only Routes
 export const adminRoutes: RouteConfig[] = [
-  { path: "/users-list", element: UsersList, roles: ["Admin"] },
-  { path: "/contact-messages", element: ContactMessages, roles: ["Admin"] },
-  { path: "/contact-messages/:id", element: MessageDetails, roles: ["Admin"] },
-  { path: "/affiliate/new-requests", element: NewRequests, roles: ["Admin"] },
-  {
-    path: "/affiliate/manage-affiliates",
-    element: ManageAffiliates,
-    roles: ["Admin"],
-  },
-  {
-    path: "/affiliate/manage-affiliates/:id",
-    element: AffiliateDetails,
-    roles: ["Admin"],
-  },
-  {
-    path: "/affiliate/payouts-panel",
-    element: AdminAffiliatePayoutsPanel,
-    roles: ["Admin"],
-  },
-  {
-    path: "/affiliate/commission-management",
-    element: AdminCommissions,
-    roles: ["Admin"],
-  },
-  {
-    path: "/affiliate/*",
-    element: AffiliateRoutesWrapper,
-    roles: ["Admin"],
-  },
+  { path: "/users-list", element: UsersList },
+  { path: "/contact-messages", element: ContactMessages },
+  { path: "/contact-messages/:id", element: MessageDetails },
+  { path: "/affiliate/*", element: AffiliateRoutesWrapper },
   { path: "/funded-traders", element: FundedTradersPage, roles: ["Admin"] },
-  {
-    path: "/trader-payout-requests",
-    element: TraderPayoutRequests,
-    roles: ["Admin"],
-  },
+  { path: "/trader-payout-requests", element: TraderPayoutRequests },
 ];
-
 // User-only Routes
 export const userRoutes: RouteConfig[] = [
   { path: "/challenges", element: Home, roles: ["User"] },
