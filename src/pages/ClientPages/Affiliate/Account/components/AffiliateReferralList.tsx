@@ -7,34 +7,32 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../../components/ui/table";
-import { Referral, ReferralStep } from "../affiliateReferralData";
 import { Modal } from "../../../../../components/ui/modal";
 
 interface AffiliateReferralListProps {
-  referrals: Referral[];
+  referrals: Array<{
+    id: string;
+    fullName: string;
+    email: string;
+    signUpDate: string;
+    totalCommission: number;
+    currentStatus: string;
+    steps: Array<{
+      id: string;
+      type: string;
+      title: string;
+      date: string;
+      status: string;
+      details;
+    }>;
+  }>;
 }
 
 export default function AffiliateReferralList({
   referrals,
 }: AffiliateReferralListProps) {
-  const [selectedReferral, setSelectedReferral] = useState<Referral | null>(
-    null
-  );
+  const [selectedReferral, setSelectedReferral] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const totalCommission = referrals.reduce(
-    (sum, referral) => sum + referral.totalCommission,
-    0
-  );
-  const completedReferrals = referrals.filter(
-    (r) => r.currentStatus === "completed"
-  ).length;
-  const activeReferrals = referrals.filter(
-    (r) => r.currentStatus === "active_trader"
-  ).length;
-  const signedUpReferrals = referrals.filter(
-    (r) => r.currentStatus === "signed_up"
-  ).length;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -56,7 +54,7 @@ export default function AffiliateReferralList({
       case "completed":
         return "success";
       case "active_trader":
-        return "warning";
+        return "success";
       case "signed_up":
         return "info";
       case "pending":
@@ -81,7 +79,7 @@ export default function AffiliateReferralList({
     }
   };
 
-  const openModal = (referral: Referral) => {
+  const openModal = (referral) => {
     setSelectedReferral(referral);
     setIsModalOpen(true);
   };
@@ -91,7 +89,7 @@ export default function AffiliateReferralList({
     setSelectedReferral(null);
   };
 
-  const getStepIcon = (step: ReferralStep, index: number) => {
+  const getStepIcon = (step, index: number) => {
     if (step.status === "completed") {
       return (
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
@@ -125,28 +123,10 @@ export default function AffiliateReferralList({
     }
   };
 
-  const renderStepDetails = (step: ReferralStep) => {
+  const renderStepDetails = (step) => {
     if (step.type === "signup") {
       return (
         <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-gray-500 dark:text-gray-400">
-                Account Type:
-              </span>
-              <span className="ml-2 font-medium text-black dark:text-white">
-                {step.details.accountType}
-              </span>
-            </div>
-            <div>
-              <span className="text-gray-500 dark:text-gray-400">
-                Verification:
-              </span>
-              <span className="ml-2 font-medium text-black dark:text-white">
-                {step.details.verificationStatus}
-              </span>
-            </div>
-          </div>
           <div className="text-sm">
             <span className="text-gray-500 dark:text-gray-400">
               Commission Earned:
@@ -221,42 +201,6 @@ export default function AffiliateReferralList({
 
   return (
     <div className="mb-8">
-      {/* Summary Stats */}
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {referrals.length}
-          </div>
-          <div className="text-sm text-blue-600 dark:text-blue-400">
-            Total Referrals
-          </div>
-        </div>
-        <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-            {completedReferrals}
-          </div>
-          <div className="text-sm text-green-600 dark:text-green-400">
-            Completed
-          </div>
-        </div>
-        <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
-          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-            {activeReferrals + signedUpReferrals}
-          </div>
-          <div className="text-sm text-orange-600 dark:text-orange-400">
-            In Progress
-          </div>
-        </div>
-        <div className="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
-          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-            {formatCurrency(totalCommission)}
-          </div>
-          <div className="text-sm text-emerald-600 dark:text-emerald-400">
-            Total Earned
-          </div>
-        </div>
-      </div>
-
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
         Your Referrals
       </h2>
@@ -282,12 +226,6 @@ export default function AffiliateReferralList({
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Phone
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
                   Total Commission
                 </TableCell>
                 <TableCell
@@ -295,6 +233,12 @@ export default function AffiliateReferralList({
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
                   Sign Up Date
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                >
+                  Status
                 </TableCell>
                 <TableCell
                   isHeader
@@ -321,10 +265,6 @@ export default function AffiliateReferralList({
                     {referral.email}
                   </TableCell>
 
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {referral.phone}
-                  </TableCell>
-
                   <TableCell className="px-4 py-3 text-start">
                     <div className="font-medium text-emerald-600 dark:text-emerald-400">
                       {formatCurrency(referral.totalCommission)}
@@ -335,6 +275,15 @@ export default function AffiliateReferralList({
                     {referral.signUpDate
                       ? formatDate(referral.signUpDate)
                       : "-"}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-3 text-start">
+                    <Badge
+                      size="sm"
+                      color={getStatusBadgeColor(referral.currentStatus)}
+                    >
+                      {getStatusLabel(referral.currentStatus)}
+                    </Badge>
                   </TableCell>
 
                   <TableCell className="px-4 py-3 text-start">
@@ -370,15 +319,13 @@ export default function AffiliateReferralList({
         className="max-w-2xl mx-4"
       >
         {selectedReferral && (
-          <div className="p-6 ">
+          <div className="p-6">
             <div className="mb-6">
               <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
                 {selectedReferral.fullName}'s Progress
               </h3>
               <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                 <span>{selectedReferral.email}</span>
-                <span>•</span>
-                <span>{selectedReferral.phone}</span>
                 <span>•</span>
                 <Badge
                   size="sm"
