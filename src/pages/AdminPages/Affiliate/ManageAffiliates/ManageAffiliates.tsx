@@ -1,36 +1,94 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../../components/common/PageMeta";
-import {
-  FilterBar,
-  AffiliatesTable,
-  SummaryStats,
-  dummyAffiliates,
-  type Affiliate,
-  type FilterType,
-  type SortField,
-} from "./components";
 import { Link } from "react-router";
-import { useAffiliates } from "../../../../context/AffiliateContext";
+import axiosInstance from "../../../../api/axiosInstance";
+import {
+  Affiliate,
+  AffiliatesTable,
+  FilterType,
+  SortField,
+  SummaryStats,
+} from "./components";
+import FilterBar from "../../../../components/FilterBar";
+
+// API Response types
+interface ApiAffiliate {
+  _id: string;
+  userId: string;
+  user: {
+    name: string;
+    email: string;
+    profilePicture: string;
+  };
+  tier: string;
+  referralCode: string;
+  referralLink: string;
+  referrals: [];
+  referralsCount: number;
+  commissionPercentage: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ApiResponse {
+  result: {
+    data: ApiAffiliate[];
+    pagination: {
+      currentPage: number;
+      perPage: number;
+      totalItems: number;
+      totalPages: number;
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+    };
+  };
+  message: string;
+}
 
 export default function ManageAffiliates() {
-  const { affiliates, setAffiliates } = useAffiliates();
+  const [apiAffiliates, setApiAffiliates] = useState<ApiAffiliate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [sortField, setSortField] = useState<SortField>("commissionsEarned");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
+  // Fetch affiliates data
+  useEffect(() => {
+    const fetchAffiliates = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get<ApiResponse>(
+          "/admin/affiliates?pageNo=1"
+        );
+        setApiAffiliates(response.data.result.data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching affiliates:", err);
+        setError(err.message || "Failed to fetch affiliates");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAffiliates();
+  }, []);
+
+  // Transform API data to match the existing Affiliate interface
   const simpleAffiliates: Affiliate[] = useMemo(() => {
-    return affiliates.map((a) => ({
-      id: a.id,
-      fullName: a.fullName,
-      email: a.email,
-      status: a.status,
-      clicks: a.performance.totalClicks,
-      signups: a.performance.totalSignups,
-      fundedAccounts: a.performance.totalFundedAccounts,
-      commissionsEarned: a.performance.totalCommissionEarned,
+    return apiAffiliates.map((a) => ({
+      id: a._id,
+      fullName: a.user.name,
+      email: a.user.email,
+      status: a.tier.toLowerCase() as "active" | "inactive" | "pending", // Map tier to status
+      clicks: 0, // Not provided in API response
+      signups: a.referralsCount,
+      fundedAccounts: 0, // Not provided in API response
+      commissionsEarned: a.commissionPercentage, // Use commission percentage instead
+      referralCode: a.referralCode,
     }));
-  }, [affiliates]);
+  }, [apiAffiliates]);
 
   // Filter and sort logic
   const filteredAndSortedAffiliates = useMemo(() => {
@@ -66,6 +124,40 @@ export default function ManageAffiliates() {
     }
   };
 
+  if (loading) {
+    return (
+      <>
+        <PageMeta
+          title="Admin PeakProfit"
+          description="Peak Profit Admin Manage Affiliates Page"
+        />
+        <PageBreadcrumb pageTitle="Manage Affiliates" />
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-600 dark:text-gray-400">
+            Loading affiliates...
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <PageMeta
+          title="Admin PeakProfit"
+          description="Peak Profit Admin Manage Affiliates Page"
+        />
+        <PageBreadcrumb pageTitle="Manage Affiliates" />
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-red-600 dark:text-red-400">
+            Error: {error}
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <PageMeta
@@ -82,10 +174,34 @@ export default function ManageAffiliates() {
 
       <PageBreadcrumb pageTitle="Manage Affiliates" />
       <div>
+        <SummaryStats affiliates={filteredAndSortedAffiliates} />
+
         <FilterBar
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
-          affiliates={simpleAffiliates}
+          filterOptions={[
+            { key: "all", label: "All" },
+            { key: "active", label: "Active", color: "success" },
+            { key: "inactive", label: "Inactive", color: "error" },
+            { key: "pending", label: "Pending", color: "warning" },
+            { key: "bronze", label: "Bronze", color: "info" },
+            { key: "silver", label: "Silver", color: "info" },
+            { key: "gold", label: "Gold", color: "success" },
+          ]}
+          counts={{
+            all: simpleAffiliates.length,
+            active: simpleAffiliates.filter((a) => a.status === "active")
+              .length,
+            inactive: simpleAffiliates.filter((a) => a.status === "inactive")
+              .length,
+            pending: simpleAffiliates.filter((a) => a.status === "pending")
+              .length,
+            bronze: simpleAffiliates.filter((a) => a.status === "bronze")
+              .length,
+            silver: simpleAffiliates.filter((a) => a.status === "silver")
+              .length,
+            gold: simpleAffiliates.filter((a) => a.status === "gold").length,
+          }}
         />
 
         <AffiliatesTable
@@ -94,8 +210,6 @@ export default function ManageAffiliates() {
           sortDirection={sortDirection}
           onSort={handleSort}
         />
-
-        <SummaryStats affiliates={filteredAndSortedAffiliates} />
       </div>
     </>
   );

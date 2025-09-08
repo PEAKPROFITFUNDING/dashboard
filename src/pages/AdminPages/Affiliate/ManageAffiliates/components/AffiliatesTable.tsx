@@ -36,23 +36,22 @@ export default function AffiliatesTable({
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case "active":
         return "success";
       case "inactive":
         return "error";
       case "pending":
         return "warning";
+      case "bronze":
+        return "info";
+      case "silver":
+        return "success";
+      case "gold":
+        return "warning";
       default:
         return "primary";
     }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
   };
 
   return (
@@ -86,14 +85,14 @@ export default function AffiliatesTable({
                   className="flex items-center gap-1 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
                   onClick={() => onSort("status")}
                 >
-                  Status {getSortIcon("status")}
+                  Tier {getSortIcon("status")}
                 </div>
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Clicks
+                Referral Code
               </TableCell>
               <TableCell
                 isHeader
@@ -103,14 +102,8 @@ export default function AffiliatesTable({
                   className="flex items-center gap-1 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
                   onClick={() => onSort("signups")}
                 >
-                  Signups {getSortIcon("signups")}
+                  Referrals {getSortIcon("signups")}
                 </div>
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Funded Accounts
               </TableCell>
               <TableCell
                 isHeader
@@ -120,7 +113,7 @@ export default function AffiliatesTable({
                   className="flex items-center gap-1 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
                   onClick={() => onSort("commissionsEarned")}
                 >
-                  Commissions {getSortIcon("commissionsEarned")}
+                  Commission % {getSortIcon("commissionsEarned")}
                 </div>
               </TableCell>
               <TableCell
@@ -160,21 +153,17 @@ export default function AffiliatesTable({
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start">
                   <Badge size="sm" color={getStatusColor(affiliate.status)}>
-                    {affiliate.status.charAt(0).toUpperCase() +
-                      affiliate.status.slice(1)}
+                    {affiliate.status.toUpperCase()}
                   </Badge>
                 </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {affiliate.clicks.toLocaleString()}
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400 font-mono">
+                  {affiliate.referralCode}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {affiliate.signups.toLocaleString()}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {affiliate.fundedAccounts.toLocaleString()}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {formatCurrency(affiliate.commissionsEarned)}
+                  {affiliate.commissionsEarned}%
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start">
                   <Link to={`/affiliate/manage-affiliates/${affiliate.id}`}>

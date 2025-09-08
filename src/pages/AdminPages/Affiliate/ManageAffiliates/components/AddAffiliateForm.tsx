@@ -140,7 +140,7 @@ const AddAffiliateForm: FC<AddAffiliateFormProps> = ({ setAffiliates }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-6">
+    <div className=" mt-6">
       {successMessage && (
         <p className="p-2 mb-4 text-green-700 bg-green-100 rounded">
           {successMessage}
