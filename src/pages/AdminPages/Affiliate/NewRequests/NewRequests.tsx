@@ -3,6 +3,7 @@ import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../../components/common/PageMeta";
 import AffiliateRequestsTable from "./components/AffiliateRequestsTable";
 import RequestDetailsModal from "./components/RequestDetailsModal";
+import ConfirmationModal from "./components/ConfirmationModal";
 import { AffiliateRequest, Comment } from "./components/types";
 import axiosInstance from "../../../../api/axiosInstance";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
@@ -43,6 +44,7 @@ const transformApiData = (
 ): AffiliateRequest[] => {
   return apiData.map((item) => ({
     id: parseInt(item._id.slice(-8), 16), // Convert MongoDB ObjectId to number for compatibility
+    _id: item._id, // Store original MongoDB _id for API calls
     fullName: item.name,
     email: item.email,
     appliedDate: new Date(item.createdAt).toLocaleDateString(),
@@ -70,6 +72,17 @@ export default function NewRequests() {
     totalItems: 0,
     hasNextPage: false,
     hasPreviousPage: false,
+  });
+
+  // Confirmation modal state
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    confirmText: "",
+    confirmVariant: "success" as "success" | "error",
+    onConfirm: () => {},
+    loading: false,
   });
 
   // Fetch affiliate requests from API
@@ -107,35 +120,85 @@ export default function NewRequests() {
     fetchAffiliateRequests();
   }, []);
 
-  // Handle approve/reject with API call
-  const handleStatusChange = async (
-    id: number,
-    status: "approved" | "rejected"
+  // API call to update status
+  const updateAffiliateStatus = async (
+    affiliateId: string,
+    status: "accepted" | "rejected"
   ) => {
     try {
-      // Find the request to get the MongoDB _id
-      const request = requests.find((r) => r.id === id);
-      if (!request) return;
+      setConfirmationModal((prev) => ({ ...prev, loading: true }));
 
-      // Convert back to MongoDB ObjectId format (you'll need to store the original _id)
-      // For now, we'll update locally and you can implement the API call
-
-      // TODO: Implement API call to update status
-      // await axiosInstance.put(`/admin/affiliateApplications/${originalId}`, { status });
+      await axiosInstance.put(`/admin/affiliateApplication/${affiliateId}`, {
+        status: status,
+      });
 
       // Update local state
       setRequests((prev) =>
         prev.map((request) =>
-          request.id === id ? { ...request, status } : request
+          request._id === affiliateId
+            ? {
+                ...request,
+                status: status === "accepted" ? "approved" : "rejected",
+              }
+            : request
         )
       );
 
-      // Optionally refetch data to ensure consistency
-      // fetchAffiliateRequests(pagination.currentPage);
+      // Update selected request if it's the one being updated
+      if (selectedRequest && selectedRequest._id === affiliateId) {
+        setSelectedRequest((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: status === "accepted" ? "approved" : "rejected",
+              }
+            : null
+        );
+      }
+
+      // Close confirmation modal
+      setConfirmationModal((prev) => ({
+        ...prev,
+        isOpen: false,
+        loading: false,
+      }));
+
+      // Show success message
+      alert(
+        `Request ${
+          status === "accepted" ? "approved" : "rejected"
+        } successfully!`
+      );
     } catch (err) {
       console.error("Error updating status:", err);
-      alert("Failed to update status");
+      setConfirmationModal((prev) => ({ ...prev, loading: false }));
+      alert(err.response?.data?.message || "Failed to update status");
     }
+  };
+
+  // Handle approve/reject with confirmation modal
+  const handleStatusChange = async (
+    id: number,
+    status: "approved" | "rejected"
+  ) => {
+    // Find the request to get the MongoDB _id
+    const request = requests.find((r) => r.id === id);
+    if (!request) return;
+
+    const isApprove = status === "approved";
+    const apiStatus = isApprove ? "accepted" : "rejected";
+
+    setConfirmationModal({
+      isOpen: true,
+      title: `${isApprove ? "Approve" : "Reject"} Affiliate Request`,
+      message: `Are you sure you want to ${
+        isApprove ? "approve" : "reject"
+      } the affiliate request from ${request.fullName}?`,
+      confirmText: isApprove ? "Approve" : "Reject",
+      confirmVariant: isApprove ? "success" : "error",
+      onConfirm: () => updateAffiliateStatus(request._id!, apiStatus),
+      loading: false,
+    });
   };
 
   // Handle modal open
@@ -182,6 +245,13 @@ export default function NewRequests() {
   // Handle page change
   const handlePageChange = (pageNo: number) => {
     fetchAffiliateRequests(pageNo);
+  };
+
+  // Close confirmation modal
+  const closeConfirmationModal = () => {
+    if (!confirmationModal.loading) {
+      setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
+    }
   };
 
   if (loading) {
@@ -249,7 +319,7 @@ export default function NewRequests() {
               <div className="mt-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
                 <div>
                   Showing page {pagination.currentPage} of{" "}
-                  {pagination.totalPages}({pagination.totalItems} total items)
+                  {pagination.totalPages} ({pagination.totalItems} total items)
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -272,7 +342,7 @@ export default function NewRequests() {
           </>
         )}
 
-        {/* Modal Component */}
+        {/* Request Details Modal */}
         <RequestDetailsModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -280,6 +350,18 @@ export default function NewRequests() {
           onStatusChange={handleStatusChange}
           onFlagChange={handleFlagChange}
           onCommentAdd={handleAddComment}
+        />
+
+        {/* Confirmation Modal */}
+        <ConfirmationModal
+          isOpen={confirmationModal.isOpen}
+          onClose={closeConfirmationModal}
+          onConfirm={confirmationModal.onConfirm}
+          title={confirmationModal.title}
+          message={confirmationModal.message}
+          confirmText={confirmationModal.confirmText}
+          confirmVariant={confirmationModal.confirmVariant}
+          loading={confirmationModal.loading}
         />
       </div>
     </>

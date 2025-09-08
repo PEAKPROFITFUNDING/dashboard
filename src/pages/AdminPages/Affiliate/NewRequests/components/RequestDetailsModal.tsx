@@ -39,7 +39,7 @@ export default function RequestDetailsModal({
   const handleStatusChange = (status: "approved" | "rejected") => {
     if (request) {
       onStatusChange(request.id, status);
-      onClose();
+      // Don't close modal here - let the parent component handle it after confirmation
     }
   };
 
@@ -81,8 +81,24 @@ export default function RequestDetailsModal({
                   Applied Date
                 </label>
                 <p className="text-gray-900 dark:text-white">
-                  {new Date(request.appliedDate).toLocaleDateString()}
+                  {request.appliedDate}
                 </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Status
+                </label>
+                <span
+                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    request.status === "approved"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      : request.status === "rejected"
+                      ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                      : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                  }`}
+                >
+                  {request.status}
+                </span>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -92,7 +108,7 @@ export default function RequestDetailsModal({
                   href={request.socialMediaLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300"
+                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 break-all"
                 >
                   {request.socialMediaLink}
                 </a>
@@ -105,9 +121,9 @@ export default function RequestDetailsModal({
                   href={request.websiteLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300"
+                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 break-all"
                 >
-                  {request.socialMediaLink}
+                  {request.websiteLink}
                 </a>
               </div>
             </div>
