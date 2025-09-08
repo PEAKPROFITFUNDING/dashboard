@@ -89,22 +89,35 @@ export default function RequestDetailsModal({
                   Social Media Link
                 </label>
                 <a
-                  href={request.socialLink}
+                  href={request.socialMediaLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300"
                 >
-                  {request.socialLink}
+                  {request.socialMediaLink}
+                </a>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Website Link
+                </label>
+                <a
+                  href={request.websiteLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300"
+                >
+                  {request.socialMediaLink}
                 </a>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Application Note
+                Strategy
               </label>
               <p className="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
-                {request.applicationNote}
+                {request.strategy}
               </p>
             </div>
 

@@ -8,7 +8,6 @@ import {
 } from "../../../../../components/ui/table";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import RequestRow from "./RequestRow";
-import Pagination from "./Pagination";
 import { AffiliateRequest } from "./types";
 
 interface AffiliateRequestsTableProps {
@@ -22,13 +21,11 @@ export default function AffiliateRequestsTable({
   onViewDetails,
   onStatusChange,
 }: AffiliateRequestsTableProps) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
   const [sortField, setSortField] =
     useState<keyof AffiliateRequest>("appliedDate");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  // Sorting function
+  // Sorting function - now only for client-side sorting of current page data
   const sortedRequests = useMemo(() => {
     return [...requests].sort((a, b) => {
       const aValue = a[sortField];
@@ -39,15 +36,13 @@ export default function AffiliateRequestsTable({
         return sortDirection === "asc" ? comparison : -comparison;
       }
 
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+      }
+
       return 0;
     });
   }, [requests, sortField, sortDirection]);
-
-  // Pagination
-  const totalPages = Math.ceil(sortedRequests.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentRequests = sortedRequests.slice(startIndex, endIndex);
 
   // Handle sorting
   const handleSort = (field: keyof AffiliateRequest) => {
@@ -127,7 +122,7 @@ export default function AffiliateRequestsTable({
             </TableHeader>
 
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {currentRequests.map((request) => (
+              {sortedRequests.map((request) => (
                 <RequestRow
                   key={request.id}
                   request={request}
@@ -139,18 +134,6 @@ export default function AffiliateRequestsTable({
           </Table>
         </div>
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          startIndex={startIndex}
-          endIndex={endIndex}
-          totalItems={sortedRequests.length}
-        />
-      )}
     </div>
   );
 }
