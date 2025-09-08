@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Modal } from "../../../../../components/ui/modal";
 import Button from "../../../../../components/ui/button/Button";
-import Select from "../../../../../components/form/Select";
-import { AffiliateRequest, Comment, flagOptions } from "./types";
-import CommentSection from "./CommentSection";
+import { AffiliateRequest, Comment } from "./types";
 
 interface RequestDetailsModalProps {
   isOpen: boolean;
@@ -19,9 +17,9 @@ export default function RequestDetailsModal({
   onClose,
   request,
   onStatusChange,
-  onFlagChange,
-  onCommentAdd,
-}: RequestDetailsModalProps) {
+}: // onFlagChange,
+// onCommentAdd,
+RequestDetailsModalProps) {
   const [selectedFlag, setSelectedFlag] = useState("");
 
   // Update selected flag when request changes
@@ -29,12 +27,12 @@ export default function RequestDetailsModal({
     setSelectedFlag(request.flag || "");
   }
 
-  const handleFlagChange = (flag: string) => {
-    setSelectedFlag(flag);
-    if (request) {
-      onFlagChange(request.id, flag);
-    }
-  };
+  // const handleFlagChange = (flag: string) => {
+  //   setSelectedFlag(flag);
+  //   if (request) {
+  //     onFlagChange(request.id, flag);
+  //   }
+  // };
 
   const handleStatusChange = (status: "approved" | "rejected") => {
     if (request) {
@@ -138,7 +136,7 @@ export default function RequestDetailsModal({
             </div>
 
             {/* Flag Selection */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Flag Status
               </label>
@@ -149,10 +147,10 @@ export default function RequestDetailsModal({
                 placeholder="Select a flag"
                 className="w-full"
               />
-            </div>
+            </div> */}
 
             {/* Comment Section */}
-            <CommentSection request={request} onCommentAdd={onCommentAdd} />
+            {/* <CommentSection request={request} onCommentAdd={onCommentAdd} /> */}
 
             {/* Action Buttons */}
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
