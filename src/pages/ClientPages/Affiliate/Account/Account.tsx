@@ -119,28 +119,28 @@ export default function Account() {
   const stats = [
     {
       title: "Total Referrals",
-      value: (data: any) => data.totalReferrals,
+      value: (data) => data.totalReferrals,
       icon: Users,
       bg: "bg-blue-100 dark:bg-blue-900",
       color: "text-blue-600 dark:text-blue-400",
     },
     {
       title: "Total Earnings",
-      value: (data: any) => `$${data.totalEarnings}`,
+      value: (data) => `$${data.totalEarnings}`,
       icon: DollarSign,
       bg: "bg-green-100 dark:bg-green-900",
       color: "text-green-600 dark:text-green-400",
     },
     {
       title: "Current Balance",
-      value: (data: any) => `$${data.balance}`,
+      value: (data) => `$${data.balance}`,
       icon: Wallet,
       bg: "bg-purple-100 dark:bg-purple-900",
       color: "text-purple-600 dark:text-purple-400",
     },
     {
       title: "Commission Rate",
-      value: (data: any) => `${data.commissionPercentage}%`,
+      value: (data) => `${data.commissionPercentage}%`,
       icon: Percent,
       bg: "bg-orange-200 dark:bg-orange-800",
       color: "text-orange-600 dark:text-orange-400",
@@ -166,7 +166,7 @@ export default function Account() {
             return (
               <div
                 key={i}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+                className="bg-white dark:border-white/[0.05] dark:bg-white/[0.03] rounded-xl shadow-lg border border-gray-200  overflow-hidden p-6"
               >
                 <div className="flex items-center">
                   <div className={`p-3 rounded-full ${stat.bg}`}>
