@@ -1,13 +1,13 @@
 import { useState } from "react";
-import Badge from "../../../../../components/ui/badge/Badge";
+import Badge from "../ui/badge/Badge";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../../../../../components/ui/table";
-import ProgressModal from "./ReferralProgressModal";
+} from "../ui/table";
+import ProgressModal from "../../pages/ClientPages/Affiliate/Account/components/ReferralProgressModal";
 
 interface AffiliateReferralListProps {
   referrals: Array<{
@@ -186,19 +186,18 @@ export default function AffiliateReferralList({
               ))}
             </TableBody>
           </Table>
+          {referrals.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 dark:text-gray-600 text-lg mb-2">
+                No referrals yet
+              </div>
+              <div className="text-gray-500 dark:text-gray-400 text-sm">
+                Share your referral link to start earning commissions
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {referrals.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-gray-400 dark:text-gray-600 text-lg mb-2">
-            No referrals yet
-          </div>
-          <div className="text-gray-500 dark:text-gray-400 text-sm">
-            Share your referral link to start earning commissions
-          </div>
-        </div>
-      )}
 
       <ProgressModal
         isOpen={isModalOpen}

@@ -16,7 +16,7 @@ interface ProfileCardProps {
   };
 }
 
-export default function ProfileCard({ affiliate }: ProfileCardProps) {
+export default function AffiliateProfileCard({ affiliate }: ProfileCardProps) {
   const [copiedReferral, setCopiedReferral] = useState(false);
 
   const copyReferralLink = () => {
