@@ -133,37 +133,41 @@ export default function ManageAffiliates() {
       <div>
         <SummaryStats affiliates={filteredAndSortedAffiliates} />
 
-        <FilterBar
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          filterOptions={[
-            { key: "all", label: "All" },
-            { key: "active", label: "Active", color: "success" },
-            { key: "inactive", label: "Inactive", color: "error" },
-            { key: "pending", label: "Pending", color: "warning" },
-            { key: "bronze", label: "Bronze", color: "info" },
-            { key: "silver", label: "Silver", color: "info" },
-            { key: "gold", label: "Gold", color: "success" },
-          ]}
-          counts={{
-            all: affiliates?.length || 0,
-            active:
-              affiliates?.filter(
-                (a) => a.totalEarnings > 0 && a.totalReferrals > 0
-              ).length || 0,
-            inactive:
-              affiliates?.filter(
-                (a) => a.totalEarnings === 0 && a.totalReferrals === 0
-              ).length || 0,
-            pending:
-              affiliates?.filter((a) =>
-                a.withdraws.some((w) => w.status === "REQUESTED")
-              ).length || 0,
-            bronze: affiliates?.filter((a) => a.tier === "BRONZE").length || 0,
-            silver: affiliates?.filter((a) => a.tier === "SILVER").length || 0,
-            gold: affiliates?.filter((a) => a.tier === "GOLD").length || 0,
-          }}
-        />
+        <div className="pb-6 border-b  border-gray-100 dark:border-white/[0.05]">
+          <FilterBar
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+            filterOptions={[
+              { key: "all", label: "All" },
+              { key: "active", label: "Active", color: "success" },
+              { key: "inactive", label: "Inactive", color: "error" },
+              { key: "pending", label: "Pending", color: "warning" },
+              { key: "bronze", label: "Bronze", color: "info" },
+              { key: "silver", label: "Silver", color: "info" },
+              { key: "gold", label: "Gold", color: "success" },
+            ]}
+            counts={{
+              all: affiliates?.length || 0,
+              active:
+                affiliates?.filter(
+                  (a) => a.totalEarnings > 0 && a.totalReferrals > 0
+                ).length || 0,
+              inactive:
+                affiliates?.filter(
+                  (a) => a.totalEarnings === 0 && a.totalReferrals === 0
+                ).length || 0,
+              pending:
+                affiliates?.filter((a) =>
+                  a.withdraws.some((w) => w.status === "REQUESTED")
+                ).length || 0,
+              bronze:
+                affiliates?.filter((a) => a.tier === "BRONZE").length || 0,
+              silver:
+                affiliates?.filter((a) => a.tier === "SILVER").length || 0,
+              gold: affiliates?.filter((a) => a.tier === "GOLD").length || 0,
+            }}
+          />
+        </div>
 
         <AffiliatesTable
           affiliates={filteredAndSortedAffiliates}

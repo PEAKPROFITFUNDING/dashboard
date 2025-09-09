@@ -1,33 +1,22 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import AffiliateReferralList from "../../../../components/affiliates/AffiliateReferralList";
-import axiosInstance from "../../../../api/axiosInstance";
 import AffiliateProfileCard from "../../../../components/affiliates/AffiliateProfileCard";
 import AffiliateProfileStats from "../../../../components/affiliates/AffiliateProfileStats";
+import { useAffiliateProfile } from "../../../../context/user/UserAffiliatesContext";
 
 export default function Account() {
-  const [affiliateData, setAffiliateData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { affiliate, loading, error, fetchAffiliateProfile, hasData } =
+    useAffiliateProfile();
 
   useEffect(() => {
-    fetchAffiliateProfile();
-  }, []);
-
-  const fetchAffiliateProfile = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get("/affiliate/profile");
-      setAffiliateData(response.data.result);
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Failed to fetch affiliate profile"
-      );
-    } finally {
-      setLoading(false);
+    if (!affiliate) {
+      fetchAffiliateProfile();
     }
-  };
+  }, [affiliate, fetchAffiliateProfile]);
+
+  console.log(affiliate);
 
   if (loading) {
     return (
@@ -48,7 +37,7 @@ export default function Account() {
     );
   }
 
-  if (!affiliateData) {
+  if (!hasData || !affiliate) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
@@ -63,21 +52,21 @@ export default function Account() {
 
   // Transform API data to match component structure
   const transformedAffiliate = {
-    fullName: affiliateData.userId.name,
-    email: affiliateData.userId.email,
-    joinedDate: affiliateData.createdAt,
-    referralCode: affiliateData.referralCode,
-    referralLink: affiliateData.referralLink,
-    tier: affiliateData.tier,
-    totalEarnings: affiliateData.totalEarnings,
-    balance: affiliateData.balance,
-    commissionPercentage: affiliateData.commissionPercentage,
-    totalReferrals: affiliateData.totalReferrals,
-    totalWithdrawn: affiliateData.totalWithdrawn,
+    fullName: affiliate.userId.name,
+    email: affiliate.userId.email,
+    joinedDate: affiliate.createdAt,
+    referralCode: affiliate.referralCode,
+    referralLink: affiliate.referralLink,
+    tier: affiliate.tier,
+    totalEarnings: affiliate.totalEarnings,
+    balance: affiliate.balance,
+    commissionPercentage: affiliate.commissionPercentage,
+    totalReferrals: affiliate.totalReferrals,
+    totalWithdrawn: affiliate.totalWithdrawn,
   };
 
   // Transform referrals data
-  const transformedReferrals = affiliateData.referrals.map((referral) => ({
+  const transformedReferrals = affiliate.referrals.map((referral) => ({
     id: referral._id,
     fullName: referral.referredUser.name,
     email: referral.referredUser.email,
@@ -129,7 +118,7 @@ export default function Account() {
         <AffiliateProfileCard affiliate={transformedAffiliate} />
 
         {/* Performance Stats */}
-        <AffiliateProfileStats affiliateData={affiliateData} />
+        <AffiliateProfileStats affiliateData={affiliate} />
 
         {/* Referrals List */}
         <AffiliateReferralList referrals={transformedReferrals} />

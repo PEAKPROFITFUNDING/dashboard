@@ -25,7 +25,7 @@ export default function FilterBar({
   counts,
 }: FilterBarProps) {
   return (
-    <div className="mb-6 flex justify-between items-center">
+    <div className=" flex justify-between items-center">
       <div className="flex flex-wrap gap-2">
         {filterOptions.map((filter) => (
           <button

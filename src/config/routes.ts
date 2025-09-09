@@ -1,12 +1,8 @@
 import { lazy } from "react";
 import AdminRedirect from "../components/common/AdminRedirect";
-import Account from "../pages/ClientPages/Affiliate/Account/Account";
-import Earnings from "../pages/ClientPages/Affiliate/Earnings/Earnings";
-import Withdrawals from "../pages/ClientPages/Affiliate/Withdrawals/Wathdrawals";
-import TierStatus from "../pages/ClientPages/Affiliate/TierStatus/TierStatus";
 import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
 import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
-import BecomeAffiliate from "../pages/ClientPages/Affiliate/BecomeAffiliate/BecomeAffiliate";
+import AffiliateClientRoutesWrapper from "./AffiliateClientRoutesWrapper";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -84,11 +80,7 @@ export const adminRoutes: RouteConfig[] = [
 export const userRoutes: RouteConfig[] = [
   { path: "/challenges", element: Home, roles: ["User"] },
   { path: "/payout", element: PayoutPage, roles: ["User"] },
-  { path: "/affiliate/account", element: Account, roles: ["User"] },
-  { path: "/affiliate/earnings", element: Earnings, roles: ["User"] },
-  { path: "/affiliate/withdrawal", element: Withdrawals, roles: ["User"] },
-  { path: "/affiliate/tier", element: TierStatus, roles: ["User"] },
-  { path: "/affiliate/become-affiliate", element: BecomeAffiliate },
+  { path: "/affiliate/*", element: AffiliateClientRoutesWrapper },
 ];
 
 // UI Routes
