@@ -126,7 +126,7 @@ export default function AffiliatesTable({
           </TableHeader>
 
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {affiliates.map((affiliate) => (
+            {affiliates?.map((affiliate) => (
               <TableRow
                 key={affiliate.id}
                 className="hover:bg-gray-50 dark:hover:bg-white/[0.02]"

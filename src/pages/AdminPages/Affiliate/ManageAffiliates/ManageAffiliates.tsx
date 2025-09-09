@@ -1,8 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../../components/common/PageMeta";
-import { Link } from "react-router";
-import axiosInstance from "../../../../api/axiosInstance";
 import {
   Affiliate,
   AffiliatesTable,
@@ -11,73 +9,25 @@ import {
   SummaryStats,
 } from "./components";
 import FilterBar from "../../../../components/FilterBar";
+import { useAffiliatesAdmin } from "../../../../context/admin/AdminAffiliatesContext";
 
 // API Response types
-interface ApiAffiliate {
-  _id: string;
-  userId: string;
-  user: {
-    name: string;
-    email: string;
-    profilePicture: string;
-  };
-  tier: string;
-  referralCode: string;
-  referralLink: string;
-  referrals: [];
-  referralsCount: number;
-  commissionPercentage: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ApiResponse {
-  result: {
-    data: ApiAffiliate[];
-    pagination: {
-      currentPage: number;
-      perPage: number;
-      totalItems: number;
-      totalPages: number;
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-    };
-  };
-  message: string;
-}
 
 export default function ManageAffiliates() {
-  const [apiAffiliates, setApiAffiliates] = useState<ApiAffiliate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [sortField, setSortField] = useState<SortField>("commissionsEarned");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const { affiliates, fetchAffiliates, loading, error } = useAffiliatesAdmin();
 
-  // Fetch affiliates data
   useEffect(() => {
-    const fetchAffiliates = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get<ApiResponse>(
-          "/admin/affiliates?pageNo=1"
-        );
-        setApiAffiliates(response.data.result.data);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching affiliates:", err);
-        setError(err.message || "Failed to fetch affiliates");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAffiliates();
-  }, []);
+    if (!affiliates) {
+      fetchAffiliates(true);
+    }
+  }, [affiliates, fetchAffiliates]);
 
   // Transform API data to match the existing Affiliate interface
   const simpleAffiliates: Affiliate[] = useMemo(() => {
-    return apiAffiliates.map((a) => ({
+    return affiliates?.map((a) => ({
       id: a._id,
       fullName: a.user.name,
       email: a.user.email,
@@ -88,7 +38,7 @@ export default function ManageAffiliates() {
       commissionsEarned: a.commissionPercentage, // Use commission percentage instead
       referralCode: a.referralCode,
     }));
-  }, [apiAffiliates]);
+  }, [affiliates]);
 
   // Filter and sort logic
   const filteredAndSortedAffiliates = useMemo(() => {
@@ -100,7 +50,7 @@ export default function ManageAffiliates() {
       );
     }
 
-    return filtered.sort((a, b) => {
+    return filtered?.sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
       if (typeof aValue === "string" && typeof bValue === "string") {
@@ -165,12 +115,12 @@ export default function ManageAffiliates() {
         description="Peak Profit Admin Manage Affiliates Page"
       />
 
-      <Link
+      {/* <Link
         to={"/affiliate/manage-affiliates/new-affiliate"}
         className="fixed bottom-6 right-6 flex items-center justify-center w-16 h-16 bg-brand-700 text-white text-3xl rounded-full shadow-3xl cursor-pointer hover:bg-brand-800 transition"
       >
         +
-      </Link>
+      </Link> */}
 
       <PageBreadcrumb pageTitle="Manage Affiliates" />
       <div>
@@ -189,18 +139,18 @@ export default function ManageAffiliates() {
             { key: "gold", label: "Gold", color: "success" },
           ]}
           counts={{
-            all: simpleAffiliates.length,
-            active: simpleAffiliates.filter((a) => a.status === "active")
+            all: simpleAffiliates?.length,
+            active: simpleAffiliates?.filter((a) => a.status === "active")
               .length,
-            inactive: simpleAffiliates.filter((a) => a.status === "inactive")
+            inactive: simpleAffiliates?.filter((a) => a.status === "inactive")
               .length,
-            pending: simpleAffiliates.filter((a) => a.status === "pending")
+            pending: simpleAffiliates?.filter((a) => a.status === "pending")
               .length,
-            bronze: simpleAffiliates.filter((a) => a.status === "bronze")
+            bronze: simpleAffiliates?.filter((a) => a.status === "bronze")
               .length,
-            silver: simpleAffiliates.filter((a) => a.status === "silver")
+            silver: simpleAffiliates?.filter((a) => a.status === "silver")
               .length,
-            gold: simpleAffiliates.filter((a) => a.status === "gold").length,
+            gold: simpleAffiliates?.filter((a) => a.status === "gold")?.length,
           }}
         />
 

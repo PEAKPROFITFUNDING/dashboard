@@ -8,21 +8,27 @@ import NewAffiliate from "../pages/AdminPages/Affiliate/ManageAffiliates/NewAffi
 import AffiliateDetails from "../pages/AdminPages/Affiliate/ManageAffiliates/AffiliateDetails/AffiliateDetails";
 import AdminAffiliatePayoutsPanel from "../pages/AdminPages/Affiliate/PayoutsPanel/AdminAffiliatePayoutsPanel";
 import AdminCommissions from "../pages/AdminPages/Affiliate/Comissions/AdminComissions";
+import { AffiliatesAdminProvider } from "../context/admin/AdminAffiliatesContext";
 
 export default function AffiliateRoutesWrapper() {
   return (
-    <AffiliatesProvider>
-      <Routes>
-        <Route path="new-requests" element={<NewRequests />} />
-        <Route path="manage-affiliates" element={<ManageAffiliates />} />
-        <Route
-          path="manage-affiliates/new-affiliate"
-          element={<NewAffiliate />}
-        />
-        <Route path="manage-affiliates/:id" element={<AffiliateDetails />} />
-        <Route path="payouts-panel" element={<AdminAffiliatePayoutsPanel />} />
-        <Route path="commission-management" element={<AdminCommissions />} />
-      </Routes>
-    </AffiliatesProvider>
+    <AffiliatesAdminProvider>
+      <AffiliatesProvider>
+        <Routes>
+          <Route path="new-requests" element={<NewRequests />} />
+          <Route path="manage-affiliates" element={<ManageAffiliates />} />
+          <Route
+            path="manage-affiliates/new-affiliate"
+            element={<NewAffiliate />}
+          />
+          <Route path="manage-affiliates/:id" element={<AffiliateDetails />} />
+          <Route
+            path="payouts-panel"
+            element={<AdminAffiliatePayoutsPanel />}
+          />
+          <Route path="commission-management" element={<AdminCommissions />} />
+        </Routes>
+      </AffiliatesProvider>
+    </AffiliatesAdminProvider>
   );
 }

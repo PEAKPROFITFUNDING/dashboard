@@ -109,7 +109,7 @@ const AppRoutes = () => {
           }
         />
       </Routes>
-      {/* {import.meta.env.DEV && <RouteDebugger />} */}
+      {import.meta.env.DEV && <RouteDebugger />}
     </Router>
   );
 };
