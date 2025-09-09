@@ -11,8 +11,6 @@ import {
 import FilterBar from "../../../../components/FilterBar";
 import { useAffiliatesAdmin } from "../../../../context/admin/AdminAffiliatesContext";
 
-// API Response types
-
 export default function ManageAffiliates() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [sortField, setSortField] = useState<SortField>("commissionsEarned");
@@ -20,22 +18,30 @@ export default function ManageAffiliates() {
   const { affiliates, fetchAffiliates, loading, error } = useAffiliatesAdmin();
 
   useEffect(() => {
-    if (!affiliates) {
-      fetchAffiliates(true);
+    if (!affiliates?.length) {
+      fetchAffiliates();
     }
-  }, [affiliates, fetchAffiliates]);
+  }, [affiliates?.length, fetchAffiliates]);
 
   // Transform API data to match the existing Affiliate interface
   const simpleAffiliates: Affiliate[] = useMemo(() => {
-    return affiliates?.map((a) => ({
+    if (!affiliates) return [];
+
+    return affiliates.map((a) => ({
       id: a._id,
-      fullName: a.user.name,
-      email: a.user.email,
-      status: a.tier.toLowerCase() as "active" | "inactive" | "pending", // Map tier to status
+      fullName: a.userId.name,
+      email: a.userId.email,
+      status: a.tier.toLowerCase() as
+        | "active"
+        | "inactive"
+        | "pending"
+        | "bronze"
+        | "silver"
+        | "gold",
       clicks: 0, // Not provided in API response
-      signups: a.referralsCount,
+      signups: a.totalReferrals,
       fundedAccounts: 0, // Not provided in API response
-      commissionsEarned: a.commissionPercentage, // Use commission percentage instead
+      commissionsEarned: a.totalEarnings,
       referralCode: a.referralCode,
     }));
   }, [affiliates]);
@@ -45,9 +51,17 @@ export default function ManageAffiliates() {
     let filtered = simpleAffiliates;
 
     if (activeFilter !== "all") {
-      filtered = filtered.filter(
-        (affiliate) => affiliate.status === activeFilter
-      );
+      if (["bronze", "silver", "gold"].includes(activeFilter)) {
+        // Filter by tier
+        filtered = filtered.filter(
+          (affiliate) => affiliate.status === activeFilter
+        );
+      } else {
+        // Filter by status (active, inactive, pending)
+        filtered = filtered.filter(
+          (affiliate) => affiliate.status === activeFilter
+        );
+      }
     }
 
     return filtered?.sort((a, b) => {
@@ -115,13 +129,6 @@ export default function ManageAffiliates() {
         description="Peak Profit Admin Manage Affiliates Page"
       />
 
-      {/* <Link
-        to={"/affiliate/manage-affiliates/new-affiliate"}
-        className="fixed bottom-6 right-6 flex items-center justify-center w-16 h-16 bg-brand-700 text-white text-3xl rounded-full shadow-3xl cursor-pointer hover:bg-brand-800 transition"
-      >
-        +
-      </Link> */}
-
       <PageBreadcrumb pageTitle="Manage Affiliates" />
       <div>
         <SummaryStats affiliates={filteredAndSortedAffiliates} />
@@ -139,18 +146,22 @@ export default function ManageAffiliates() {
             { key: "gold", label: "Gold", color: "success" },
           ]}
           counts={{
-            all: simpleAffiliates?.length,
-            active: simpleAffiliates?.filter((a) => a.status === "active")
-              .length,
-            inactive: simpleAffiliates?.filter((a) => a.status === "inactive")
-              .length,
-            pending: simpleAffiliates?.filter((a) => a.status === "pending")
-              .length,
-            bronze: simpleAffiliates?.filter((a) => a.status === "bronze")
-              .length,
-            silver: simpleAffiliates?.filter((a) => a.status === "silver")
-              .length,
-            gold: simpleAffiliates?.filter((a) => a.status === "gold")?.length,
+            all: affiliates?.length || 0,
+            active:
+              affiliates?.filter(
+                (a) => a.totalEarnings > 0 && a.totalReferrals > 0
+              ).length || 0,
+            inactive:
+              affiliates?.filter(
+                (a) => a.totalEarnings === 0 && a.totalReferrals === 0
+              ).length || 0,
+            pending:
+              affiliates?.filter((a) =>
+                a.withdraws.some((w) => w.status === "REQUESTED")
+              ).length || 0,
+            bronze: affiliates?.filter((a) => a.tier === "BRONZE").length || 0,
+            silver: affiliates?.filter((a) => a.tier === "SILVER").length || 0,
+            gold: affiliates?.filter((a) => a.tier === "GOLD").length || 0,
           }}
         />
 

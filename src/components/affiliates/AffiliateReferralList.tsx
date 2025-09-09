@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import ProgressModal from "../../pages/ClientPages/Affiliate/Account/components/ReferralProgressModal";
+import ProgressModal from "./ReferralProgressModal";
 
 interface AffiliateReferralListProps {
   referrals: Array<{

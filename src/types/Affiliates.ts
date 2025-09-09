@@ -4,6 +4,7 @@ export interface AffiliateType {
     _id: string;
     email: string;
     name: string;
+    profilePicture: string;
   };
   tier: string;
   referralCode: string;

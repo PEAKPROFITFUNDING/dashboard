@@ -6,24 +6,25 @@ import AffiliateProfileCard from "../../../../../components/affiliates/Affiliate
 import AffiliateProfileStats from "../../../../../components/affiliates/AffiliateProfileStats";
 import AffiliateReferralList from "../../../../../components/affiliates/AffiliateReferralList";
 import { useAffiliatesAdmin } from "../../../../../context/admin/AdminAffiliatesContext";
+import { AffiliateType } from "../../../../../types/Affiliates";
 
 export default function AffiliateDetails() {
   const { id } = useParams<{ id: string }>();
   const { affiliates, fetchAffiliates, loading, error } = useAffiliatesAdmin();
-  const [affiliateData, setAffiliateData] = useState(null);
-
-  console.log(affiliates);
+  const [affiliateData, setAffiliateData] = useState<AffiliateType | null>(
+    null
+  );
 
   useEffect(() => {
-    if (!affiliates.length && !loading) {
+    if (!affiliates?.length && !loading) {
       fetchAffiliates();
     }
-  }, [affiliates.length, loading, fetchAffiliates]);
+  }, [affiliates?.length, loading, fetchAffiliates]);
 
   useEffect(() => {
-    if (affiliates.length && id) {
+    if (affiliates?.length && id) {
       const foundAffiliate = affiliates.find(
-        (affiliate) => affiliate._id === id
+        (affiliate: AffiliateType) => affiliate._id === id
       );
       setAffiliateData(foundAffiliate || null);
     }
@@ -65,30 +66,24 @@ export default function AffiliateDetails() {
 
   // Transform API data to match component structure
   const transformedAffiliate = {
-    fullName: affiliateData.user.name,
-    email: affiliateData.user.email,
+    fullName: affiliateData.userId.name,
+    email: affiliateData.userId.email,
     joinedDate: affiliateData.createdAt,
     referralCode: affiliateData.referralCode,
     referralLink: affiliateData.referralLink,
     tier: affiliateData.tier,
-    totalEarnings: affiliateData.referrals.reduce(
-      (sum, referral) => sum + referral.totalEarnings,
-      0
-    ),
-    balance: affiliateData.referrals.reduce(
-      (sum, referral) => sum + referral.totalEarnings,
-      0
-    ), // Assuming balance equals total earnings
+    totalEarnings: affiliateData.totalEarnings,
+    balance: affiliateData.balance,
     commissionPercentage: affiliateData.commissionPercentage,
-    totalReferrals: affiliateData.referralsCount,
-    totalWithdrawn: 0, // Not provided in API response, defaulting to 0
+    totalReferrals: affiliateData.totalReferrals,
+    totalWithdrawn: affiliateData.totalWithdrawn,
   };
 
   // Transform referrals data
   const transformedReferrals = affiliateData.referrals.map((referral) => ({
     id: referral._id,
-    fullName: referral.referredUser.name || "N/A", // Handle case where name might not be available
-    email: referral.referredUser.email || "N/A", // Handle case where email might not be available
+    fullName: referral.referredUser.name,
+    email: referral.referredUser.email,
     phone: "N/A", // Not provided in API response
     signUpDate: referral.signupDate,
     totalCommission: referral.totalEarnings,

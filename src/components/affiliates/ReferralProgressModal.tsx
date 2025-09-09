@@ -1,5 +1,5 @@
-import Badge from "../../../../../components/ui/badge/Badge";
-import { Modal } from "../../../../../components/ui/modal";
+import Badge from "../ui/badge/Badge";
+import { Modal } from "../ui/modal";
 
 interface ProgressModalProps {
   isOpen: boolean;
