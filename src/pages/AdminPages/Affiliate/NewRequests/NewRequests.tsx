@@ -338,14 +338,15 @@ export default function NewRequests() {
 
       <div>
         {/* Filter Bar */}
-        <FilterBar
-          activeFilter={activeFilter}
-          onFilterChange={handleFilterChange}
-          filterOptions={filterOptions}
-          counts={counts}
-          badgeConfig={badgeConfig}
-        />
-
+        <div className="pb-3">
+          <FilterBar
+            activeFilter={activeFilter}
+            onFilterChange={handleFilterChange}
+            filterOptions={filterOptions}
+            counts={counts}
+            badgeConfig={badgeConfig}
+          />
+        </div>
         {requests.length === 0 ? (
           <div className="flex justify-center items-center py-8">
             <div className="text-gray-600 dark:text-gray-400">

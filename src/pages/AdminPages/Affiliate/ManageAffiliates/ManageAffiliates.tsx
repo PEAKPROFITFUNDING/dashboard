@@ -133,7 +133,7 @@ export default function ManageAffiliates() {
       <div>
         <SummaryStats affiliates={filteredAndSortedAffiliates} />
 
-        <div className="pb-6 border-b  border-gray-100 dark:border-white/[0.05]">
+        <div className="pb-3">
           <FilterBar
             activeFilter={activeFilter}
             onFilterChange={setActiveFilter}

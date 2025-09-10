@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Button from "../../../../../components/ui/button/Button";
 import { Modal } from "../../../../../components/ui/modal";
 import axiosInstance from "../../../../../api/axiosInstance";
+import { PaymentConfirmationModal } from "./PaymentConfirmationModal";
+
+// Confirmation Modal Component
 
 // Request Payout Modal Component
 export function RequestPayoutModal({
@@ -19,12 +22,16 @@ export function RequestPayoutModal({
   const [amount, setAmount] = useState("");
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
   const [errors, setErrors] = useState<{
     paymentType?: string;
     walletType?: string;
     accountNumber?: string;
     amount?: string;
-    submit?: string;
   }>({});
 
   const paymentTypes = [
@@ -46,6 +53,7 @@ export function RequestPayoutModal({
     { value: "SOL", label: "Solana (SOL)" },
     { value: "OTHER", label: "Other" },
   ];
+  const modalContentRef = useRef<HTMLDivElement>(null);
 
   // Helper function to clear specific errors
   const clearError = (field: string) => {
@@ -58,14 +66,10 @@ export function RequestPayoutModal({
     }
   };
 
-  // Helper function to clear submit error when any field changes
-  const clearSubmitError = () => {
-    if (errors.submit) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.submit;
-        return newErrors;
-      });
+  // Helper function to clear submit status when any field changes
+  const clearSubmitStatus = () => {
+    if (submitStatus.type) {
+      setSubmitStatus({ type: null, message: "" });
     }
   };
 
@@ -103,8 +107,8 @@ export function RequestPayoutModal({
         newErrors.amount = "Please enter a valid amount";
       } else if (amountNum > availableBalance) {
         newErrors.amount = "Amount cannot exceed available balance";
-      } else if (amountNum < 100) {
-        newErrors.amount = "Minimum withdrawal amount is $100";
+      } else if (amountNum < 0) {
+        newErrors.amount = "Minimum withdrawal amount is $50";
       }
     }
 
@@ -112,15 +116,23 @@ export function RequestPayoutModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Clear any previous status messages
+    setSubmitStatus({ type: null, message: "" });
 
     if (!validateForm()) {
       return;
     }
 
+    // Show confirmation modal
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmedSubmit = async () => {
     setIsSubmitting(true);
-    setErrors({});
+    setSubmitStatus({ type: null, message: "" });
 
     try {
       // Format payment method type for cryptocurrency
@@ -140,10 +152,26 @@ export function RequestPayoutModal({
 
       const response = await axiosInstance.post("/withdraw/request", payload);
 
-      // Success - close modal and reset form
-      handleClose();
+      // Success - reset form values and show success message
+      setShowConfirmation(false);
 
-      // You might want to show a success message or refresh the withdrawal data
+      // Reset all form values on success
+      setPaymentType("");
+      setWalletType("");
+      setAccountNumber("");
+      setAmount("");
+      setNotes("");
+      setErrors({});
+
+      setSubmitStatus({
+        type: "success",
+        message:
+          "Withdrawal request submitted successfully! You will receive a confirmation email shortly.",
+      });
+
+      // Scroll to top to show success message
+      modalContentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+
       console.log("Withdrawal request submitted successfully:", response.data);
     } catch (error) {
       console.error("Error submitting withdrawal request:", error);
@@ -152,7 +180,15 @@ export function RequestPayoutModal({
       const errorMessage =
         error.response?.data?.message ||
         "Failed to submit withdrawal request. Please try again.";
-      setErrors({ submit: errorMessage });
+
+      setShowConfirmation(false);
+      setSubmitStatus({
+        type: "error",
+        message: errorMessage,
+      });
+
+      // Scroll to top to show error message
+      modalContentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setIsSubmitting(false);
     }
@@ -168,6 +204,19 @@ export function RequestPayoutModal({
     setAmount("");
     setNotes("");
     setErrors({});
+    setSubmitStatus({ type: null, message: "" });
+    setShowConfirmation(false);
+  };
+
+  const handleStartNewRequest = () => {
+    setPaymentType("");
+    setWalletType("");
+    setAccountNumber("");
+    setAmount("");
+    setNotes("");
+    setErrors({});
+    setSubmitStatus({ type: null, message: "" });
+    setShowConfirmation(false);
   };
 
   const handlePaymentTypeChange = (value: string) => {
@@ -176,7 +225,7 @@ export function RequestPayoutModal({
     clearError("paymentType");
     clearError("walletType");
     clearError("accountNumber");
-    clearSubmitError();
+    clearSubmitStatus();
 
     // Reset wallet type when changing payment method
     if (value !== "CRYPTOCURRENCY") {
@@ -190,7 +239,7 @@ export function RequestPayoutModal({
     setWalletType(value);
     clearError("walletType");
     clearError("accountNumber");
-    clearSubmitError();
+    clearSubmitStatus();
     // Clear account number when changing wallet type
     setAccountNumber("");
   };
@@ -198,13 +247,13 @@ export function RequestPayoutModal({
   const handleAccountNumberChange = (value: string) => {
     setAccountNumber(value);
     clearError("accountNumber");
-    clearSubmitError();
+    clearSubmitStatus();
   };
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
     clearError("amount");
-    clearSubmitError();
+    clearSubmitStatus();
   };
 
   const getAccountPlaceholder = () => {
@@ -240,184 +289,241 @@ export function RequestPayoutModal({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      className="max-w-md mx-4 max-h-11/12 overflow-auto"
-    >
-      <div className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-          Request Payout
-        </h2>
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        className="max-w-md mx-4 max-h-11/12 overflow-auto"
+        ref={modalContentRef}
+      >
+        <div className="p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+            Request Payout
+          </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Available Balance Display */}
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Available Balance
-            </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              ${availableBalance.toLocaleString()}
-            </p>
-          </div>
-
-          {/* Payment Method Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Payment Method *
-            </label>
-            <select
-              value={paymentType}
-              onChange={(e) => handlePaymentTypeChange(e.target.value)}
-              disabled={isSubmitting}
-              className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
-                errors.paymentType
-                  ? "border-red-300 dark:border-red-600"
-                  : "border-gray-200 dark:border-white/[0.05]"
+          {/* Success/Error Message */}
+          {submitStatus.type && (
+            <div
+              className={`mb-6 rounded-lg p-4 border ${
+                submitStatus.type === "success"
+                  ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+                  : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
               }`}
             >
-              <option value="">Select payment method</option>
-              {paymentTypes.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            {errors.paymentType && (
-              <p className="text-red-500 text-sm mt-1">{errors.paymentType}</p>
-            )}
-          </div>
+              <p
+                className={`text-sm ${
+                  submitStatus.type === "success"
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {submitStatus.message}
+              </p>
+              {submitStatus.type === "success" && (
+                <div className="mt-4 flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleClose}
+                    className="flex-1 text-sm"
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleStartNewRequest}
+                    className="flex-1 text-sm"
+                  >
+                    New Request
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
-          {/* Wallet Type Selection for Cryptocurrency */}
-          {paymentType === "CRYPTOCURRENCY" && (
+          <form onSubmit={handleFormSubmit} className="space-y-6">
+            {/* Available Balance Display */}
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Available Balance
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                ${availableBalance.toLocaleString()}
+              </p>
+            </div>
+
+            {/* Payment Method Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Wallet Type *
+                Payment Method *
               </label>
               <select
-                value={walletType}
-                onChange={(e) => handleWalletTypeChange(e.target.value)}
+                value={paymentType}
+                onChange={(e) => handlePaymentTypeChange(e.target.value)}
                 disabled={isSubmitting}
                 className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
-                  errors.walletType
+                  errors.paymentType
                     ? "border-red-300 dark:border-red-600"
                     : "border-gray-200 dark:border-white/[0.05]"
                 }`}
               >
-                <option value="">Select wallet type</option>
-                {walletTypes.map((option) => (
+                <option value="">Select payment method</option>
+                {paymentTypes.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
               </select>
-              {errors.walletType && (
-                <p className="text-red-500 text-sm mt-1">{errors.walletType}</p>
-              )}
-            </div>
-          )}
-
-          {/* Account Details */}
-          {paymentType && (paymentType !== "CRYPTOCURRENCY" || walletType) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {getAccountLabel()} *
-              </label>
-              <input
-                type="text"
-                value={accountNumber}
-                onChange={(e) => handleAccountNumberChange(e.target.value)}
-                placeholder={getAccountPlaceholder()}
-                disabled={isSubmitting}
-                className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
-                  errors.accountNumber
-                    ? "border-red-300 dark:border-red-600"
-                    : "border-gray-200 dark:border-white/[0.05]"
-                }`}
-              />
-              {errors.accountNumber && (
+              {errors.paymentType && (
                 <p className="text-red-500 text-sm mt-1">
-                  {errors.accountNumber}
+                  {errors.paymentType}
                 </p>
               )}
             </div>
-          )}
 
-          {/* Amount */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Amount *
-            </label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
-                $
-              </span>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => handleAmountChange(e.target.value)}
-                placeholder="0.00"
-                step="0.01"
-                disabled={isSubmitting}
-                className={`w-full pl-8 pr-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
-                  errors.amount
-                    ? "border-red-300 dark:border-red-600"
-                    : "border-gray-200 dark:border-white/[0.05]"
-                }`}
-              />
-            </div>
-            {errors.amount && (
-              <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
+            {/* Wallet Type Selection for Cryptocurrency */}
+            {paymentType === "CRYPTOCURRENCY" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Wallet Type *
+                </label>
+                <select
+                  value={walletType}
+                  onChange={(e) => handleWalletTypeChange(e.target.value)}
+                  disabled={isSubmitting}
+                  className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
+                    errors.walletType
+                      ? "border-red-300 dark:border-red-600"
+                      : "border-gray-200 dark:border-white/[0.05]"
+                  }`}
+                >
+                  <option value="">Select wallet type</option>
+                  {walletTypes.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.walletType && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.walletType}
+                  </p>
+                )}
+              </div>
             )}
-            {/* <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Minimum withdrawal limit: $100
-            </p> */}
-          </div>
 
-          {/* Notes */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Notes (Optional)
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any additional notes for this withdrawal..."
-              rows={3}
-              disabled={isSubmitting}
-              className="w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed border-gray-200 dark:border-white/[0.05] resize-none"
-            />
-          </div>
+            {/* Account Details */}
+            {paymentType &&
+              (paymentType !== "CRYPTOCURRENCY" || walletType) && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {getAccountLabel()} *
+                  </label>
+                  <input
+                    type="text"
+                    value={accountNumber}
+                    onChange={(e) => handleAccountNumberChange(e.target.value)}
+                    placeholder={getAccountPlaceholder()}
+                    disabled={isSubmitting}
+                    className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
+                      errors.accountNumber
+                        ? "border-red-300 dark:border-red-600"
+                        : "border-gray-200 dark:border-white/[0.05]"
+                    }`}
+                  />
+                  {errors.accountNumber && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.accountNumber}
+                    </p>
+                  )}
+                </div>
+              )}
 
-          {/* Error Message */}
-          {errors.submit && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <p className="text-red-600 dark:text-red-400 text-sm">
-                {errors.submit}
+            {/* Amount */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Amount *
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                  $
+                </span>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => handleAmountChange(e.target.value)}
+                  placeholder="0.00"
+                  step="0.01"
+                  disabled={isSubmitting}
+                  className={`w-full pl-8 pr-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
+                    errors.amount
+                      ? "border-red-300 dark:border-red-600"
+                      : "border-gray-200 dark:border-white/[0.05]"
+                  }`}
+                />
+              </div>
+              {errors.amount && (
+                <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
+              )}
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Minimum withdrawal: $50 • Maximum: $
+                {availableBalance.toLocaleString()}
               </p>
             </div>
-          )}
 
-          {/* Buttons */}
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-              className="flex-1"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              className="flex-1"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Submitting..." : "Submit Request"}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </Modal>
+            {/* Notes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Notes (Optional)
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add any additional notes for this withdrawal..."
+                rows={3}
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed border-gray-200 dark:border-white/[0.05] resize-none"
+              />
+            </div>
+
+            {/* Buttons - only show if no success message */}
+            {submitStatus.type !== "success" && (
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleClose}
+                  className="flex-1"
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="flex-1"
+                  disabled={isSubmitting}
+                >
+                  Review Request
+                </Button>
+              </div>
+            )}
+          </form>
+        </div>
+      </Modal>
+
+      {/* Confirmation Modal */}
+      <PaymentConfirmationModal
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={handleConfirmedSubmit}
+        isSubmitting={isSubmitting}
+        paymentDetails={{
+          amount,
+          paymentType,
+          walletType,
+          accountNumber,
+          notes,
+        }}
+      />
+    </>
   );
 }
