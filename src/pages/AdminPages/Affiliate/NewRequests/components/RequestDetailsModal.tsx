@@ -7,7 +7,12 @@ interface RequestDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   request: AffiliateRequest | null;
-  onStatusChange: (id: number, status: "approved" | "rejected") => void;
+  onStatusChange: (
+    id: number,
+    status: "approved" | "rejected",
+    isPlatinumTier?: boolean,
+    commissionPercentage?: number
+  ) => void;
   onFlagChange: (id: number, flag: string) => void;
   onCommentAdd: (id: number, comment: Comment) => void;
   currentFilter: "pending" | "rejected";
@@ -23,6 +28,8 @@ export default function RequestDetailsModal({
   currentFilter,
 }: RequestDetailsModalProps) {
   const [selectedFlag, setSelectedFlag] = useState("");
+  const [isPlatinumTier, setIsPlatinumTier] = useState(false);
+  const [commissionPercentage, setCommissionPercentage] = useState(5);
 
   // Update selected flag when request changes
   if (request && selectedFlag !== (request.flag || "")) {
@@ -38,9 +45,27 @@ export default function RequestDetailsModal({
 
   const handleStatusChange = (status: "approved" | "rejected") => {
     if (request) {
-      onStatusChange(request.id, status);
+      if (status === "approved") {
+        // For approval, pass the platinum tier and commission data
+        onStatusChange(
+          request.id,
+          status,
+          isPlatinumTier,
+          commissionPercentage
+        );
+      } else {
+        // For rejection, don't pass the additional fields
+        onStatusChange(request.id, status);
+      }
       // Don't close modal here - let the parent component handle it after confirmation
     }
+  };
+
+  // Reset fields when modal closes
+  const handleClose = () => {
+    setIsPlatinumTier(false);
+    setCommissionPercentage(5);
+    onClose();
   };
 
   // Don't show action buttons for rejected requests
@@ -50,7 +75,7 @@ export default function RequestDetailsModal({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       className="max-w-2xl w-full mx-4 max-h-[90vh] "
     >
       <div className="flex flex-col h-full max-h-[90vh]">
@@ -141,6 +166,57 @@ export default function RequestDetailsModal({
               </p>
             </div>
 
+            {/* Approval Settings - Only show for pending requests */}
+            {showActionButtons && (
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-4">
+                <h4 className="text-lg font-medium text-gray-900 dark:text-white">
+                  Approval Settings
+                </h4>
+
+                {/* Platinum Tier Toggle */}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isPlatinumTier"
+                    checked={isPlatinumTier}
+                    onChange={(e) => setIsPlatinumTier(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label
+                    htmlFor="isPlatinumTier"
+                    className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    Platinum Tier Affiliate
+                  </label>
+                </div>
+
+                {/* Commission Percentage - Only show if Platinum Tier is enabled */}
+                {isPlatinumTier && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Commission Percentage (%)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      value={commissionPercentage}
+                      onChange={(e) =>
+                        setCommissionPercentage(parseFloat(e.target.value) || 0)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      placeholder="5.0"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Set the commission percentage for this platinum tier
+                      affiliate
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Flag Selection */}
             {/* <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -163,7 +239,7 @@ export default function RequestDetailsModal({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={onClose}
+                onClick={handleClose}
                 className="text-xs"
               >
                 Close

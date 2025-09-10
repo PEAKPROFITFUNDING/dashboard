@@ -175,14 +175,28 @@ export default function NewRequests() {
   // API call to update status
   const updateAffiliateStatus = async (
     affiliateId: string,
-    status: "accepted" | "rejected"
+    status: "accepted" | "rejected",
+    isPlatinumTier?: boolean,
+    commissionPercentage?: number
   ) => {
     try {
       setConfirmationModal((prev) => ({ ...prev, loading: true }));
 
-      await axiosInstance.put(`/admin/affiliateApplication/${affiliateId}`, {
-        status: status,
-      });
+      // Prepare the request body
+      const requestBody = { status };
+
+      // Add platinum tier fields only if approving and platinum tier is enabled
+      if (status === "accepted" && isPlatinumTier !== undefined) {
+        requestBody.isPlatinumTier = isPlatinumTier;
+        if (isPlatinumTier && commissionPercentage !== undefined) {
+          requestBody.commissionPercentage = commissionPercentage;
+        }
+      }
+
+      await axiosInstance.put(
+        `/admin/affiliateApplication/${affiliateId}`,
+        requestBody
+      );
 
       // Close confirmation modal first
       setConfirmationModal((prev) => ({
@@ -196,11 +210,15 @@ export default function NewRequests() {
       setSelectedRequest(null);
 
       // Show success message
-      alert(
-        `Request ${
-          status === "accepted" ? "approved" : "rejected"
-        } successfully!`
-      );
+      let successMessage = `Request ${
+        status === "accepted" ? "approved" : "rejected"
+      } successfully!`;
+
+      if (status === "accepted" && isPlatinumTier) {
+        successMessage += ` Platinum Tier status has been set with ${commissionPercentage}% commission.`;
+      }
+
+      alert(successMessage);
 
       // Refresh the current page data and counts
       await Promise.all([
@@ -217,7 +235,9 @@ export default function NewRequests() {
   // Handle approve/reject with confirmation modal
   const handleStatusChange = async (
     id: number,
-    status: "approved" | "rejected"
+    status: "approved" | "rejected",
+    isPlatinumTier?: boolean,
+    commissionPercentage?: number
   ) => {
     // Find the request to get the MongoDB _id
     const request = requests.find((r) => r.id === id);
@@ -226,15 +246,29 @@ export default function NewRequests() {
     const isApprove = status === "approved";
     const apiStatus = isApprove ? "accepted" : "rejected";
 
+    // Create the confirmation message
+    let message = `Are you sure you want to ${
+      isApprove ? "approve" : "reject"
+    } the affiliate request from ${request.fullName}?`;
+
+    // Add platinum tier info to the message if approving with platinum tier
+    if (isApprove && isPlatinumTier) {
+      message += `\n\nThis will be approved as a Platinum Tier affiliate with ${commissionPercentage}% commission.`;
+    }
+
     setConfirmationModal({
       isOpen: true,
       title: `${isApprove ? "Approve" : "Reject"} Affiliate Request`,
-      message: `Are you sure you want to ${
-        isApprove ? "approve" : "reject"
-      } the affiliate request from ${request.fullName}?`,
+      message,
       confirmText: isApprove ? "Approve" : "Reject",
       confirmVariant: isApprove ? "success" : "error",
-      onConfirm: () => updateAffiliateStatus(request._id!, apiStatus),
+      onConfirm: () =>
+        updateAffiliateStatus(
+          request._id!,
+          apiStatus,
+          isPlatinumTier,
+          commissionPercentage
+        ),
       loading: false,
     });
   };
