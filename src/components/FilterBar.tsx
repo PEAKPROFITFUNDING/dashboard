@@ -11,11 +11,6 @@ interface FilterBarProps {
   onFilterChange: Dispatch<SetStateAction<string>>;
   filterOptions: FilterOption[];
   counts: Record<string, number>;
-  badgeConfig?: {
-    key: string;
-    color: "success" | "warning" | "error" | "info";
-    label: string;
-  }[];
 }
 
 export default function FilterBar({

@@ -105,11 +105,6 @@ export default function NewRequests() {
     { key: "rejected", label: "Rejected", color: "error" as const },
   ];
 
-  const badgeConfig = [
-    { key: "pending", color: "warning" as const, label: "Pending" },
-    { key: "rejected", color: "error" as const, label: "Rejected" },
-  ];
-
   // Fetch affiliate requests from API
   const fetchAffiliateRequests = async (
     pageNo: number = 1,
@@ -384,7 +379,6 @@ export default function NewRequests() {
             onFilterChange={handleFilterChange}
             filterOptions={filterOptions}
             counts={counts}
-            badgeConfig={badgeConfig}
           />
         </div>
         {requests.length === 0 ? (
