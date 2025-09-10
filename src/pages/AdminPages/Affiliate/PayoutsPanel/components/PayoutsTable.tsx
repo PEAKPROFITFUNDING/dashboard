@@ -29,6 +29,7 @@ interface PayoutsTableProps {
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
   onMarkPaid: (id: string, transactionId: string) => void;
+  loading: boolean;
 }
 
 const filterOptions: FilterOption[] = [
@@ -45,6 +46,7 @@ export function PayoutsTable({
   onApprove,
   onReject,
   onMarkPaid,
+  loading,
 }: PayoutsTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,17 +84,17 @@ export function PayoutsTable({
     );
   };
 
-  // Calculate counts for filter
+  // Calculate counts for? filter
   const counts = {
-    all: requests.length,
-    PENDING: requests.filter((r) => r.status === "PENDING").length,
-    APPROVED: requests.filter((r) => r.status === "APPROVED").length,
-    PAID: requests.filter((r) => r.status === "PAID").length,
-    DENIED: requests.filter((r) => r.status === "DENIED").length,
+    all: requests?.length,
+    PENDING: requests?.filter((r) => r.status === "PENDING")?.length,
+    APPROVED: requests?.filter((r) => r.status === "APPROVED")?.length,
+    PAID: requests?.filter((r) => r.status === "PAID")?.length,
+    DENIED: requests?.filter((r) => r.status === "DENIED")?.length,
   };
 
   const sortedAndFilteredData = [...requests]
-    .filter(
+    ?.filter(
       (request) => statusFilter === "all" || request.status === statusFilter
     )
     .sort((a, b) => {
@@ -125,7 +127,7 @@ export function PayoutsTable({
     currentPage * itemsPerPage
   );
 
-  const totalPages = Math.ceil(sortedAndFilteredData.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedAndFilteredData?.length / itemsPerPage);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -171,7 +173,7 @@ export function PayoutsTable({
         </h3>
       </div>
 
-      {/* Filter Bar */}
+      {/*? Filter Bar */}
       <div className="p-4 px-6 border-b border-gray-100 dark:border-white/[0.05]">
         <FilterBar
           activeFilter={statusFilter}
@@ -246,75 +248,88 @@ export function PayoutsTable({
               </TableRow>
             </TableHeader>
 
-            <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {paginatedData.map((request) => (
-                <TableRow
-                  key={request.id}
-                  className="hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                >
-                  <TableCell className="px-6 py-4 text-start">
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-white">
-                        {request.affiliate.name}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {request.affiliate.email}
-                      </div>
+            {loading ? (
+              <div className="flex items-center justify-center h-20">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              </div>
+            ) : (
+              <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+                {paginatedData.length === 0 && (
+                  <div className="flex justify-center items-center py-8">
+                    <div className="text-gray-600 dark:text-gray-400">
+                      No payouts requests found.
                     </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-start">
-                    <span className="font-semibold text-gray-900 dark:text-white">
-                      ${request.amount.toLocaleString()}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-start">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {new Date(request.requestedDate).toLocaleDateString()}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-start">
-                    <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">
-                      {request.paymentMethod.type.replace("_", " ")}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-start">
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
-                        request.status
-                      )}`}
-                    >
-                      {request.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-start">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewClick(request)}
-                        className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  </div>
+                )}
+                {paginatedData.map((request) => (
+                  <TableRow
+                    key={request.id}
+                    className="hover:bg-gray-50 dark:hover:bg-white/[0.02]"
+                  >
+                    <TableCell className="px-6 py-4 text-start">
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {request.affiliate.name}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {request.affiliate.email}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-start">
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        ${request.amount.toLocaleString()}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-start">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {new Date(request.requestedDate).toLocaleDateString()}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-start">
+                      <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">
+                        {request.paymentMethod.type.replace("_", " ")}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-start">
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
+                          request.status
+                        )}`}
                       >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      {request.status === "PENDING" && (
-                        <>
-                          <button
-                            onClick={() => handleViewClick(request)}
-                            className="p-1 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleRejectClick(request)}
-                            className="p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+                        {request.status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-start">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleViewClick(request)}
+                          className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        {request.status === "PENDING" && (
+                          <>
+                            <button
+                              onClick={() => handleViewClick(request)}
+                              className="p-1 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleRejectClick(request)}
+                              className="p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            )}
           </Table>
         </div>
       </div>
@@ -327,9 +342,9 @@ export function PayoutsTable({
               Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
               {Math.min(
                 currentPage * itemsPerPage,
-                sortedAndFilteredData.length
+                sortedAndFilteredData?.length
               )}{" "}
-              of {sortedAndFilteredData.length} results
+              of {sortedAndFilteredData?.length} results
             </p>
             <div className="flex items-center gap-2">
               <button

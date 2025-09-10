@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { SearchBar } from "../../../../components/SearchBar";
-import { Calendar, CheckCircle, DollarSign } from "lucide-react";
 import { PayoutsTable } from "./components/PayoutsTable";
-import { StatsCard } from "./components/StatsCard";
+import axiosInstance from "../../../../api/axiosInstance";
+import PayoutsOverview from "./components/PayoutsOverview";
 export interface PayoutResponse {
   data: PayoutRequest[];
   counts: PayoutCounts;
@@ -57,99 +57,135 @@ export type FilterOption = {
   color?: "success" | "warning" | "error" | "info";
 };
 
+export interface PayoutData {
+  data: PayoutRequest[];
+  totalElements: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+}
+
 export default function AdminAffiliatePayoutsPanel() {
   const [payoutData, setPayoutData] = useState<PayoutResponse | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  const [error, setError] = useState<string | null>(null);
 
   // Mock data - replace with actual API call
   useEffect(() => {
-    const mockData: PayoutResponse = {
-      data: [
-        {
-          id: "68c178f90b64a1e3e238462f",
-          amount: 2,
-          status: "PENDING",
-          requestedDate: "2025-09-10T13:11:21.523Z",
-          processedDate: null,
-          affiliate: {
-            id: "68be6ff30aacd6d55af19134",
-            name: "Soban Umar",
-            email: "sobanumar0@gmail.com",
+    const fetchInitialData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await axiosInstance.get("/admin/affiliateWithdraws", {
+          params: {
+            pageNo: "0",
+            // You can add other default params here if needed
+            // status: 'PENDING', // if you want to show only pending by default
           },
-          paymentMethod: {
-            type: "BANK_ACCOUNT",
-            accountNumber: "1223",
-          },
-        },
-        {
-          id: "68c1784a0b64a1e3e2384606",
-          amount: 20,
-          status: "PENDING",
-          requestedDate: "2025-09-10T13:08:26.585Z",
-          processedDate: null,
-          affiliate: {
-            id: "68be6ff30aacd6d55af19134",
-            name: "Soban Umar",
-            email: "sobanumar0@gmail.com",
-          },
-          paymentMethod: {
-            type: "PAYPAL",
-            accountNumber: "sobanumar0@gmail.com",
-          },
-        },
-        {
-          id: "68c177960b64a1e3e23845f7",
-          amount: 20,
-          status: "APPROVED",
-          requestedDate: "2025-09-10T13:05:26.432Z",
-          processedDate: null,
-          affiliate: {
-            id: "68be6ff30aacd6d55af19134",
-            name: "Soban Umar",
-            email: "sobanumar0@gmail.com",
-          },
-          paymentMethod: {
-            type: "PAYPAL",
-            accountNumber: "sobanumar0@gmail.com",
-          },
-        },
-      ],
-      counts: {
-        pending: 8,
-        approved: 1,
-        denied: 0,
-        paid: 3,
-        total: 12,
-      },
-      pagination: {
-        currentPage: 1,
-        perPage: 10,
-        totalItems: 12,
-        totalPages: 2,
-        hasNextPage: true,
-        hasPreviousPage: false,
-      },
+        });
+
+        setPayoutData(response.data.result);
+        // console.log("Initial payout data loaded:", response.data);
+      } catch (error) {
+        console.error("Error fetching initial payout data:", error);
+        setError(error.response?.data?.message || "Failed to load payout data");
+
+        // Optional: Set empty data structure to prevent rendering issues
+        setPayoutData(null);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    setPayoutData(mockData);
-    setLoading(false);
-  }, []);
+    fetchInitialData();
+  }, []); // Empty dependency array - runs once on component mount
 
-  const handleSearch = () => {
-    // Implement search logic here
-    console.log("Searching for:", searchQuery);
+  // Optional: Effect to refetch data when filters change
+  useEffect(() => {
+    if (statusFilter !== "all") {
+      handleSearch(); // This will trigger the search with current filters
+    }
+  }, [statusFilter]); // Runs when statusFilter changes
+
+  // Optional: Debounced search effect (runs search after user stops typing)
+  // useEffect(() => {
+  //   if (searchQuery.trim() === "") {
+  //     return; // Don't search for empty queries
+  //   }
+
+  //   const debounceTimer = setTimeout(() => {
+  //     handleSearch();
+  //   }, 500); // 2000ms delay
+
+  //   return () => clearTimeout(debounceTimer); // Cleanup
+  // }, [searchQuery]);
+
+  const handleSearch = async () => {
+    try {
+      setIsLoading(true);
+
+      // Build query parameters
+      const params: Record<string, string> = {};
+
+      if (searchQuery.trim()) {
+        params.search = searchQuery.trim();
+      }
+
+      // Add status filter if not "all"
+      if (statusFilter && statusFilter !== "all") {
+        params.status = statusFilter;
+      }
+
+      const response = await axiosInstance.get("/admin/affiliateWithdraws", {
+        params,
+      });
+
+      setPayoutData(response.data.result);
+      // console.log("Search results:", response.data.result);
+    } catch (error) {
+      console.error("Error searching payouts:", error);
+      // Handle error (show toast, etc.)
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleClearSearch = () => {
+  const handleClearSearch = async () => {
     setSearchQuery("");
+    setStatusFilter("all");
+
+    // Reload data without filters
+    try {
+      setIsLoading(true);
+
+      const response = await axiosInstance.get("/admin/affiliateWithdraws", {
+        params: { pageNo: "0" },
+      });
+
+      setPayoutData(response.data.result);
+    } catch (error) {
+      console.error("Error clearing search:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleApprove = async (id: string) => {
     try {
-      // API call to approve
-      console.log("Approving payout:", id);
-      // Update status in state
+      setIsLoading(true);
+
+      // API call to approve payout
+      await axiosInstance.put(`/admin/updateWithdrawStatus/${id}`, {
+        status: "APPROVED",
+      });
+
+      console.log("Payout approved:", id);
+
+      // Update status in local state
       if (payoutData) {
         const updatedData = {
           ...payoutData,
@@ -161,16 +197,29 @@ export default function AdminAffiliatePayoutsPanel() {
         };
         setPayoutData(updatedData);
       }
+
+      // Show success message
+      // toast.success("Payout approved successfully");
     } catch (error) {
       console.error("Error approving payout:", error);
+      // toast.error("Failed to approve payout");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleReject = async (id: string) => {
     try {
-      // API call to reject
-      console.log("Rejecting payout:", id);
-      // Update status in state
+      setIsLoading(true);
+
+      // API call to reject payout
+      await axiosInstance.put(`/admin/updateWithdrawStatus/${id}`, {
+        status: "DENIED",
+      });
+
+      console.log("Payout rejected:", id);
+
+      // Update status in local state
       if (payoutData) {
         const updatedData = {
           ...payoutData,
@@ -182,16 +231,35 @@ export default function AdminAffiliatePayoutsPanel() {
         };
         setPayoutData(updatedData);
       }
+
+      // Show success message
+      // toast.success("Payout rejected successfully");
     } catch (error) {
       console.error("Error rejecting payout:", error);
+      // toast.error("Failed to reject payout");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleMarkPaid = async (id: string, transactionId: string) => {
     try {
-      // API call to mark as paid with transaction ID
-      console.log("Marking as paid:", id, "Transaction ID:", transactionId);
-      // Update status in state
+      setIsLoading(true);
+
+      // API call to mark payout as paid with transaction ID
+      await axiosInstance.put(`/admin/updateWithdrawStatus/${id}`, {
+        status: "PAID",
+        transactionRef: transactionId,
+      });
+
+      console.log(
+        "Payout marked as paid:",
+        id,
+        "Transaction ID:",
+        transactionId
+      );
+
+      // Update status in local state
       if (payoutData) {
         const updatedData = {
           ...payoutData,
@@ -208,40 +276,24 @@ export default function AdminAffiliatePayoutsPanel() {
         };
         setPayoutData(updatedData);
       }
+
+      // Show success message
+      // toast.success("Payout marked as paid successfully");
     } catch (error) {
       console.error("Error marking payout as paid:", error);
+      // toast.error("Failed to mark payout as paid");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (loading) {
+  if (!payoutData && isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     );
   }
-
-  if (!payoutData) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-500 dark:text-gray-400">
-          Failed to load payout data
-        </p>
-      </div>
-    );
-  }
-
-  const totalPendingAmount = payoutData.data
-    .filter((r) => r.status === "PENDING")
-    .reduce((sum, r) => sum + r.amount, 0);
-
-  const totalApprovedAmount = payoutData.data
-    .filter((r) => r.status === "APPROVED")
-    .reduce((sum, r) => sum + r.amount, 0);
-
-  const totalPaidAmount = payoutData.data
-    .filter((r) => r.status === "PAID")
-    .reduce((sum, r) => sum + r.amount, 0);
 
   return (
     <div className="">
@@ -254,60 +306,38 @@ export default function AdminAffiliatePayoutsPanel() {
           Manage affiliate payout requests and process payments
         </p>
       </div>
+      {/* Payouts Overview */}
+      <PayoutsOverview />
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatsCard
-          title="Pending Requests"
-          value={`${
-            payoutData.counts.pending
-          } (${totalPendingAmount.toLocaleString()})`}
-          subtitle={`${payoutData.counts.pending} requests awaiting review`}
-          icon={<Calendar className="w-8 h-8" />}
-        />
-        <StatsCard
-          title="Approved (Unpaid)"
-          value={`${
-            payoutData.counts.approved
-          } (${totalApprovedAmount.toLocaleString()})`}
-          subtitle={`${payoutData.counts.approved} requests ready for payment`}
-          icon={<CheckCircle className="w-8 h-8" />}
-        />
-        <StatsCard
-          title="Paid Requests"
-          value={`${
-            payoutData.counts.paid
-          } (${totalPaidAmount.toLocaleString()})`}
-          subtitle="Successfully processed payments"
-          icon={<DollarSign className="w-8 h-8" />}
-        />
-        <StatsCard
-          title="Total Requests"
-          value={payoutData.counts.total}
-          subtitle="All payout requests"
-          icon={<DollarSign className="w-8 h-8" />}
-        />
-      </div>
+      {!payoutData && !isLoading ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500 dark:text-gray-400">
+            Failed to load payout data
+          </p>
+        </div>
+      ) : (
+        <div>
+          {/* Search Bar */}
+          <div className="mb-6">
+            <SearchBar
+              searchQuery={searchQuery}
+              onSearch={handleSearch}
+              onSearchChange={setSearchQuery}
+              onClear={handleClearSearch}
+              placeholder="Search affiliates by name or email..."
+            />
+          </div>
 
-      {/* Search Bar */}
-      <div className="mb-6">
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onSearch={handleSearch}
-          onClear={handleClearSearch}
-          placeholder="Search affiliates by name or email..."
-        />
-      </div>
-
-      {/* Payouts Table */}
-      <PayoutsTable
-        title="Payout Requests"
-        requests={payoutData.data}
-        onApprove={handleApprove}
-        onReject={handleReject}
-        onMarkPaid={handleMarkPaid}
-      />
+          <PayoutsTable
+            title="Payout Requests"
+            requests={payoutData?.data}
+            onApprove={handleApprove}
+            onReject={handleReject}
+            onMarkPaid={handleMarkPaid}
+            loading={isLoading}
+          />
+        </div>
+      )}
     </div>
   );
 }
