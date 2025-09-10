@@ -32,11 +32,11 @@ export function RequirementsSection({
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-900 dark:text-white">
+                <span className="font-medium text-sm text-gray-900 dark:text-white">
                   {req.description}
                 </span>
                 <span
-                  className={`text-sm font-semibold ${
+                  className={`text-xs font-semibold ${
                     req.completed ? "text-green-600" : "text-red-600"
                   }`}
                 >
