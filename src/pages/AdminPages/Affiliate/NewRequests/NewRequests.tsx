@@ -39,6 +39,12 @@ interface ApiResponse {
   message: string;
 }
 
+interface AffiliateUpdatePayload {
+  status: "accepted" | "rejected";
+  isPlatinumTier?: boolean;
+  commissionPercentage?: number;
+}
+
 type FilterType = "pending" | "rejected";
 
 // Transform API data to match your existing AffiliateRequest interface
@@ -183,7 +189,7 @@ export default function NewRequests() {
       setConfirmationModal((prev) => ({ ...prev, loading: true }));
 
       // Prepare the request body
-      const requestBody = { status };
+      const requestBody: AffiliateUpdatePayload = { status };
 
       // Add platinum tier fields only if approving and platinum tier is enabled
       if (status === "accepted" && isPlatinumTier !== undefined) {
