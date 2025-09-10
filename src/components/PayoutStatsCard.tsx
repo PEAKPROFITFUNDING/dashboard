@@ -1,5 +1,5 @@
-// Overview Stats Cards Component
-export function StatsCard({
+export function PayoutStatsCard({
+  // Overview Stats Cards Component
   title,
   value,
   subtitle,

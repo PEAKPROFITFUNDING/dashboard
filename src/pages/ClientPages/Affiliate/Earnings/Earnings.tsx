@@ -1,8 +1,18 @@
+import { useState, useEffect } from "react";
 import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
-import BarChartOne from "../../../../components/charts/bar/BarChartOne";
-import { StatsCard } from "./components/StatsCard";
 import { CommissionTable } from "./components/CommissionTable";
+import {
+  DollarSign,
+  TrendingUp,
+  Calendar,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
+import axiosInstance from "../../../../api/axiosInstance";
+import { StatsCard } from "../../../../components/StatsCard";
+import EarningsChart from "./components/EarningsChart";
+import { PayoutStatsCard } from "../../../../components/PayoutStatsCard";
 
 // Types for sorting and filtering
 export type SortField = "user" | "type" | "amount" | "status" | "date";
@@ -16,16 +26,251 @@ export interface Commission {
   status: string;
   date: string;
 }
-const summaryData = {
-  lifetime: 2500,
-  thisMonth: 500,
-  thisWeek: 120,
-  pending: 200,
-  approved: 1000,
-  paid: 1300,
-};
+
+interface AffiliateStats {
+  dashboard: {
+    affiliate: {
+      id: string;
+      referralCode: string;
+      tier: string;
+      commissionPercentage: number;
+      totalReferrals: number;
+      availableBalance: number;
+    };
+    earnings: {
+      lifetime: {
+        total: number;
+        signups: number;
+        purchases: number;
+        signupCount: number;
+        purchaseCount: number;
+      };
+      thisMonth: {
+        total: number;
+        signups: number;
+        purchases: number;
+        signupCount: number;
+        purchaseCount: number;
+      };
+      thisWeek: {
+        total: number;
+        signups: number;
+        purchases: number;
+        signupCount: number;
+        purchaseCount: number;
+      };
+    };
+    withdrawals: {
+      paid: {
+        count: number;
+        amount: number;
+      };
+      pending: {
+        count: number;
+        amount: number;
+      };
+      total: {
+        count: number;
+        amount: number;
+      };
+    };
+  };
+  yearly: {
+    year: number;
+    monthlyBreakdown: Array<{
+      month: number;
+      monthName: string;
+      signups: {
+        count: number;
+        amount: number;
+      };
+      purchases: {
+        count: number;
+        amount: number;
+      };
+      total: {
+        count: number;
+        amount: number;
+      };
+    }>;
+    yearTotals: {
+      signups: {
+        count: number;
+        amount: number;
+      };
+      purchases: {
+        count: number;
+        amount: number;
+      };
+      total: {
+        count: number;
+        amount: number;
+      };
+    };
+    insights: {
+      bestMonth: string | null;
+      worstMonth: string | null;
+      activeMonths: number;
+      averageMonthlyEarnings: number;
+    };
+  };
+}
 
 export default function Earnings() {
+  const [stats, setStats] = useState<AffiliateStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAffiliateStats = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get("/affiliate/stats");
+        setStats(response.data.result);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching affiliate stats:", err);
+        setError("Failed to load affiliate statistics");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAffiliateStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <>
+        <PageMeta
+          title="PeakProfit - Affiliate Earnings"
+          description="Peak Profit Affiliate Earnings Page"
+        />
+        <PageBreadcrumb pageTitle={`Affiliate Earnings Overview`} />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading affiliate statistics...
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <PageMeta
+          title="PeakProfit - Affiliate Earnings"
+          description="Peak Profit Affiliate Earnings Page"
+        />
+        <PageBreadcrumb pageTitle={`Affiliate Earnings Overview`} />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (!stats) return null;
+
+  const dummyData = [
+    {
+      month: 1,
+      monthName: "Jan",
+      signups: { count: 12, amount: 120 },
+      purchases: { count: 5, amount: 300 },
+      total: { count: 17, amount: 420 },
+    },
+    {
+      month: 2,
+      monthName: "Feb",
+      signups: { count: 8, amount: 80 },
+      purchases: { count: 7, amount: 280 },
+      total: { count: 15, amount: 360 },
+    },
+    {
+      month: 3,
+      monthName: "Mar",
+      signups: { count: 15, amount: 150 },
+      purchases: { count: 10, amount: 400 },
+      total: { count: 25, amount: 550 },
+    },
+    {
+      month: 4,
+      monthName: "Apr",
+      signups: { count: 10, amount: 100 },
+      purchases: { count: 6, amount: 240 },
+      total: { count: 16, amount: 340 },
+    },
+    {
+      month: 5,
+      monthName: "May",
+      signups: { count: 20, amount: 200 },
+      purchases: { count: 12, amount: 480 },
+      total: { count: 32, amount: 680 },
+    },
+    {
+      month: 6,
+      monthName: "Jun",
+      signups: { count: 18, amount: 180 },
+      purchases: { count: 9, amount: 360 },
+      total: { count: 27, amount: 540 },
+    },
+    {
+      month: 7,
+      monthName: "Jul",
+      signups: { count: 14, amount: 140 },
+      purchases: { count: 11, amount: 440 },
+      total: { count: 25, amount: 580 },
+    },
+    {
+      month: 8,
+      monthName: "Aug",
+      signups: { count: 22, amount: 220 },
+      purchases: { count: 15, amount: 600 },
+      total: { count: 37, amount: 820 },
+    },
+    {
+      month: 9,
+      monthName: "Sep",
+      signups: { count: 9, amount: 90 },
+      purchases: { count: 4, amount: 160 },
+      total: { count: 13, amount: 250 },
+    },
+    {
+      month: 10,
+      monthName: "Oct",
+      signups: { count: 16, amount: 160 },
+      purchases: { count: 13, amount: 520 },
+      total: { count: 29, amount: 680 },
+    },
+    {
+      month: 11,
+      monthName: "Nov",
+      signups: { count: 11, amount: 110 },
+      purchases: { count: 8, amount: 320 },
+      total: { count: 19, amount: 430 },
+    },
+    {
+      month: 12,
+      monthName: "Dec",
+      signups: { count: 25, amount: 250 },
+      purchases: { count: 20, amount: 800 },
+      total: { count: 45, amount: 1050 },
+    },
+  ];
+
   return (
     <>
       <PageMeta
@@ -36,47 +281,51 @@ export default function Earnings() {
 
       <div className="space-y-8">
         {/* Stats Cards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-          <div className="xl:col-span-2">
-            <StatsCard
-              title="Lifetime Earnings"
-              value={summaryData.lifetime}
-              subtitle="Total earned since joining"
-            />
-          </div>
-          <StatsCard
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          <PayoutStatsCard
+            title="Lifetime Earnings"
+            value={`$${stats.dashboard.earnings.lifetime.total.toFixed(2)}`}
+            subtitle="Total earned since joining"
+            icon={<DollarSign className="h-6 w-6" />}
+          />
+
+          <PayoutStatsCard
             title="This Month"
-            value={summaryData.thisMonth}
+            value={`$${stats.dashboard.earnings.thisMonth.total.toFixed(2)}`}
             subtitle="Current month earnings"
+            icon={<Calendar className="h-6 w-6" />}
           />
-          <StatsCard
+          <PayoutStatsCard
             title="This Week"
-            value={summaryData.thisWeek}
+            value={`$${stats.dashboard.earnings.thisWeek.total.toFixed(2)}`}
             subtitle="Current week earnings"
+            icon={<TrendingUp className="h-6 w-6" />}
           />
-          <StatsCard
+          <PayoutStatsCard
             title="Pending"
-            value={summaryData.pending}
+            value={`$${stats.dashboard.withdrawals.pending.amount.toFixed(2)}`}
             subtitle="Awaiting approval"
+            icon={<Clock className="h-6 w-6" />}
           />
-          <StatsCard
+          <PayoutStatsCard
             title="Paid"
-            value={summaryData.paid}
+            value={`$${stats.dashboard.withdrawals.paid.amount.toFixed(2)}`}
             subtitle="Successfully paid out"
+            icon={<CheckCircle className="h-6 w-6" />}
           />
         </div>
 
         {/* Chart Section */}
-        <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.05] p-6">
-          <div className="mb-6">
+        <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.05]">
+          <div className="p-6 ">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Earnings Overview
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Monthly commission earnings for the current year
+              Monthly commission earnings for {stats.yearly.year}
             </p>
           </div>
-          <BarChartOne />
+          <EarningsChart monthlyData={stats.yearly.monthlyBreakdown} />
         </div>
 
         {/* Commission Table Section */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Calendar, CheckCircle, DollarSign, TrendingUp } from "lucide-react";
 import { StatsCard } from "./StatsCard";
 import axiosInstance from "../../../../../api/axiosInstance";
+import { PayoutStatsCard } from "../../../../../components/PayoutStatsCard";
 
 // Define types for the API response
 interface PayoutStatsResult {
@@ -92,25 +93,25 @@ const PayoutsOverview = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <StatsCard
+      <PayoutStatsCard
         title="Pending Requests"
         value={`${statsData.pending.count} (${statsData.pending.formattedAmount})`}
         subtitle={statsData.pending.description}
         icon={<Calendar className="w-8 h-8" />}
       />
-      <StatsCard
+      <PayoutStatsCard
         title="Approved (Unpaid)"
         value={`${statsData.approvedUnpaid.count} (${statsData.approvedUnpaid.formattedAmount})`}
         subtitle={statsData.approvedUnpaid.description}
         icon={<CheckCircle className="w-8 h-8" />}
       />
-      <StatsCard
+      <PayoutStatsCard
         title="Paid This Month"
         value={statsData.paidThisMonth.formattedAmount}
         subtitle={statsData.paidThisMonth.description}
         icon={<DollarSign className="w-8 h-8" />}
       />
-      <StatsCard
+      <PayoutStatsCard
         title="Lifetime Paid"
         value={statsData.lifetimePaid.formattedAmount}
         subtitle={statsData.lifetimePaid.description}
