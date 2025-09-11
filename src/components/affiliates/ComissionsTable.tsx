@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { Commission } from "../../types/Affiliates";
+import FilterBar from "../FilterBar";
+import { SearchBar } from "../SearchBar";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../../../../../components/ui/table";
-import { SearchBar } from "../../../../../components/SearchBar";
-import { Pagination } from "../../../../../components/Pagination";
-import FilterBar from "../../../../../components/FilterBar";
-import { Commission } from "../Earnings";
-
+} from "../ui/table";
+import { Pagination } from "../Pagination";
 export type SortField =
   | "user"
   | "type"
@@ -81,12 +80,12 @@ export function CommissionsTable({
   };
 
   const sortedData = [...commissions].sort((a, b) => {
-    let aValue: any;
-    let bValue: any;
+    let aValue;
+    let bValue;
 
     // Use earnedAt as the date field since that's what's in the API
-    const aDate = a.date || a.earnedAt;
-    const bDate = b.date || b.earnedAt;
+    const aDate = a.earnedAt || a.earnedAt;
+    const bDate = b.earnedAt || b.earnedAt;
 
     switch (sortField) {
       case "amount":
@@ -111,8 +110,8 @@ export function CommissionsTable({
         break;
       case "user":
         // Since user field might not exist, use referralCode as fallback
-        aValue = a.user || a.referralCode || "";
-        bValue = b.user || b.referralCode || "";
+        aValue = a.referredUser.name || a.referralCode || "";
+        bValue = b.referredUser.name || b.referralCode || "";
         break;
       default:
         return 0;
@@ -284,10 +283,10 @@ export function CommissionsTable({
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium text-sm">
                         {displayUser
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .slice(0, 2)}
+                          ?.split(" ")
+                          ?.map((n) => n[0])
+                          ?.join("")
+                          ?.slice(0, 2)}
                       </div>
                       <div className="flex flex-col">
                         <span className="font-medium text-gray-900 dark:text-white">

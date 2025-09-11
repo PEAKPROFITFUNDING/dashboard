@@ -11,35 +11,12 @@ import {
 import axiosInstance from "../../../../api/axiosInstance";
 import EarningsChart from "./components/EarningsChart";
 import { PayoutStatsCard } from "../../../../components/PayoutStatsCard";
-import { CommissionsTable } from "./components/CommissionsTable";
+import { Commission } from "../../../../types/Affiliates";
+import { CommissionsTable } from "../../../../components/affiliates/ComissionsTable";
 
 // Types for sorting and filtering
 export type SortField = "user" | "type" | "amount" | "status" | "date";
 export type CommissionFilterType = "all" | "SIGNUP" | "PURCHASE";
-
-export interface Commission {
-  id: string;
-  type: "SIGNUP" | "PURCHASE";
-  amount: number;
-  formattedAmount: string;
-  commissionPercentage: number;
-  affiliateTier: "BRONZE" | "SILVER" | "GOLD"; // Assuming other tiers exist
-  earnedAt: string;
-  referralCode: string;
-  referredUser?: {
-    _id: string;
-    email: string;
-    name: string;
-  };
-  challenge?: {
-    _id: string;
-    name: string;
-    cost: number;
-  };
-  originalAmount?: number;
-  formattedOriginalAmount?: string;
-  purchaseDate?: string;
-}
 
 interface AffiliateStats {
   dashboard: {
@@ -251,25 +228,6 @@ export default function Earnings() {
       const response = await axiosInstance.get<CommissionsResponse>(url);
       const commissionData = response.data.result.commissions;
 
-      const formattedCommissions = commissionData.map((item) => ({
-        id: item.id,
-        user: item.referredUser?.name || "N/A",
-        email: item.referredUser?.email || "N/A", // Add this line
-        type: item.type,
-        amount: item.amount,
-        formattedAmount: item.formattedAmount,
-        commissionPercentage: item.commissionPercentage,
-        affiliateTier: item.affiliateTier,
-        date: item.earnedAt,
-        challenge: item.challenge
-          ? {
-              _id: item.challenge._id,
-              name: item.challenge.name,
-              cost: item.challenge.cost,
-            }
-          : undefined,
-      }));
-
       setCommissions(commissionData);
       setPagination({
         currentPage: response.data.result.currentPage,
@@ -349,6 +307,12 @@ export default function Earnings() {
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
+
+  console.log(
+    "filteredAndSearchedCommissions:",
+    filteredAndSearchedCommissions
+  );
+
   if (loading && !stats) {
     return (
       <>

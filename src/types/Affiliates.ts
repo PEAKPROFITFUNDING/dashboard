@@ -81,3 +81,39 @@ export interface AffiliatesList {
   };
   message: string;
 }
+
+export interface Commission {
+  id: string;
+  type: "SIGNUP" | "PURCHASE";
+  amount: number;
+  formattedAmount?: string; // optional in case API doesn’t send
+  commissionPercentage: number;
+  affiliateTier: "BRONZE" | "SILVER" | "GOLD" | "PLATINUM"; // added PLATINUM too
+  earnedAt: string;
+  referralCode: string;
+
+  // ✅ Shown always (user who generated commission)
+  referredUser?: {
+    id: string; // changed from _id to id for consistency
+    email: string;
+    name: string;
+  };
+
+  // ✅ Shown only if type = PURCHASE
+  challenge?: {
+    id: string;
+    name?: string;
+    price: number; // changed from cost → price
+  };
+
+  originalAmount?: number;
+  formattedOriginalAmount?: string;
+  purchaseDate?: string;
+
+  // ✅ Only included if `showAffiliate = true` (for admins)
+  affiliate?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
