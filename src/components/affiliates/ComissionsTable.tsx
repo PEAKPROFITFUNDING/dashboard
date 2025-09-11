@@ -36,6 +36,7 @@ interface CommissionsTableProps {
   activeFilter: string;
   searchQuery: string;
   counts: Record<string, number>;
+  showAffiliates?: boolean;
 }
 
 const filterOptions = [
@@ -55,6 +56,7 @@ export function CommissionsTable({
   activeFilter,
   searchQuery,
   counts,
+  showAffiliates = false,
 }: CommissionsTableProps) {
   const [sortField, setSortField] = useState<SortField>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
@@ -67,6 +69,8 @@ export function CommissionsTable({
       setSortDirection("desc");
     }
   };
+
+  console.log(commissions);
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
@@ -198,6 +202,19 @@ export function CommissionsTable({
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
+              {showAffiliates && (
+                <TableCell
+                  isHeader
+                  className="px-6 py-4 font-medium text-gray-500 text-start text-xs dark:text-gray-400"
+                >
+                  <div
+                    className="flex items-center gap-1 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
+                    onClick={() => handleSort("user")}
+                  >
+                    Affiliate {getSortIcon("user")}
+                  </div>
+                </TableCell>
+              )}
               <TableCell
                 isHeader
                 className="px-6 py-4 font-medium text-gray-500 text-start text-xs dark:text-gray-400"
@@ -206,9 +223,14 @@ export function CommissionsTable({
                   className="flex items-center gap-1 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
                   onClick={() => handleSort("user")}
                 >
-                  User {getSortIcon("user")}
+                  {showAffiliates ? (
+                    <>Referral {getSortIcon("user")}</>
+                  ) : (
+                    <>User {getSortIcon("user")}</>
+                  )}
                 </div>
               </TableCell>
+
               <TableCell
                 isHeader
                 className="px-6 py-4 font-medium text-gray-500 text-start text-xs dark:text-gray-400"
@@ -279,6 +301,27 @@ export function CommissionsTable({
                   key={commission.id}
                   className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer"
                 >
+                  {showAffiliates && (
+                    <TableCell className="px-6 py-4 text-start">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium text-sm">
+                          {commission.affiliate.name
+                            ?.split(" ")
+                            ?.map((n) => n[0])
+                            ?.join("")
+                            ?.slice(0, 2)}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {commission.affiliate.name}
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {commission.affiliate.email}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                  )}
                   <TableCell className="px-6 py-4 text-start">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium text-sm">

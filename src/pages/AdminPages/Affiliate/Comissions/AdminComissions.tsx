@@ -407,6 +407,7 @@ export default function AdminCommissions() {
           activeFilter={typeFilter}
           searchQuery={searchQuery}
           counts={counts}
+          showAffiliates={true}
         />
       </div>
     </>
