@@ -16,14 +16,14 @@ const AffiliateProfileStats = ({ affiliateData }: Props) => {
     },
     {
       title: "Total Earnings",
-      value: (data: AffiliateType) => `$${data?.totalEarnings}`,
+      value: (data: AffiliateType) => `$${data?.totalEarnings?.toFixed(2)}`,
       icon: DollarSign,
       bg: "bg-green-100 dark:bg-green-900",
       color: "text-green-600 dark:text-green-400",
     },
     {
       title: "Current Balance",
-      value: (data: AffiliateType) => `$${data?.balance}`,
+      value: (data: AffiliateType) => `$${data?.balance?.toFixed(2)}`,
       icon: Wallet,
       bg: "bg-purple-100 dark:bg-purple-900",
       color: "text-purple-600 dark:text-purple-400",

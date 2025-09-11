@@ -308,11 +308,6 @@ export default function Earnings() {
       .includes(searchQuery.toLowerCase())
   );
 
-  console.log(
-    "filteredAndSearchedCommissions:",
-    filteredAndSearchedCommissions
-  );
-
   if (loading && !stats) {
     return (
       <>
