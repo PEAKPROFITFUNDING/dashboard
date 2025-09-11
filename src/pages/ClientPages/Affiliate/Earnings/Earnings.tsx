@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
-import { CommissionTable } from "./components/CommissionTable";
 import {
   DollarSign,
   TrendingUp,
@@ -10,21 +9,36 @@ import {
   CheckCircle,
 } from "lucide-react";
 import axiosInstance from "../../../../api/axiosInstance";
-import { StatsCard } from "../../../../components/StatsCard";
 import EarningsChart from "./components/EarningsChart";
 import { PayoutStatsCard } from "../../../../components/PayoutStatsCard";
+import { CommissionsTable } from "./components/CommissionsTable";
 
 // Types for sorting and filtering
 export type SortField = "user" | "type" | "amount" | "status" | "date";
-export type FilterType = "all" | "pending" | "approved" | "paid";
+export type CommissionFilterType = "all" | "SIGNUP" | "PURCHASE";
 
 export interface Commission {
-  id: number;
-  user: string;
-  type: string;
+  id: string;
+  type: "SIGNUP" | "PURCHASE";
   amount: number;
-  status: string;
-  date: string;
+  formattedAmount: string;
+  commissionPercentage: number;
+  affiliateTier: "BRONZE" | "SILVER" | "GOLD"; // Assuming other tiers exist
+  earnedAt: string;
+  referralCode: string;
+  referredUser?: {
+    _id: string;
+    email: string;
+    name: string;
+  };
+  challenge?: {
+    _id: string;
+    name: string;
+    cost: number;
+  };
+  originalAmount?: number;
+  formattedOriginalAmount?: string;
+  purchaseDate?: string;
 }
 
 interface AffiliateStats {
@@ -56,8 +70,8 @@ interface AffiliateStats {
         total: number;
         signups: number;
         purchases: number;
-        signupCount: number;
         purchaseCount: number;
+        signupCount: number;
       };
     };
     withdrawals: {
@@ -116,30 +130,226 @@ interface AffiliateStats {
   };
 }
 
+interface CommissionsResponse {
+  result: {
+    commissions;
+    totalCommissions: number;
+    currentPage: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+const dummyData = [
+  {
+    month: 1,
+    monthName: "Jan",
+    signups: { count: 12, amount: 120 },
+    purchases: { count: 5, amount: 300 },
+    total: { count: 17, amount: 420 },
+  },
+  {
+    month: 2,
+    monthName: "Feb",
+    signups: { count: 8, amount: 80 },
+    purchases: { count: 7, amount: 280 },
+    total: { count: 15, amount: 360 },
+  },
+  {
+    month: 3,
+    monthName: "Mar",
+    signups: { count: 15, amount: 150 },
+    purchases: { count: 10, amount: 400 },
+    total: { count: 25, amount: 550 },
+  },
+  {
+    month: 4,
+    monthName: "Apr",
+    signups: { count: 10, amount: 100 },
+    purchases: { count: 6, amount: 240 },
+    total: { count: 16, amount: 340 },
+  },
+  {
+    month: 5,
+    monthName: "May",
+    signups: { count: 20, amount: 200 },
+    purchases: { count: 12, amount: 480 },
+    total: { count: 32, amount: 680 },
+  },
+  {
+    month: 6,
+    monthName: "Jun",
+    signups: { count: 18, amount: 180 },
+    purchases: { count: 9, amount: 360 },
+    total: { count: 27, amount: 540 },
+  },
+  {
+    month: 7,
+    monthName: "Jul",
+    signups: { count: 14, amount: 140 },
+    purchases: { count: 11, amount: 440 },
+    total: { count: 25, amount: 580 },
+  },
+  {
+    month: 8,
+    monthName: "Aug",
+    signups: { count: 22, amount: 220 },
+    purchases: { count: 15, amount: 600 },
+    total: { count: 37, amount: 820 },
+  },
+  {
+    month: 9,
+    monthName: "Sep",
+    signups: { count: 9, amount: 90 },
+    purchases: { count: 4, amount: 160 },
+    total: { count: 13, amount: 250 },
+  },
+  {
+    month: 10,
+    monthName: "Oct",
+    signups: { count: 16, amount: 160 },
+    purchases: { count: 13, amount: 520 },
+    total: { count: 29, amount: 680 },
+  },
+  {
+    month: 11,
+    monthName: "Nov",
+    signups: { count: 11, amount: 110 },
+    purchases: { count: 8, amount: 320 },
+    total: { count: 19, amount: 430 },
+  },
+  {
+    month: 12,
+    monthName: "Dec",
+    signups: { count: 25, amount: 250 },
+    purchases: { count: 20, amount: 800 },
+    total: { count: 45, amount: 1050 },
+  },
+];
+
 export default function Earnings() {
   const [stats, setStats] = useState<AffiliateStats | null>(null);
+  const [commissions, setCommissions] = useState<Commission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    perPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  });
+
+  const fetchCommissions = useCallback(async () => {
+    try {
+      setLoading(true);
+      const url = `/affiliate/commissionHistory?page=${currentPage}&type=${typeFilter}`;
+      const response = await axiosInstance.get<CommissionsResponse>(url);
+      const commissionData = response.data.result.commissions;
+
+      const formattedCommissions = commissionData.map((item) => ({
+        id: item.id,
+        user: item.referredUser?.name || "N/A",
+        email: item.referredUser?.email || "N/A", // Add this line
+        type: item.type,
+        amount: item.amount,
+        formattedAmount: item.formattedAmount,
+        commissionPercentage: item.commissionPercentage,
+        affiliateTier: item.affiliateTier,
+        date: item.earnedAt,
+        challenge: item.challenge
+          ? {
+              _id: item.challenge._id,
+              name: item.challenge.name,
+              cost: item.challenge.cost,
+            }
+          : undefined,
+      }));
+
+      setCommissions(commissionData);
+      setPagination({
+        currentPage: response.data.result.currentPage,
+        perPage: 10, // The API doesn't return perPage, so we hardcode it based on the expected behavior.
+        totalItems: response.data.result.totalCommissions,
+        totalPages: response.data.result.totalPages,
+      });
+
+      // Fetch all commissions to calculate counts for the filter bar
+      const allCommissionsResponse =
+        await axiosInstance.get<CommissionsResponse>(
+          `/affiliate/commissionHistory?page=1&type=`
+        );
+      const allCommissions = allCommissionsResponse.data.result.commissions;
+      const countsData = allCommissions.reduce(
+        (acc: Record<string, number>, curr) => {
+          const type = curr.type.toUpperCase();
+          acc[type] = (acc[type] || 0) + 1;
+          return acc;
+        },
+        { all: allCommissionsResponse.data.result.totalCommissions }
+      );
+      setCounts(countsData);
+    } catch (err) {
+      console.error("Error fetching commissions:", err);
+      setError("Failed to load commission history.");
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, typeFilter]);
 
   useEffect(() => {
     const fetchAffiliateStats = async () => {
       try {
-        setLoading(true);
         const response = await axiosInstance.get("/affiliate/stats");
         setStats(response.data.result);
-        setError(null);
       } catch (err) {
         console.error("Error fetching affiliate stats:", err);
         setError("Failed to load affiliate statistics");
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchAffiliateStats();
-  }, []);
+    fetchCommissions();
+  }, [fetchCommissions]);
 
-  if (loading) {
+  const handleFilterChange = (filter) => {
+    if (filter === "all") {
+      setTypeFilter("");
+    } else {
+      setTypeFilter(filter as CommissionFilterType);
+    }
+
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleSearch = () => {
+    // The new API endpoint does not support searching. We'll handle this on the client-side for now, but it's not ideal.
+    // For a real-world scenario, the API would need to be updated.
+    // For this implementation, we will just trigger a fetch and the search input will not affect the API call directly.
+    setCurrentPage(1);
+    fetchCommissions();
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+    fetchCommissions();
+  };
+
+  const filteredAndSearchedCommissions = commissions.filter((commission) =>
+    (commission?.referredUser?.name || "")
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
+  if (loading && !stats) {
     return (
       <>
         <PageMeta
@@ -183,93 +393,6 @@ export default function Earnings() {
   }
 
   if (!stats) return null;
-
-  const dummyData = [
-    {
-      month: 1,
-      monthName: "Jan",
-      signups: { count: 12, amount: 120 },
-      purchases: { count: 5, amount: 300 },
-      total: { count: 17, amount: 420 },
-    },
-    {
-      month: 2,
-      monthName: "Feb",
-      signups: { count: 8, amount: 80 },
-      purchases: { count: 7, amount: 280 },
-      total: { count: 15, amount: 360 },
-    },
-    {
-      month: 3,
-      monthName: "Mar",
-      signups: { count: 15, amount: 150 },
-      purchases: { count: 10, amount: 400 },
-      total: { count: 25, amount: 550 },
-    },
-    {
-      month: 4,
-      monthName: "Apr",
-      signups: { count: 10, amount: 100 },
-      purchases: { count: 6, amount: 240 },
-      total: { count: 16, amount: 340 },
-    },
-    {
-      month: 5,
-      monthName: "May",
-      signups: { count: 20, amount: 200 },
-      purchases: { count: 12, amount: 480 },
-      total: { count: 32, amount: 680 },
-    },
-    {
-      month: 6,
-      monthName: "Jun",
-      signups: { count: 18, amount: 180 },
-      purchases: { count: 9, amount: 360 },
-      total: { count: 27, amount: 540 },
-    },
-    {
-      month: 7,
-      monthName: "Jul",
-      signups: { count: 14, amount: 140 },
-      purchases: { count: 11, amount: 440 },
-      total: { count: 25, amount: 580 },
-    },
-    {
-      month: 8,
-      monthName: "Aug",
-      signups: { count: 22, amount: 220 },
-      purchases: { count: 15, amount: 600 },
-      total: { count: 37, amount: 820 },
-    },
-    {
-      month: 9,
-      monthName: "Sep",
-      signups: { count: 9, amount: 90 },
-      purchases: { count: 4, amount: 160 },
-      total: { count: 13, amount: 250 },
-    },
-    {
-      month: 10,
-      monthName: "Oct",
-      signups: { count: 16, amount: 160 },
-      purchases: { count: 13, amount: 520 },
-      total: { count: 29, amount: 680 },
-    },
-    {
-      month: 11,
-      monthName: "Nov",
-      signups: { count: 11, amount: 110 },
-      purchases: { count: 8, amount: 320 },
-      total: { count: 19, amount: 430 },
-    },
-    {
-      month: 12,
-      monthName: "Dec",
-      signups: { count: 25, amount: 250 },
-      purchases: { count: 20, amount: 800 },
-      total: { count: 45, amount: 1050 },
-    },
-  ];
 
   return (
     <>
@@ -329,7 +452,18 @@ export default function Earnings() {
         </div>
 
         {/* Commission Table Section */}
-        <CommissionTable />
+        <CommissionsTable
+          commissions={filteredAndSearchedCommissions}
+          pagination={pagination}
+          onPageChange={setCurrentPage}
+          onFilterChange={handleFilterChange}
+          onSearchChange={handleSearchChange}
+          onSearch={handleSearch}
+          onClearSearch={handleClearSearch}
+          activeFilter={typeFilter}
+          searchQuery={searchQuery}
+          counts={counts}
+        />
       </div>
     </>
   );
