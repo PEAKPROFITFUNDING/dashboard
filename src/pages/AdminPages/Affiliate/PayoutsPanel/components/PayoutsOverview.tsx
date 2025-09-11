@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Calendar, CheckCircle, DollarSign, TrendingUp } from "lucide-react";
-import { StatsCard } from "./StatsCard";
+
 import axiosInstance from "../../../../../api/axiosInstance";
 import { PayoutStatsCard } from "../../../../../components/PayoutStatsCard";
 

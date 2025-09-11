@@ -71,7 +71,7 @@ export default function AdminAffiliatePayoutsPanel() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   // Mock data - replace with actual API call
   useEffect(() => {

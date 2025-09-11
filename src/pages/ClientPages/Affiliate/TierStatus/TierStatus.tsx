@@ -33,15 +33,6 @@ export interface Requirement {
   unit: string;
 }
 
-// Dummy data
-const currentUserData = {
-  currentTier: "silver",
-  lifetimeEarnings: 800,
-  totalReferrals: 15,
-  activeReferrals: 12,
-  monthsActive: 6,
-};
-
 const tiers: Tier[] = [
   {
     id: "bronze",

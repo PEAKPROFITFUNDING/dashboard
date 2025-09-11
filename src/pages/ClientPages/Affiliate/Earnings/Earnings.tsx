@@ -118,92 +118,92 @@ interface CommissionsResponse {
   };
 }
 
-const dummyData = [
-  {
-    month: 1,
-    monthName: "Jan",
-    signups: { count: 12, amount: 120 },
-    purchases: { count: 5, amount: 300 },
-    total: { count: 17, amount: 420 },
-  },
-  {
-    month: 2,
-    monthName: "Feb",
-    signups: { count: 8, amount: 80 },
-    purchases: { count: 7, amount: 280 },
-    total: { count: 15, amount: 360 },
-  },
-  {
-    month: 3,
-    monthName: "Mar",
-    signups: { count: 15, amount: 150 },
-    purchases: { count: 10, amount: 400 },
-    total: { count: 25, amount: 550 },
-  },
-  {
-    month: 4,
-    monthName: "Apr",
-    signups: { count: 10, amount: 100 },
-    purchases: { count: 6, amount: 240 },
-    total: { count: 16, amount: 340 },
-  },
-  {
-    month: 5,
-    monthName: "May",
-    signups: { count: 20, amount: 200 },
-    purchases: { count: 12, amount: 480 },
-    total: { count: 32, amount: 680 },
-  },
-  {
-    month: 6,
-    monthName: "Jun",
-    signups: { count: 18, amount: 180 },
-    purchases: { count: 9, amount: 360 },
-    total: { count: 27, amount: 540 },
-  },
-  {
-    month: 7,
-    monthName: "Jul",
-    signups: { count: 14, amount: 140 },
-    purchases: { count: 11, amount: 440 },
-    total: { count: 25, amount: 580 },
-  },
-  {
-    month: 8,
-    monthName: "Aug",
-    signups: { count: 22, amount: 220 },
-    purchases: { count: 15, amount: 600 },
-    total: { count: 37, amount: 820 },
-  },
-  {
-    month: 9,
-    monthName: "Sep",
-    signups: { count: 9, amount: 90 },
-    purchases: { count: 4, amount: 160 },
-    total: { count: 13, amount: 250 },
-  },
-  {
-    month: 10,
-    monthName: "Oct",
-    signups: { count: 16, amount: 160 },
-    purchases: { count: 13, amount: 520 },
-    total: { count: 29, amount: 680 },
-  },
-  {
-    month: 11,
-    monthName: "Nov",
-    signups: { count: 11, amount: 110 },
-    purchases: { count: 8, amount: 320 },
-    total: { count: 19, amount: 430 },
-  },
-  {
-    month: 12,
-    monthName: "Dec",
-    signups: { count: 25, amount: 250 },
-    purchases: { count: 20, amount: 800 },
-    total: { count: 45, amount: 1050 },
-  },
-];
+// const dummyData = [
+//   {
+//     month: 1,
+//     monthName: "Jan",
+//     signups: { count: 12, amount: 120 },
+//     purchases: { count: 5, amount: 300 },
+//     total: { count: 17, amount: 420 },
+//   },
+//   {
+//     month: 2,
+//     monthName: "Feb",
+//     signups: { count: 8, amount: 80 },
+//     purchases: { count: 7, amount: 280 },
+//     total: { count: 15, amount: 360 },
+//   },
+//   {
+//     month: 3,
+//     monthName: "Mar",
+//     signups: { count: 15, amount: 150 },
+//     purchases: { count: 10, amount: 400 },
+//     total: { count: 25, amount: 550 },
+//   },
+//   {
+//     month: 4,
+//     monthName: "Apr",
+//     signups: { count: 10, amount: 100 },
+//     purchases: { count: 6, amount: 240 },
+//     total: { count: 16, amount: 340 },
+//   },
+//   {
+//     month: 5,
+//     monthName: "May",
+//     signups: { count: 20, amount: 200 },
+//     purchases: { count: 12, amount: 480 },
+//     total: { count: 32, amount: 680 },
+//   },
+//   {
+//     month: 6,
+//     monthName: "Jun",
+//     signups: { count: 18, amount: 180 },
+//     purchases: { count: 9, amount: 360 },
+//     total: { count: 27, amount: 540 },
+//   },
+//   {
+//     month: 7,
+//     monthName: "Jul",
+//     signups: { count: 14, amount: 140 },
+//     purchases: { count: 11, amount: 440 },
+//     total: { count: 25, amount: 580 },
+//   },
+//   {
+//     month: 8,
+//     monthName: "Aug",
+//     signups: { count: 22, amount: 220 },
+//     purchases: { count: 15, amount: 600 },
+//     total: { count: 37, amount: 820 },
+//   },
+//   {
+//     month: 9,
+//     monthName: "Sep",
+//     signups: { count: 9, amount: 90 },
+//     purchases: { count: 4, amount: 160 },
+//     total: { count: 13, amount: 250 },
+//   },
+//   {
+//     month: 10,
+//     monthName: "Oct",
+//     signups: { count: 16, amount: 160 },
+//     purchases: { count: 13, amount: 520 },
+//     total: { count: 29, amount: 680 },
+//   },
+//   {
+//     month: 11,
+//     monthName: "Nov",
+//     signups: { count: 11, amount: 110 },
+//     purchases: { count: 8, amount: 320 },
+//     total: { count: 19, amount: 430 },
+//   },
+//   {
+//     month: 12,
+//     monthName: "Dec",
+//     signups: { count: 25, amount: 250 },
+//     purchases: { count: 20, amount: 800 },
+//     total: { count: 45, amount: 1050 },
+//   },
+// ];
 
 export default function Earnings() {
   const [stats, setStats] = useState<AffiliateStats | null>(null);
