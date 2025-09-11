@@ -361,7 +361,7 @@ export default function Earnings() {
       />
       <PageBreadcrumb pageTitle={`Affiliate Earnings Overview`} />
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Stats Cards Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           <PayoutStatsCard

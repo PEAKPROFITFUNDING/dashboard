@@ -97,7 +97,7 @@ export default function Withdrawals() {
       />
       <PageBreadcrumb pageTitle={`Withdrawal Management`} />
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Available Balance Section */}
         <div className="max-w-md mx-auto">
           <AvailableBalanceCard

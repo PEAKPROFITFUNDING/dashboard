@@ -129,7 +129,7 @@ export default function AffiliateDetails() {
         pageTitle={`Affiliate Details - ${transformedAffiliate.fullName}`}
       />
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Profile Card */}
         <AffiliateProfileCard affiliate={transformedAffiliate} />
 

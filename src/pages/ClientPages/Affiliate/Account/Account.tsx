@@ -113,7 +113,7 @@ export default function Account() {
       />
       <PageBreadcrumb pageTitle={`Affiliate Account`} />
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Profile Card */}
         <AffiliateProfileCard affiliate={transformedAffiliate} />
 

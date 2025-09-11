@@ -197,7 +197,7 @@ export default function TierStatus() {
       />
       <PageBreadcrumb pageTitle={`Tier Status & Benefits`} />
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Current Tier Section */}
         <CurrentTierSection currentTier={currentTier} />
 

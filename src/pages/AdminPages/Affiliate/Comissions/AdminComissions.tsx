@@ -7,10 +7,14 @@ import {
   Users,
   TrendingUp,
   Clock,
+  UserCheck,
+  ShoppingCart,
 } from "lucide-react";
 import axiosInstance from "../../../../api/axiosInstance";
-import { StatsCard } from "./components/StatsCard";
 import { CommissionsTable } from "../../../../components/affiliates/ComissionsTable";
+import CommissionsChart from "../../../../components/affiliates/CommissionsChart";
+import { PayoutStatsCard } from "../../../../components/PayoutStatsCard";
+import { Commission } from "../../../../types/Affiliates";
 
 // Types
 export type SortField =
@@ -24,48 +28,125 @@ export type SortField =
 export type FilterType = "all" | "SIGNUP" | "PURCHASE";
 export type CommissionType = "SIGNUP" | "PURCHASE";
 
-export interface Commission {
-  id: string;
-  type: CommissionType;
-  amount: number;
-  commissionPercentage: number;
-  affiliateTier: string;
-  earnedAt: string;
-  referralCode: string;
-  affiliate: {
-    id: string;
-    name: string;
-    email: string;
+interface MonthlyData {
+  month: number;
+  monthName: string;
+  signups: {
+    count: number;
+    amount: number;
+    uniqueAffiliates: number;
   };
-  referredUser: {
-    id: string;
-    name: string;
-    email: string;
+  purchases: {
+    count: number;
+    amount: number;
+    uniqueAffiliates: number;
   };
-  challenge?: {
-    id: string;
-    name: string;
-    price: number;
+  total: {
+    count: number;
+    amount: number;
+    uniqueAffiliates: number;
   };
-  originalAmount?: number;
-  formattedOriginalAmount?: string;
-  purchaseDate?: string;
 }
 
 interface AdminStats {
-  totalLifetimeCommissions: number;
-  thisMonthCommissions: number;
-  pendingCommissions: {
-    count: number;
-    amount: number;
+  dashboard: {
+    overview: {
+      totalAffiliates: number;
+      activeAffiliates: number;
+      totalBalance: number;
+      totalReferrals: number;
+      tierBreakdown: {
+        BRONZE: number;
+        SILVER: number;
+        GOLD: number;
+        PLATINUM: number;
+      };
+    };
+    earnings: {
+      lifetime: {
+        totalCommissions: number;
+        totalEntries: number;
+        signupCommissions: number;
+        purchaseCommissions: number;
+        signupCount: number;
+        purchaseCount: number;
+        uniqueAffiliates: number;
+      };
+      thisMonth: {
+        totalCommissions: number;
+        totalEntries: number;
+        signupCommissions: number;
+        purchaseCommissions: number;
+        signupCount: number;
+        purchaseCount: number;
+        uniqueAffiliates: number;
+      };
+      thisWeek: {
+        totalCommissions: number;
+        totalEntries: number;
+        signupCommissions: number;
+        purchaseCommissions: number;
+        signupCount: number;
+        purchaseCount: number;
+        uniqueAffiliates: number;
+      };
+    };
+    withdrawals: {
+      paid: {
+        count: number;
+        amount: number;
+      };
+      pending: {
+        count: number;
+        amount: number;
+      };
+      total: {
+        count: number;
+        amount: number;
+      };
+    };
   };
-  approvedCommissions: {
-    count: number;
-    amount: number;
-  };
-  paidCommissions: {
-    count: number;
-    amount: number;
+  yearly: {
+    year: number;
+    monthlyBreakdown: MonthlyData[];
+    yearTotals: {
+      signups: {
+        count: number;
+        amount: number;
+        uniqueAffiliates: number;
+      };
+      purchases: {
+        count: number;
+        amount: number;
+        uniqueAffiliates: number;
+      };
+      total: {
+        count: number;
+        amount: number;
+        uniqueAffiliates: number;
+      };
+    };
+    insights: {
+      bestMonth: {
+        month: string;
+        amount: number;
+        count: number;
+        uniqueAffiliates: number;
+      } | null;
+      worstMonth;
+      activeMonths: number;
+      averageMonthlyEarnings: number;
+      topPerformingAffiliates: Array<{
+        _id: string;
+        totalAmount: number;
+        totalCount: number;
+        signupCount: number;
+        purchaseCount: number;
+        affiliateId: string;
+        referralCode: string;
+        tier: string;
+      }>;
+    };
   };
 }
 
@@ -136,7 +217,7 @@ export default function AdminCommissions() {
   useEffect(() => {
     const fetchAdminStats = async () => {
       try {
-        const response = await axiosInstance.get("/admin/stats");
+        const response = await axiosInstance.get("/admin/commissionStats");
         setStats(response.data.result);
       } catch (err) {
         console.error("Error fetching admin stats:", err);
@@ -198,30 +279,30 @@ export default function AdminCommissions() {
     );
   }
 
-  // if (error) {
-  //   return (
-  //     <>
-  //       <PageMeta
-  //         title="Admin - Commission Management"
-  //         description="Admin dashboard for managing affiliate commissions"
-  //       />
-  //       <PageBreadcrumb pageTitle={`Commission Management`} />
-  //       <div className="flex items-center justify-center h-64">
-  //         <div className="text-center">
-  //           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-  //           <button
-  //             onClick={() => window.location.reload()}
-  //             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-  //           >
-  //             Retry
-  //           </button>
-  //         </div>
-  //       </div>
-  //     </>
-  //   );
-  // }
+  if (error && !stats) {
+    return (
+      <>
+        <PageMeta
+          title="Admin - Commission Management"
+          description="Admin dashboard for managing affiliate commissions"
+        />
+        <PageBreadcrumb pageTitle={`Commission Management`} />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
-  // if (!stats) return null;
+  if (!stats) return null;
 
   return (
     <>
@@ -231,45 +312,88 @@ export default function AdminCommissions() {
       />
       <PageBreadcrumb pageTitle={`Commission Management`} />
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Overview Cards */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          <StatsCard
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <PayoutStatsCard
             title="Total Lifetime"
-            value={`$${stats.totalLifetimeCommissions.toFixed(2)}`}
+            value={`$${stats.dashboard.earnings.lifetime.totalCommissions.toFixed(
+              2
+            )}`}
             subtitle="All-time commissions earned"
             icon={<TrendingUp className="w-6 h-6" />}
-            color="blue"
           />
-          <StatsCard
+          <PayoutStatsCard
             title="This Month"
-            value={`$${stats.thisMonthCommissions.toFixed(2)}`}
+            value={`$${stats.dashboard.earnings.thisMonth.totalCommissions.toFixed(
+              2
+            )}`}
             subtitle="Commissions earned this month"
             icon={<DollarSign className="w-6 h-6" />}
-            color="green"
           />
-          <StatsCard
-            title="Pending"
-            value={`$${stats.pendingCommissions.amount.toFixed(2)}`}
-            subtitle={`${stats.pendingCommissions.count} awaiting approval`}
-            icon={<Clock className="w-6 h-6" />}
-            color="yellow"
-          />
-          <StatsCard
-            title="Approved"
-            value={`$${stats.approvedCommissions.amount.toFixed(2)}`}
-            subtitle={`${stats.approvedCommissions.count} ready for payout`}
-            icon={<CheckCircle className="w-6 h-6" />}
-            color="purple"
-          />
-          <StatsCard
-            title="Paid"
-            value={`$${stats.paidCommissions.amount.toFixed(2)}`}
-            subtitle={`${stats.paidCommissions.count} completed payments`}
+          <PayoutStatsCard
+            title="This Week"
+            value={stats.dashboard.earnings.thisWeek.totalCommissions.toFixed(
+              2
+            )}
+            subtitle={"Commissions earned this week"}
             icon={<Users className="w-6 h-6" />}
-            color="gray"
           />
-        </div> */}
+
+          <PayoutStatsCard
+            title="Pending Payouts"
+            value={`$${stats.dashboard.withdrawals.pending.amount.toFixed(2)}`}
+            subtitle={`${stats.dashboard.withdrawals.pending.count} pending requests`}
+            icon={<Clock className="w-6 h-6" />}
+          />
+          <PayoutStatsCard
+            title="Paid Out"
+            value={`$${stats.dashboard.withdrawals.paid.amount.toFixed(2)}`}
+            subtitle={`${stats.dashboard.withdrawals.paid.count} completed payments`}
+            icon={<UserCheck className="w-6 h-6" />}
+          />
+        </div>
+
+        {/* Secondary Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <PayoutStatsCard
+            title="Signup Commissions"
+            value={`$${stats.dashboard.earnings.lifetime.signupCommissions.toFixed(
+              2
+            )}`}
+            subtitle={`${stats.dashboard.earnings.lifetime.signupCount} total signups`}
+            icon={<UserCheck className="w-5 h-5" />}
+          />
+          <PayoutStatsCard
+            title="Purchase Commissions"
+            value={`$${stats.dashboard.earnings.lifetime.purchaseCommissions.toFixed(
+              2
+            )}`}
+            subtitle={`${stats.dashboard.earnings.lifetime.purchaseCount} total purchases`}
+            icon={<ShoppingCart className="w-5 h-5" />}
+          />
+          <PayoutStatsCard
+            title="Total Affiliates"
+            value={stats.dashboard.overview.totalAffiliates.toString()}
+            subtitle={`${stats.dashboard.overview.totalReferrals.toString()} total referrals`}
+            icon={<Users className="w-6 h-6" />}
+          />
+        </div>
+
+        {/* Earnings Chart */}
+        <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.05]">
+          <div className="p-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Monthly Earnings Overview
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Signup vs Purchase commissions for {stats.yearly.year}
+              </p>
+            </div>
+          </div>
+          <CommissionsChart monthlyData={stats.yearly.monthlyBreakdown} />
+        </div>
 
         {/* Commissions Table */}
         <CommissionsTable

@@ -89,7 +89,7 @@ export default function AffiliateReferralList({
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
         Your Referrals
       </h2>
 
