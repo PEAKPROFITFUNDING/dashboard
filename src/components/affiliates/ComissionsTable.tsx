@@ -70,8 +70,6 @@ export function CommissionsTable({
     }
   };
 
-  console.log(commissions);
-
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
       return <ArrowUpDown className="w-4 h-4 opacity-50" />;

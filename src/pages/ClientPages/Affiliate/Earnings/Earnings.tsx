@@ -226,7 +226,7 @@ export default function Earnings() {
       setLoading(true);
       const url = `/affiliate/commissionHistory?page=${currentPage}&type=${typeFilter}`;
       const response = await axiosInstance.get<CommissionsResponse>(url);
-      const commissionData = response.data.result.commissions;
+      const commissionData = response?.data?.result?.commissions;
 
       setCommissions(commissionData);
       setPagination({
@@ -236,19 +236,13 @@ export default function Earnings() {
         totalPages: response.data.result.totalPages,
       });
 
-      // Fetch all commissions to calculate counts for the filter bar
-      const allCommissionsResponse =
-        await axiosInstance.get<CommissionsResponse>(
-          `/affiliate/commissionHistory?page=1&type=`
-        );
-      const allCommissions = allCommissionsResponse.data.result.commissions;
-      const countsData = allCommissions.reduce(
+      const countsData = commissionData.reduce(
         (acc: Record<string, number>, curr) => {
           const type = curr.type.toUpperCase();
           acc[type] = (acc[type] || 0) + 1;
           return acc;
         },
-        { all: allCommissionsResponse.data.result.totalCommissions }
+        { all: commissionData?.data?.result?.totalCommissions }
       );
       setCounts(countsData);
     } catch (err) {
@@ -263,7 +257,7 @@ export default function Earnings() {
     const fetchAffiliateStats = async () => {
       try {
         const response = await axiosInstance.get("/affiliate/stats");
-        setStats(response.data.result);
+        setStats(response?.data?.result);
       } catch (err) {
         console.error("Error fetching affiliate stats:", err);
         setError("Failed to load affiliate statistics");
@@ -366,32 +360,32 @@ export default function Earnings() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           <PayoutStatsCard
             title="Lifetime Earnings"
-            value={`$${stats.dashboard.earnings.lifetime.total.toFixed(2)}`}
+            value={`$${stats?.dashboard.earnings.lifetime.total.toFixed(2)}`}
             subtitle="Total earned since joining"
             icon={<DollarSign className="h-6 w-6" />}
           />
 
           <PayoutStatsCard
             title="This Month"
-            value={`$${stats.dashboard.earnings.thisMonth.total.toFixed(2)}`}
+            value={`$${stats?.dashboard.earnings.thisMonth.total.toFixed(2)}`}
             subtitle="Current month earnings"
             icon={<Calendar className="h-6 w-6" />}
           />
           <PayoutStatsCard
             title="This Week"
-            value={`$${stats.dashboard.earnings.thisWeek.total.toFixed(2)}`}
+            value={`$${stats?.dashboard.earnings.thisWeek.total.toFixed(2)}`}
             subtitle="Current week earnings"
             icon={<TrendingUp className="h-6 w-6" />}
           />
           <PayoutStatsCard
             title="Pending"
-            value={`$${stats.dashboard.withdrawals.pending.amount.toFixed(2)}`}
+            value={`$${stats?.dashboard.withdrawals.pending.amount.toFixed(2)}`}
             subtitle="Awaiting approval"
             icon={<Clock className="h-6 w-6" />}
           />
           <PayoutStatsCard
             title="Paid"
-            value={`$${stats.dashboard.withdrawals.paid.amount.toFixed(2)}`}
+            value={`$${stats?.dashboard.withdrawals.paid.amount.toFixed(2)}`}
             subtitle="Successfully paid out"
             icon={<CheckCircle className="h-6 w-6" />}
           />
@@ -404,10 +398,10 @@ export default function Earnings() {
               Earnings Overview
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Monthly commission earnings for {stats.yearly.year}
+              Monthly commission earnings for {stats?.yearly.year}
             </p>
           </div>
-          <EarningsChart monthlyData={stats.yearly.monthlyBreakdown} />
+          <EarningsChart monthlyData={stats?.yearly.monthlyBreakdown} />
         </div>
 
         {/* Commission Table Section */}

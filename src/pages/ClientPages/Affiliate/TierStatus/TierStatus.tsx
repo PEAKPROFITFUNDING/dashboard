@@ -8,6 +8,7 @@ import { RequirementsSection } from "./components/RequriementsSection";
 import { ProgressSection } from "./components/ProgressSection";
 import { CurrentTierSection } from "./components/CurrentTierSection";
 import { useAffiliateProfile } from "../../../../context/user/UserAffiliatesContext";
+import { useEffect } from "react";
 
 // Types
 export interface Tier {
@@ -115,9 +116,15 @@ const tiers: Tier[] = [
 ];
 
 export default function TierStatus() {
-  const { affiliate } = useAffiliateProfile();
+  const { affiliate, fetchAffiliateProfile, loading } = useAffiliateProfile();
 
-  if (!affiliate) {
+  useEffect(() => {
+    if (!affiliate) {
+      fetchAffiliateProfile();
+    }
+  }, [affiliate, fetchAffiliateProfile]);
+
+  if (loading || !affiliate) {
     return (
       <>
         <PageMeta
