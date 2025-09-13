@@ -8,7 +8,8 @@ import { RequirementsSection } from "./components/RequriementsSection";
 import { ProgressSection } from "./components/ProgressSection";
 import { CurrentTierSection } from "./components/CurrentTierSection";
 import { useAffiliateProfile } from "../../../../context/user/UserAffiliatesContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../../../api/axiosInstance";
 
 // Types
 export interface Tier {
@@ -34,16 +35,31 @@ export interface Requirement {
   unit: string;
 }
 
-const tiers: Tier[] = [
+interface TierDetails {
+  minReferrals: number;
+  commissionPercentage: number;
+  nextTier: string | null;
+  minEarning: number;
+  maxEarning?: number;
+}
+
+interface TierDetailsResponse {
+  BRONZE: TierDetails;
+  SILVER: TierDetails;
+  GOLD: TierDetails;
+  PLATINUM: TierDetails;
+}
+
+const defaultTiers: Tier[] = [
   {
     id: "bronze",
     name: "Bronze",
     icon: <Star className="w-6 h-6" />,
-    color: "text-amber-600",
+    color: "text-amber-700",
     bgColor: "bg-amber-50",
-    borderColor: "border-amber-200",
+    borderColor: "border-amber-300",
     commissionRate: 5,
-    payoutFrequency: "Monthly",
+    payoutFrequency: "Weekly",
     minEarnings: 0,
     maxEarnings: 499,
     benefits: [
@@ -57,16 +73,16 @@ const tiers: Tier[] = [
     id: "silver",
     name: "Silver",
     icon: <Award className="w-6 h-6" />,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-200",
+    color: "text-gray-600",
+    bgColor: "bg-gray-50",
+    borderColor: "border-gray-300",
     commissionRate: 7,
-    payoutFrequency: "Bi-weekly",
+    payoutFrequency: "Weekly",
     minEarnings: 500,
     maxEarnings: 1999,
     benefits: [
       "7% commission rate",
-      "Bi-weekly payouts",
+      "Weekly payouts",
       "Priority support",
       "Advanced marketing materials",
       "Performance analytics",
@@ -78,7 +94,7 @@ const tiers: Tier[] = [
     icon: <Trophy className="w-6 h-6" />,
     color: "text-yellow-600",
     bgColor: "bg-yellow-50",
-    borderColor: "border-yellow-200",
+    borderColor: "border-yellow-300",
     commissionRate: 10,
     payoutFrequency: "Weekly",
     minEarnings: 2000,
@@ -96,9 +112,9 @@ const tiers: Tier[] = [
     id: "platinum",
     name: "Platinum",
     icon: <Crown className="w-6 h-6" />,
-    color: "text-purple-600",
+    color: "text-purple-700",
     bgColor: "bg-purple-50",
-    borderColor: "border-purple-200",
+    borderColor: "border-purple-300",
     commissionRate: 15,
     payoutFrequency: "Weekly",
     minEarnings: 5000,
@@ -117,14 +133,94 @@ const tiers: Tier[] = [
 
 export default function TierStatus() {
   const { affiliate, fetchAffiliateProfile, loading } = useAffiliateProfile();
+  const [tiers, setTiers] = useState<Tier[]>(defaultTiers);
+  const [tierDetailsLoading, setTierDetailsLoading] = useState(false);
+
+  // Fetch tier details from API
+  const fetchTierDetails = async () => {
+    try {
+      setTierDetailsLoading(true);
+      const response = await axiosInstance.get<{
+        result: TierDetailsResponse;
+        message: string;
+      }>("/affiliate/tierDetails");
+      const tierDetails = response.data.result;
+
+      // Update tiers with API data
+      const updatedTiers: Tier[] = [
+        {
+          ...defaultTiers[0],
+          commissionRate: tierDetails.BRONZE.commissionPercentage,
+          minEarnings: tierDetails.BRONZE.minEarning,
+          maxEarnings: tierDetails.BRONZE.maxEarning,
+          benefits: [
+            `${tierDetails.BRONZE.commissionPercentage}% commission rate`,
+            "Weekly payouts",
+            "Basic support",
+            "Access to marketing materials",
+          ],
+        },
+        {
+          ...defaultTiers[1],
+          commissionRate: tierDetails.SILVER.commissionPercentage,
+          minEarnings: tierDetails.SILVER.minEarning,
+          maxEarnings: tierDetails.SILVER.maxEarning,
+          benefits: [
+            `${tierDetails.SILVER.commissionPercentage}% commission rate`,
+            "Weekly payouts",
+            "Priority support",
+            "Advanced marketing materials",
+            "Performance analytics",
+          ],
+        },
+        {
+          ...defaultTiers[2],
+          commissionRate: tierDetails.GOLD.commissionPercentage,
+          minEarnings: tierDetails.GOLD.minEarning,
+          maxEarnings: tierDetails.GOLD.maxEarning,
+          benefits: [
+            `${tierDetails.GOLD.commissionPercentage}% commission rate`,
+            "Weekly payouts",
+            "Dedicated support",
+            "Custom marketing materials",
+            "Advanced analytics dashboard",
+            "Early access to new features",
+          ],
+        },
+        {
+          ...defaultTiers[3],
+          commissionRate: tierDetails.PLATINUM.commissionPercentage,
+          minEarnings: tierDetails.PLATINUM.minEarning,
+          benefits: [
+            `${tierDetails.PLATINUM.commissionPercentage}% commission rate`,
+            "Weekly payouts",
+            "VIP support line",
+            "Personalized marketing strategy",
+            "Real-time analytics",
+            "Beta feature access",
+            "Quarterly bonus rewards",
+            "Direct account manager",
+          ],
+        },
+      ];
+
+      setTiers(updatedTiers);
+    } catch (error) {
+      console.error("Failed to fetch tier details:", error);
+      // Keep default tiers if API call fails
+    } finally {
+      setTierDetailsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!affiliate) {
       fetchAffiliateProfile();
     }
+    fetchTierDetails();
   }, [affiliate, fetchAffiliateProfile]);
 
-  if (loading || !affiliate) {
+  if (loading || !affiliate || tierDetailsLoading) {
     return (
       <>
         <PageMeta
@@ -195,7 +291,6 @@ export default function TierStatus() {
       ]
     : [];
 
-  // Rest of the component remains the same...
   return (
     <>
       <PageMeta

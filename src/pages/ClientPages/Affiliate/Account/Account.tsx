@@ -16,7 +16,6 @@ export default function Account() {
     }
   }, [affiliate, fetchAffiliateProfile]);
 
-  console.log(affiliate);
 
   if (loading) {
     return (

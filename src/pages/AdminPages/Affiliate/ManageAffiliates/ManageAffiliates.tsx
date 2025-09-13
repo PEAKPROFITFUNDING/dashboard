@@ -169,7 +169,7 @@ export default function ManageAffiliates() {
           />
         </div>
 
-        <AffiliatesTable
+      <AffiliatesTable
           affiliates={filteredAndSortedAffiliates}
           sortField={sortField}
           sortDirection={sortDirection}
