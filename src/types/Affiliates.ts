@@ -6,6 +6,7 @@ export interface AffiliateType {
     name: string;
     profilePicture: string;
   };
+  lastWithdrawDate: Date;
   tier: string;
   referralCode: string;
   referralLink: string;
@@ -90,7 +91,7 @@ export interface Commission {
   commissionPercentage: number;
   affiliateTier: "BRONZE" | "SILVER" | "GOLD" | "PLATINUM"; // added PLATINUM too
   earnedAt: string;
-referralCode: string;
+  referralCode: string;
 
   // ✅ Shown always (user who generated commission)
   referredUser?: {

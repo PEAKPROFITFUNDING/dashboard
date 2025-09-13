@@ -101,7 +101,7 @@ export default function Withdrawals() {
         {/* Available Balance Section */}
         <div className="max-w-md mx-auto">
           <AvailableBalanceCard
-            balance={availableBalance}
+            affiliate={affiliate}
             onRequestPayout={() => setIsModalOpen(true)}
           />
         </div>
