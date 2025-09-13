@@ -14,6 +14,7 @@ import {
   getIndexRoute,
   fallbackRoute,
 } from "./config/routes";
+import { AffiliateProfileProvider } from "./context/user/UserAffiliatesContext";
 
 // Initialize user data fetching
 const AppInitializer = () => {
@@ -49,66 +50,68 @@ const AppRoutes = () => {
   return (
     <Router>
       <ScrollToTop />
-      <Routes>
-        {/* Public Routes */}
-        {publicRoutes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={
-              <PublicRoute>
-                <LazyRoute>
-                  <route.element />
-                </LazyRoute>
-              </PublicRoute>
-            }
-          />
-        ))}
-
-        {/* Private Routes */}
-        <Route
-          element={
-            <PrivateRoute>
-              <AppLayout />
-            </PrivateRoute>
-          }
-        >
-          {/* Index Route */}
-          {indexRoute && (
-            <Route
-              index
-              element={
-                <LazyRoute>
-                  <indexRoute.element />
-                </LazyRoute>
-              }
-            />
-          )}
-
-          {/* Role-based Routes */}
-          {roleBasedRoutes.map((route) => (
+      <AffiliateProfileProvider>
+        <Routes>
+          {/* Public Routes */}
+          {publicRoutes.map((route) => (
             <Route
               key={route.path}
               path={route.path}
               element={
-                <LazyRoute>
-                  <route.element />
-                </LazyRoute>
+                <PublicRoute>
+                  <LazyRoute>
+                    <route.element />
+                  </LazyRoute>
+                </PublicRoute>
               }
             />
           ))}
-        </Route>
 
-        {/* Fallback Route */}
-        <Route
-          path={fallbackRoute.path}
-          element={
-            <LazyRoute>
-              <fallbackRoute.element />
-            </LazyRoute>
-          }
-        />
-      </Routes>
+          {/* Private Routes */}
+          <Route
+            element={
+              <PrivateRoute>
+                <AppLayout />
+              </PrivateRoute>
+            }
+          >
+            {/* Index Route */}
+            {indexRoute && (
+              <Route
+                index
+                element={
+                  <LazyRoute>
+                    <indexRoute.element />
+                  </LazyRoute>
+                }
+              />
+            )}
+
+            {/* Role-based Routes */}
+            {roleBasedRoutes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={
+                  <LazyRoute>
+                    <route.element />
+                  </LazyRoute>
+                }
+              />
+            ))}
+          </Route>
+
+          {/* Fallback Route */}
+          <Route
+            path={fallbackRoute.path}
+            element={
+              <LazyRoute>
+                <fallbackRoute.element />
+              </LazyRoute>
+            }
+          />
+        </Routes>
+      </AffiliateProfileProvider>
       {/* {import.meta.env.DEV && <RouteDebugger />} */}
     </Router>
   );

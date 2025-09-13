@@ -16,7 +16,6 @@ export default function Account() {
     }
   }, [affiliate, fetchAffiliateProfile]);
 
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
