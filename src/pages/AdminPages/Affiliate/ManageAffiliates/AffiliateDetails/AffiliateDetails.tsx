@@ -30,6 +30,19 @@ export default function AffiliateDetails() {
     }
   }, [affiliates, id]);
 
+  const handleCommissionUpdate = (newPercentage: number) => {
+    if (affiliateData) {
+      // Update the local state to reflect the change
+      setAffiliateData({
+        ...affiliateData,
+        commissionPercentage: newPercentage,
+      });
+
+      // Optionally refresh the affiliates list to sync with server
+      fetchAffiliates();
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -66,6 +79,7 @@ export default function AffiliateDetails() {
 
   // Transform API data to match component structure
   const transformedAffiliate = {
+    _id: affiliateData._id, // Include the ID for admin functionality
     fullName: affiliateData.userId.name,
     email: affiliateData.userId.email,
     joinedDate: affiliateData.createdAt,
@@ -130,8 +144,12 @@ export default function AffiliateDetails() {
       />
 
       <div className="space-y-6">
-        {/* Profile Card */}
-        <AffiliateProfileCard affiliate={transformedAffiliate} />
+        {/* Profile Card with Admin Features */}
+        <AffiliateProfileCard
+          affiliate={transformedAffiliate}
+          isAdmin={true}
+          onCommissionUpdate={handleCommissionUpdate}
+        />
 
         {/* Performance Stats */}
         <AffiliateProfileStats affiliateData={affiliateData} />
