@@ -9,7 +9,7 @@ import BecomeAffiliate from "../pages/ClientPages/Affiliate/BecomeAffiliate/Beco
 
 export default function AffiliateClientRoutesWrapper() {
   return (
-    <AffiliateProfileProvider>
+    
       <Routes>
         <Route path="account" element={<Account />} />
         <Route path="earnings" element={<Earnings />} />
@@ -17,6 +17,5 @@ export default function AffiliateClientRoutesWrapper() {
         <Route path="tier" element={<TierStatus />} />
         <Route path="become-affiliate" element={<BecomeAffiliate />} />
       </Routes>
-    </AffiliateProfileProvider>
   );
 }
