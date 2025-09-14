@@ -6,6 +6,13 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import axiosInstance from "../../api/axiosInstance";
 
+interface SignUpPayload {
+  name: string;
+  email: string;
+  password: string;
+  refcode?: string;
+}
+
 export default function SignUpForm() {
   const [searchParams] = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -61,13 +68,12 @@ export default function SignUpForm() {
     }
 
     try {
-      const { password2, ...dataToSend } = formData;
+      const { password2, ...rest } = formData;
 
-      // Add refcode to payload if it exists in URL parameters
-      if (refcode) {
-        dataToSend.refcode = refcode;
-      }
-
+      const dataToSend: SignUpPayload = {
+        ...rest,
+        ...(refcode ? { refcode } : {}),
+      };
       const response = await axiosInstance.post("/auth/sign-up/", dataToSend);
 
       if (response.status === 200 || response.status === 201) {
