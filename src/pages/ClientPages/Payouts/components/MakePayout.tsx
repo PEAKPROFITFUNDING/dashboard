@@ -39,7 +39,7 @@ export default function MakePayout() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Payout Card */}
         <div className="lg:col-span-2 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05] rounded-xl shadow-lg p-8">
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between items-start mb-8 gap-4">
             <div>
               <h3 className="text-lg text-gray-600 dark:text-gray-300 mb-2">
                 Available for Payout
@@ -55,7 +55,7 @@ export default function MakePayout() {
               <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">
                 Next payout date:
               </p>
-              <div className="flex items-center gap-2 text-gray-900 dark:text-white">
+              <div className="flex items-center gap-2 text-gray-900 dark:text-white pb-4">
                 <Calendar className="w-4 h-4" />
                 <span className="font-medium">{nextPayoutDate}</span>
               </div>
@@ -63,7 +63,7 @@ export default function MakePayout() {
           </div>
 
           {/* Payout Form */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Payout Amount */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
