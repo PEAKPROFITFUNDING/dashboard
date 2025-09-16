@@ -12,6 +12,7 @@ import {
   PayoutRequest,
 } from "../../../services/payoutService";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import MakePayout from "./components/MakePayout";
 
 const PAGE_SIZE = 10;
 
@@ -226,26 +227,29 @@ const PayoutsPage: React.FC = () => {
           Payout request submitted successfully!
         </div>
       )}
-      <ThemedDataTable
-        columns={columns}
-        data={paginated}
-        loading={loading}
-        error={error}
-        enableSearch
-        searchPlaceholder="Search challenges..."
-        onSearch={setSearch}
-        sortField={sortField}
-        sortOrder={sortOrder}
-        onSort={setSortField}
-        pagination={{
-          currentPage: page,
-          pageSize: PAGE_SIZE,
-          total,
-          onPageChange: setPage,
-        }}
-        rowKey={(ch) => ch.id}
-        emptyMessage="No challenges found."
-      />
+      <div className="gap-6 flex flex-col">
+        <MakePayout />
+        <ThemedDataTable
+          columns={columns}
+          data={paginated}
+          loading={loading}
+          error={error}
+          enableSearch
+          searchPlaceholder="Search challenges..."
+          onSearch={setSearch}
+          sortField={sortField}
+          sortOrder={sortOrder}
+          onSort={setSortField}
+          pagination={{
+            currentPage: page,
+            pageSize: PAGE_SIZE,
+            total,
+            onPageChange: setPage,
+          }}
+          rowKey={(ch) => ch.id}
+          emptyMessage="No challenges found."
+        />
+      </div>
       <PayoutRequestModal
         isOpen={modalOpen}
         onClose={handleModalClose}

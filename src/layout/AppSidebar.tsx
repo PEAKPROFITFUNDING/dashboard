@@ -10,9 +10,9 @@ import {
   MessageCircle,
   MessageCircleQuestion,
   NetworkIcon,
-  Banknote,
   Briefcase,
   Lock,
+  DollarSign,
 } from "lucide-react";
 
 type NavItem = {
@@ -38,9 +38,9 @@ const userBasicNavItems: NavItem[] = [
   },
 
   {
-    icon: <Banknote />,
+    icon: <DollarSign />,
     name: "Payouts",
-    path: "/payout",
+    path: "/payouts",
     locked: true,
   },
   // {
@@ -261,7 +261,7 @@ const AppSidebar: React.FC = () => {
                 !isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
-              } ${nav.locked ? "opacity-50 cursor-not-allowed" : ""}`}
+              } ${nav.locked ? "opacity-70 cursor-not-allowed" : ""}`}
             >
               <span
                 className={`menu-item-icon-size  ${
@@ -297,7 +297,7 @@ const AppSidebar: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               className={`menu-item group menu-item-inactive ${
-                nav.locked ? "opacity-50 pointer-events-none" : ""
+                nav.locked ? "opacity-70 pointer-events-none" : ""
               }`}
             >
               <span className="menu-item-icon-size menu-item-icon-inactive">
@@ -314,7 +314,7 @@ const AppSidebar: React.FC = () => {
             nav.path &&
             (nav.locked ? (
               <div
-                className={`menu-item group menu-item-inactive opacity-50 cursor-not-allowed`}
+                className={`menu-item group menu-item-inactive opacity-70 cursor-not-allowed`}
               >
                 <span className="menu-item-icon-size menu-item-icon-inactive">
                   {nav.icon}
@@ -366,7 +366,7 @@ const AppSidebar: React.FC = () => {
                   <li key={subItem.name}>
                     {subItem.locked ? (
                       <div
-                        className={`menu-dropdown-item menu-dropdown-item-inactive opacity-50 cursor-not-allowed`}
+                        className={`menu-dropdown-item menu-dropdown-item-inactive opacity-70 cursor-not-allowed`}
                       >
                         {subItem.name}
                         <span className="flex items-center gap-1 ml-auto">
