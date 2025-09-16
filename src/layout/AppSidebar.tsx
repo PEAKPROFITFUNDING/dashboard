@@ -13,6 +13,7 @@ import {
   Briefcase,
   Lock,
   DollarSign,
+  Plus,
 } from "lucide-react";
 
 type NavItem = {
@@ -479,15 +480,27 @@ const AppSidebar: React.FC = () => {
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
             {userRole === "User" && (
-              <button
-                onClick={() =>
-                  (window.location.href =
-                    "https://peakprofit-frontend.vercel.app")
-                }
-                className="py-2 pl-3 rounded-lg text-start menu-item-active "
-              >
-                Start New Challenge
-              </button>
+              <li>
+                <button
+                  onClick={() =>
+                    (window.location.href =
+                      "https://peakprofit-frontend.vercel.app")
+                  }
+                  className={`menu-item group menu-item-active cursor-pointer ${
+                    !isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "lg:justify-start"
+                  }`}
+                >
+                  <span className="menu-item-icon-size menu-item-icon-active">
+                    <Plus className="w-5 h-5" />
+                  </span>
+
+                  {(isExpanded || isHovered || isMobileOpen) && (
+                    <span className="menu-item-text">Start New Challenge</span>
+                  )}
+                </button>
+              </li>
             )}
 
             <div>
