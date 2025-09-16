@@ -12,6 +12,7 @@ import {
   NetworkIcon,
   Banknote,
   Briefcase,
+  Lock,
 } from "lucide-react";
 
 type NavItem = {
@@ -19,7 +20,14 @@ type NavItem = {
   icon: React.ReactNode;
   path?: string;
   externalLink?: string;
-  subItems?: { name: string; path?: string; pro?: boolean; new?: boolean }[];
+  locked?: boolean;
+  subItems?: {
+    name: string;
+    path?: string;
+    pro?: boolean;
+    new?: boolean;
+    locked?: boolean;
+  }[];
 };
 
 const userBasicNavItems: NavItem[] = [
@@ -33,6 +41,7 @@ const userBasicNavItems: NavItem[] = [
     icon: <Banknote />,
     name: "Payouts",
     path: "/payout",
+    locked: true,
   },
   // {
   //   icon: <CalenderIcon />,
@@ -243,6 +252,7 @@ const AppSidebar: React.FC = () => {
           {nav.subItems ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
+              disabled={nav.locked}
               className={`menu-item group ${
                 openSubmenu?.type === menuType && openSubmenu?.index === index
                   ? "menu-item-active"
@@ -251,7 +261,7 @@ const AppSidebar: React.FC = () => {
                 !isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
-              }`}
+              } ${nav.locked ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <span
                 className={`menu-item-icon-size  ${
@@ -266,14 +276,19 @@ const AppSidebar: React.FC = () => {
                 <span className="menu-item-text">{nav.name}</span>
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
+                <>
+                  {nav.locked && <Lock className="w-4 h-4 ml-auto mr-2" />}
+                  <ChevronDownIcon
+                    className={`${
+                      nav.locked ? "" : "ml-auto"
+                    } w-5 h-5 transition-transform duration-200 ${
+                      openSubmenu?.type === menuType &&
+                      openSubmenu?.index === index
+                        ? "rotate-180 text-brand-500"
+                        : ""
+                    }`}
+                  />
+                </>
               )}
             </button>
           ) : nav.externalLink ? (
@@ -281,17 +296,37 @@ const AppSidebar: React.FC = () => {
               href={nav.externalLink}
               target="_blank"
               rel="noopener noreferrer"
-              className={`menu-item group menu-item-inactive`}
+              className={`menu-item group menu-item-inactive ${
+                nav.locked ? "opacity-50 pointer-events-none" : ""
+              }`}
             >
               <span className="menu-item-icon-size menu-item-icon-inactive">
                 {nav.icon}
               </span>
               {(isExpanded || isHovered || isMobileOpen) && (
-                <span className="menu-item-text">{nav.name}</span>
+                <>
+                  <span className="menu-item-text">{nav.name}</span>
+                  {nav.locked && <Lock className="w-4 h-4 ml-auto" />}
+                </>
               )}
             </a>
           ) : (
-            nav.path && (
+            nav.path &&
+            (nav.locked ? (
+              <div
+                className={`menu-item group menu-item-inactive opacity-50 cursor-not-allowed`}
+              >
+                <span className="menu-item-icon-size menu-item-icon-inactive">
+                  {nav.icon}
+                </span>
+                {(isExpanded || isHovered || isMobileOpen) && (
+                  <>
+                    <span className="menu-item-text">{nav.name}</span>
+                    <Lock className="w-4 h-4 ml-auto" />
+                  </>
+                )}
+              </div>
+            ) : (
               <Link
                 to={nav.path}
                 className={`menu-item group ${
@@ -311,7 +346,7 @@ const AppSidebar: React.FC = () => {
                   <span className="menu-item-text">{nav.name}</span>
                 )}
               </Link>
-            )
+            ))
           )}
           {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
             <div
@@ -329,40 +364,61 @@ const AppSidebar: React.FC = () => {
               <ul className="mt-2 space-y-1 ml-9">
                 {nav.subItems.map((subItem) => (
                   <li key={subItem.name}>
-                    <Link
-                      to={subItem.path}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
-                      }`}
-                    >
-                      {subItem.name}
-                      <span className="flex items-center gap-1 ml-auto">
-                        {subItem.new && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
-                          >
-                            new
-                          </span>
-                        )}
-                        {subItem.pro && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
-                          >
-                            pro
-                          </span>
-                        )}
-                      </span>
-                    </Link>
+                    {subItem.locked ? (
+                      <div
+                        className={`menu-dropdown-item menu-dropdown-item-inactive opacity-50 cursor-not-allowed`}
+                      >
+                        {subItem.name}
+                        <span className="flex items-center gap-1 ml-auto">
+                          {subItem.new && (
+                            <span className="menu-dropdown-badge-inactive menu-dropdown-badge">
+                              new
+                            </span>
+                          )}
+                          {subItem.pro && (
+                            <span className="menu-dropdown-badge-inactive menu-dropdown-badge">
+                              pro
+                            </span>
+                          )}
+                          <Lock className="w-3 h-3" />
+                        </span>
+                      </div>
+                    ) : (
+                      <Link
+                        to={subItem.path}
+                        className={`menu-dropdown-item ${
+                          isActive(subItem.path)
+                            ? "menu-dropdown-item-active"
+                            : "menu-dropdown-item-inactive"
+                        }`}
+                      >
+                        {subItem.name}
+                        <span className="flex items-center gap-1 ml-auto">
+                          {subItem.new && (
+                            <span
+                              className={`ml-auto ${
+                                isActive(subItem.path)
+                                  ? "menu-dropdown-badge-active"
+                                  : "menu-dropdown-badge-inactive"
+                              } menu-dropdown-badge`}
+                            >
+                              new
+                            </span>
+                          )}
+                          {subItem.pro && (
+                            <span
+                              className={`ml-auto ${
+                                isActive(subItem.path)
+                                  ? "menu-dropdown-badge-active"
+                                  : "menu-dropdown-badge-inactive"
+                              } menu-dropdown-badge`}
+                            >
+                              pro
+                            </span>
+                          )}
+                        </span>
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

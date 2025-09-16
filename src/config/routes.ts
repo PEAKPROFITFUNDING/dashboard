@@ -22,7 +22,9 @@ const MessageDetails = lazy(
   () => import("../pages/AdminPages/ContactMessages/MessageDetails")
 );
 const NotFound = lazy(() => import("../pages/OtherPage/NotFound"));
-const PayoutPage = lazy(() => import("../pages/client/payout/PayoutPage"));
+const PayoutsPage = lazy(
+  () => import("../pages/ClientPages/Payouts/PayoutsPage")
+);
 const FundedTradersPage = lazy(
   () => import("../pages/AdminPages/FundedTraders/FundedTradersPage")
 );
@@ -79,7 +81,7 @@ export const adminRoutes: RouteConfig[] = [
 // User-only Routes
 export const userRoutes: RouteConfig[] = [
   { path: "/challenges", element: Home, roles: ["User"] },
-  { path: "/payout", element: PayoutPage, roles: ["User"] },
+  { path: "/payouts", element: PayoutsPage, roles: ["User"] },
   { path: "/affiliate/*", element: AffiliateClientRoutesWrapper },
 ];
 

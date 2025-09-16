@@ -214,7 +214,12 @@ export default function SignInForm() {
                     Forgot password?
                   </Link>
                 </div>
-                <Button className="w-full" size="sm" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="sm"
+                  disabled={loading}
+                >
                   {loading ? (
                     <>
                       <svg
