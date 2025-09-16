@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { PayoutRequest, submitPayoutRequest } from '../../services/payoutService';
-import Button from '../ui/button/Button';
+import React, { useState } from "react";
+import {
+  PayoutRequest,
+  submitPayoutRequest,
+} from "../../services/payoutService";
+import Button from "../ui/button/Button";
 
 interface Props {
   accountId: string;
@@ -8,14 +11,14 @@ interface Props {
 }
 
 const payoutMethods = [
-  { value: 'PayPal', label: 'PayPal' },
-  { value: 'Bank', label: 'Bank Transfer' },
+  { value: "PayPal", label: "PayPal" },
+  { value: "Bank", label: "Bank Transfer" },
 ];
 
 const PayoutRequestForm: React.FC<Props> = ({ accountId, onSuccess }) => {
-  const [method, setMethod] = useState<'PayPal' | 'Bank'>('PayPal');
-  const [accountHolder, setAccountHolder] = useState('');
-  const [details, setDetails] = useState('');
+  const [method, setMethod] = useState<"PayPal" | "Bank">("PayPal");
+  const [accountHolder, setAccountHolder] = useState("");
+  const [details, setDetails] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +35,7 @@ const PayoutRequestForm: React.FC<Props> = ({ accountId, onSuccess }) => {
       });
       onSuccess();
     } catch (err) {
-      setError('Failed to submit payout request');
+      setError("Failed to submit payout request");
     } finally {
       setLoading(false);
     }
@@ -44,11 +47,13 @@ const PayoutRequestForm: React.FC<Props> = ({ accountId, onSuccess }) => {
         <label>Payout Method</label>
         <select
           value={method}
-          onChange={(e) => setMethod(e.target.value as 'PayPal' | 'Bank')}
+          onChange={(e) => setMethod(e.target.value as "PayPal" | "Bank")}
           className="input"
         >
           {payoutMethods.map((m) => (
-            <option key={m.value} value={m.value}>{m.label}</option>
+            <option key={m.value} value={m.value}>
+              {m.label}
+            </option>
           ))}
         </select>
       </div>
@@ -74,10 +79,10 @@ const PayoutRequestForm: React.FC<Props> = ({ accountId, onSuccess }) => {
       </div>
       {error && <div className="text-red-500">{error}</div>}
       <button type="submit" className="btn btn-primary" disabled={loading}>
-        {loading ? 'Submitting...' : 'Submit Payout Request'}
+        {loading ? "Submitting..." : "Submit Payout Request"}
       </button>
     </form>
   );
 };
 
-export default PayoutRequestForm; 
+export default PayoutRequestForm;

@@ -263,7 +263,7 @@ const MessageDetailsPage = () => {
             {replySuccess && (
               <div className="text-success-500 text-sm">{replySuccess}</div>
             )}
-            <Button size="md" disabled={replyLoading}>
+            <Button type="submit" size="md" disabled={replyLoading}>
               {replyLoading ? "Sending..." : "Send Reply"}
             </Button>
           </form>

@@ -194,7 +194,7 @@ const AppSidebar: React.FC = () => {
 
   const userNavItems: NavItem[] = [
     ...userBasicNavItems,
-    ...(isAffiliate() ? affiliatedUserNavItems : userBecomeAffiliateNavItems),
+    ...userBecomeAffiliateNavItems,
   ];
 
   useEffect(() => {

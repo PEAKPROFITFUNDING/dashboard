@@ -162,6 +162,7 @@ const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
                 Cancel
               </Button>
               <Button
+                type="submit"
                 size="sm"
                 variant="primary"
                 disabled={loading}

@@ -172,7 +172,7 @@ export default function UserInfoCard() {
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button type="submit" size="sm" onClick={handleSave}>
                 Save Changes
               </Button>
             </div>

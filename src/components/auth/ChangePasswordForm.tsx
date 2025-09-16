@@ -261,6 +261,7 @@ export default function ChangePasswordForm() {
               </div>
 
               <Button
+                type="submit"
                 className="w-full mb-8"
                 size="sm"
                 disabled={
