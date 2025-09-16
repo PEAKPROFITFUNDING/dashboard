@@ -467,8 +467,11 @@ const AppSidebar: React.FC = () => {
                 width={150}
                 height={40}
               /> */}
-              <div className="text-3xl font-bold dark:text-white">
-                PeakProfit
+              <div className="text-3xl font-bold">
+                <span className="text-black dark:text-white">Peak</span>
+                <span className="text-cyan-500 dark:text-[#33CCDD]">
+                  Profit
+                </span>
               </div>
             </>
           ) : (
