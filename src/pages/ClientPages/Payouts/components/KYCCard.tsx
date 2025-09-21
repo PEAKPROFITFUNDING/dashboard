@@ -7,9 +7,14 @@ import {
 } from "lucide-react";
 import Button from "../../../../components/ui/button/Button";
 import { useUser } from "../../../../context/UserContext";
+import Badge from "../../../../components/ui/badge/Badge";
 
 const KYCCard = () => {
-  const { kyc } = useUser();
+  //   const { kyc } = useUser();
+
+  const kyc = { status: "pending" };
+
+  console.log(kyc);
 
   const handleCompleteKYC = () => {
     console.log("Redirecting to KYC verification...");
@@ -54,11 +59,11 @@ const KYCCard = () => {
   if (kyc.status === "pending") {
     return (
       <div className="bg-white dark:bg-white/[0.03] border border-blue-200 dark:border-blue-800/50 rounded-xl shadow-lg p-6">
-        <div className="flex items-start gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
             <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
-          <div>
+          <div className="flex items-center gap-2">
             <h4 className="text-gray-900 dark:text-white font-medium">
               KYC Under Review
             </h4>
@@ -85,17 +90,15 @@ const KYCCard = () => {
   if (kyc.status === "approved") {
     return (
       <div className="bg-white dark:bg-white/[0.03] border border-green-200 dark:border-green-800/50 rounded-xl shadow-lg p-6">
-        <div className="flex items-start gap-3 mb-4">
+        <div className="flex  items-center gap-3 mb-4">
           <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
             <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
-          <div>
+          <div className="flex items-center gap-2">
             <h4 className="text-gray-900 dark:text-white font-medium">
               KYC Verified
             </h4>
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 mt-1">
-              Approved
-            </span>
+            <Badge color="success">Approved</Badge>
           </div>
         </div>
 
@@ -116,17 +119,15 @@ const KYCCard = () => {
   if (kyc.status === "rejected") {
     return (
       <div className="bg-white dark:bg-white/[0.03] border border-red-200 dark:border-red-800/50 rounded-xl shadow-lg p-6">
-        <div className="flex items-start gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
             <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
           </div>
-          <div>
+          <div className="flex items-center gap-2">
             <h4 className="text-gray-900 dark:text-white font-medium">
               KYC Rejected
             </h4>
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 mt-1">
-              Rejected
-            </span>
+            <Badge color="error">Rejected</Badge>
           </div>
         </div>
 
@@ -135,14 +136,11 @@ const KYCCard = () => {
           and resubmit with corrected information.
         </p>
 
-        {kyc.rejectionReason && (
+        {kyc?.rejectionReason && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-4">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-red-800 dark:text-red-200 mb-1">
-                  Rejection Reason:
-                </p>
                 <p className="text-sm text-red-700 dark:text-red-300">
                   {kyc.rejectionReason}
                 </p>
