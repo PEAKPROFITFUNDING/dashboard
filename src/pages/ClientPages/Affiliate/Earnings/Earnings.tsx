@@ -306,7 +306,7 @@ export default function Earnings() {
     return (
       <>
         <PageMeta
-          title="PeakProfit - Affiliate Earnings"
+          title="Affiliate Earnings"
           description="Peak Profit Affiliate Earnings Page"
         />
         <PageBreadcrumb pageTitle={`Affiliate Earnings Overview`} />
@@ -326,7 +326,7 @@ export default function Earnings() {
     return (
       <>
         <PageMeta
-          title="PeakProfit - Affiliate Earnings"
+          title="Affiliate Earnings"
           description="Peak Profit Affiliate Earnings Page"
         />
         <PageBreadcrumb pageTitle={`Affiliate Earnings Overview`} />

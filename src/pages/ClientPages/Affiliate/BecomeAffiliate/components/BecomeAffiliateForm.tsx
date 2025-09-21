@@ -80,9 +80,9 @@ const BecomeAffiliateForm = () => {
             <div className="text-center">
               <div className="flex items-center justify-center mb-6">
                 <div className="relative">
-                  <Clock className="w-16 h-16 text-yellow-500" />
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                  <Clock className="w-16 h-16 text-blue-500" />
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                   </div>
                 </div>
               </div>
@@ -91,14 +91,14 @@ const BecomeAffiliateForm = () => {
                 Application Under Review
               </h1>
 
-              <div className="mb-6 p-6 bg-yellow-50 border border-yellow-200 rounded-lg dark:bg-yellow-900/20 dark:border-yellow-800">
-                <p className="text-lg text-yellow-800 dark:text-yellow-300 font-medium mb-2">
+              <div className="mb-6 p-6 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-900/20 dark:border-blue-800">
+                <p className="text-lg text-blue-800 dark:text-blue-300 font-medium mb-2">
                   Your affiliate request has been submitted successfully! 🎉
                 </p>
-                <p className="text-sm text-yellow-700 dark:text-yellow-400">
+                <p className="text-sm text-blue-700 dark:text-blue-400">
                   Our team is currently reviewing your application. You will be
                   notified via email once the review process is complete. This
-                  typically takes 2-3 business days.
+                  typically takes 2–3 business days.
                 </p>
               </div>
 

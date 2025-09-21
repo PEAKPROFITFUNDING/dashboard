@@ -92,7 +92,7 @@ export default function Withdrawals() {
   return (
     <>
       <PageMeta
-        title="PeakProfit - Affiliate Withdrawals"
+        title="Affiliate Withdrawals"
         description="Peak Profit Affiliate Withdrawals Page"
       />
       <PageBreadcrumb pageTitle={`Withdrawal Management`} />

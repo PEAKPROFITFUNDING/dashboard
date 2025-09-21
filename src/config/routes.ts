@@ -28,6 +28,7 @@ const PayoutsPage = lazy(
 const FundedTradersPage = lazy(
   () => import("../pages/AdminPages/FundedTraders/FundedTradersPage")
 );
+const KYC = lazy(() => import("../pages/ClientPages/Account/kyc/KYC"));
 
 // UI Elements
 const Alerts = lazy(() => import("../pages/UiElements/Alerts"));
@@ -82,7 +83,7 @@ export const adminRoutes: RouteConfig[] = [
 export const userRoutes: RouteConfig[] = [
   { path: "/challenges", element: Home },
   { path: "/payouts", element: PayoutsPage },
-  { path: "/account/kyc", element: PayoutsPage },
+  { path: "/account/kyc", element: KYC },
   { path: "/affiliate/*", element: AffiliateClientRoutesWrapper },
 ];
 

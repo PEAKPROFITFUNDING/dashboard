@@ -8,6 +8,7 @@ import {
 import Button from "../../../../components/ui/button/Button";
 import { useUser } from "../../../../context/UserContext";
 import Badge from "../../../../components/ui/badge/Badge";
+import { Link, useNavigation } from "react-router";
 
 const KYCCard = () => {
   const { kyc } = useUser();
@@ -40,13 +41,12 @@ const KYCCard = () => {
           KYC verification.
         </p>
 
-        <Button
-          onClick={handleCompleteKYC}
-          className="w-full font-semibold bg-gray-900 hover:text-white hover:bg-gray-800 border-white dark:bg-white dark:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-300"
-        >
-          <Shield className="w-4 h-4 mr-2" />
-          Complete KYC
-        </Button>
+        <Link to={"/account/kyc"}>
+          <Button className="w-full font-semibold bg-gray-900 hover:text-white hover:bg-gray-800 border-white dark:bg-white dark:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-300">
+            <Shield className="w-4 h-4 mr-2" />
+            Complete KYC
+          </Button>
+        </Link>
       </div>
     );
   }
