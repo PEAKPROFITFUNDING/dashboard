@@ -1,15 +1,26 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import { AffiliateProfileProvider } from "../context/user/UserAffiliatesContext";
-import Account from "../pages/ClientPages/Affiliate/Account/Account";
-import Earnings from "../pages/ClientPages/Affiliate/Earnings/Earnings";
-import Withdrawals from "../pages/ClientPages/Affiliate/Withdrawals/Wathdrawals";
-import TierStatus from "../pages/ClientPages/Affiliate/TierStatus/TierStatus";
-import BecomeAffiliate from "../pages/ClientPages/Affiliate/BecomeAffiliate/BecomeAffiliate";
+
+// ✅ Lazy load pages
+const Account = lazy(
+  () => import("../pages/ClientPages/Affiliate/Account/Account")
+);
+const Earnings = lazy(
+  () => import("../pages/ClientPages/Affiliate/Earnings/Earnings")
+);
+const Withdrawals = lazy(
+  () => import("../pages/ClientPages/Affiliate/Withdrawals/Wathdrawals")
+);
+const TierStatus = lazy(
+  () => import("../pages/ClientPages/Affiliate/TierStatus/TierStatus")
+);
+const BecomeAffiliate = lazy(
+  () => import("../pages/ClientPages/Affiliate/BecomeAffiliate/BecomeAffiliate")
+);
 
 export default function AffiliateClientRoutesWrapper() {
   return (
-    
+    <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         <Route path="account" element={<Account />} />
         <Route path="earnings" element={<Earnings />} />
@@ -17,5 +28,6 @@ export default function AffiliateClientRoutesWrapper() {
         <Route path="tier" element={<TierStatus />} />
         <Route path="become-affiliate" element={<BecomeAffiliate />} />
       </Routes>
+    </Suspense>
   );
 }

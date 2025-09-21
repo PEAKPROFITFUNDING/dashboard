@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, Shield, Calendar, DollarSign } from "lucide-react";
+import { TrendingUp, Calendar, DollarSign } from "lucide-react";
 import Input from "../../../../components/form/input/InputField";
 import Select from "../../../../components/form/Select";
 import Button from "../../../../components/ui/button/Button";

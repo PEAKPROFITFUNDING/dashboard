@@ -75,13 +75,14 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/contact-messages", element: ContactMessages },
   { path: "/contact-messages/:id", element: MessageDetails },
   { path: "/affiliate/*", element: AffiliateRoutesWrapper },
-  { path: "/funded-traders", element: FundedTradersPage, roles: ["Admin"] },
+  { path: "/funded-traders", element: FundedTradersPage },
   { path: "/trader-payout-requests", element: TraderPayoutRequests },
 ];
 // User-only Routes
 export const userRoutes: RouteConfig[] = [
-  { path: "/challenges", element: Home, roles: ["User"] },
-  { path: "/payouts", element: PayoutsPage, roles: ["User"] },
+  { path: "/challenges", element: Home },
+  { path: "/payouts", element: PayoutsPage },
+  { path: "/account/kyc", element: PayoutsPage },
   { path: "/affiliate/*", element: AffiliateClientRoutesWrapper },
 ];
 

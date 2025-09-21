@@ -51,6 +51,8 @@ const BecomeAffiliateForm = () => {
 
     try {
       const response = await axiosInstance.post("/affiliate/apply", formData);
+      console.log(response.data);
+
       refetchUser();
 
       setSuccess("Your affiliate application has been submitted successfully!");

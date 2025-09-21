@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import {
   AdminPayoutRequest,
   dummyPayoutRequests,
 } from "../../../../services/payoutService";
-import PayoutRequestsTable from "./components/PayoutRequestsTable";
-import PayoutRequestDetailsModal from "./components/PayoutRequestDetailsModal";
 import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
+
+// ✅ Lazy imports
+const PayoutRequestsTable = lazy(
+  () => import("./components/PayoutRequestsTable")
+);
+const PayoutRequestDetailsModal = lazy(
+  () => import("./components/PayoutRequestDetailsModal")
+);
 
 export default function TraderPayoutRequests() {
   const [requests, setRequests] =
@@ -35,17 +41,24 @@ export default function TraderPayoutRequests() {
       />
       <PageBreadcrumb pageTitle="Payout Requests" />
 
-      <PayoutRequestsTable
-        requests={requests}
-        onViewDetails={handleViewDetails}
-      />
+      {/* Suspense fallback while loading */}
+      <Suspense fallback={<div>Loading table...</div>}>
+        <PayoutRequestsTable
+          requests={requests}
+          onViewDetails={handleViewDetails}
+        />
+      </Suspense>
 
-      <PayoutRequestDetailsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        request={selectedRequest}
-        onStatusChange={handleStatusChange}
-      />
+      {isModalOpen && (
+        <Suspense fallback={<div>Loading details...</div>}>
+          <PayoutRequestDetailsModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            request={selectedRequest}
+            onStatusChange={handleStatusChange}
+          />
+        </Suspense>
+      )}
     </>
   );
 }

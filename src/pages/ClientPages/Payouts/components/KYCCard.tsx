@@ -10,11 +10,7 @@ import { useUser } from "../../../../context/UserContext";
 import Badge from "../../../../components/ui/badge/Badge";
 
 const KYCCard = () => {
-  //   const { kyc } = useUser();
-
-  const kyc = { status: "pending" };
-
-  console.log(kyc);
+  const { kyc } = useUser();
 
   const handleCompleteKYC = () => {
     console.log("Redirecting to KYC verification...");
