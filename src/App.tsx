@@ -5,7 +5,6 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import PublicRoute from "./components/auth/PublicRoute";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import { useUser } from "./context/UserContext";
-import useFetchUser from "./hooks/useFetchUser";
 import { LazyRoute } from "./components/common/LazyRoute";
 import { RouteDebugger } from "./components/common/RouteDebugger";
 import {
@@ -18,10 +17,9 @@ import { AffiliateProfileProvider } from "./context/user/UserAffiliatesContext";
 
 // Initialize user data fetching
 const AppInitializer = () => {
-  useFetchUser();
+  useUser();
   return null;
 };
-
 // Create a separate component for the routes
 const AppRoutes = () => {
   const { userRole, isUserLoaded } = useUser();

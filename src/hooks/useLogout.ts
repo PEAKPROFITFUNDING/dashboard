@@ -20,14 +20,16 @@ const useLogout = () => {
 
         // 2. Clear user context
         clearUser();
+        // console.log("clear user");
 
         // 3. Reset contact messages context to prevent stale data
         resetContactMessage();
+        // console.log("reset contact messages");
 
         setIsLoggingOut(false);
 
         // 4. Navigate to login page
-        navigate("/login", { replace: true });
+        // navigate("/login", { replace: true });
       } catch {
         setIsLoggingOut(false);
       }

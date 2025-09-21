@@ -48,21 +48,26 @@ export default function SignInForm() {
       const response = await axiosInstance.post("/auth/login/", formData);
 
       if (response.status === 200 || response.status === 201) {
-        // Use the utility function to handle login response
-        const userData = handleLoginResponse(response);
+        const loginData = response.data.result; // Based on your login structure
 
-        // Set complete user data
+        // Set complete user data using the new consolidated approach
         setUser({
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          affiliateId: userData.affiliateId,
-          referredBy: userData.referredBy,
-          affiliateStatus: userData.affiliateStatus,
+          id: loginData._id,
+          name: loginData.name,
+          email: loginData.email,
+          role: loginData.role,
+          profilePicture: loginData.profilePicture,
+          affiliateId: loginData.affiliateId,
+          referredBy: loginData.referredBy,
+          affiliateStatus: loginData.affiliateStatus,
+          kyc: loginData.kyc,
         });
 
+        // Store token
+        localStorage.setItem("authToken", loginData.token);
+
         // Redirect based on user role
-        if (userData.role === "Admin") {
+        if (loginData.role === "Admin") {
           return <AdminRedirect />;
         } else {
           navigate("/");
