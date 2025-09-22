@@ -14,6 +14,8 @@ import Button from "../../../../components/ui/button/Button";
 import FilterBar, { FilterOption } from "../../../../components/FilterBar";
 import { SearchBar } from "../../../../components/SearchBar";
 import { Pagination } from "../../../../components/Pagination";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
+import SortableHeader from "../../../../components/SortableHeader";
 
 type KYCStatus = "pending" | "approved" | "rejected";
 
@@ -51,6 +53,9 @@ type KYCResponse = {
   message: string;
 };
 
+type SortField = "name" | "socials" | "createdAt" | "status" | "dateOfBirth"; // adjust fields for KYC table
+type SortOrder = "asc" | "desc";
+
 const UsersKYCTable: React.FC = () => {
   const navigate = useNavigate();
   const [applications, setApplications] = useState<KYCApplication[]>([]);
@@ -80,12 +85,54 @@ const UsersKYCTable: React.FC = () => {
     rejected: 0,
   });
 
+  const [sortField, setSortField] = useState<SortField>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+
   const filterOptions: FilterOption[] = [
     { key: "all", label: "All Applications" },
     { key: "pending", label: "Pending", color: "warning" },
     { key: "approved", label: "Approved", color: "success" },
     { key: "rejected", label: "Rejected", color: "error" },
   ];
+
+  const handleSort = (field: SortField) => {
+    if (field === sortField) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortApplications = (applications) => {
+    return [...applications].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortField) {
+        case "name":
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case "socials":
+          comparison = Number(a.socials) - Number(b.socials);
+          break;
+
+        case "dateOfBirth":
+          comparison =
+            new Date(a.dateOfBirth).getTime() -
+            new Date(b.dateOfBirth).getTime();
+          break;
+        case "createdAt":
+          comparison =
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          break;
+        case "status":
+          comparison = (a.isVerified ? 1 : 0) - (b.isVerified ? 1 : 0);
+          break;
+      }
+
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
+  };
 
   const fetchKYCApplications = async (
     status?: string,
@@ -247,36 +294,42 @@ const UsersKYCTable: React.FC = () => {
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                User
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Social Security
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Date of Birth
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Status
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Submitted At
-              </TableCell>
+              <SortableHeader
+                field="name"
+                label="User"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+
+              <SortableHeader
+                field="socials"
+                label="Social Security"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                field="email"
+                label="Date Of Birth"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                field="status"
+                label="KYC Status"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                field="createdAt"
+                label="Submitted At"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -291,10 +344,7 @@ const UsersKYCTable: React.FC = () => {
               <TableRow>
                 <TableCell colSpan={5} className="px-6 py-8 text-center">
                   <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
-                    <span className="ml-2 text-gray-500 dark:text-gray-400">
-                      Loading applications...
-                    </span>
+                    <LoadingSpinner />
                   </div>
                 </TableCell>
               </TableRow>
@@ -308,7 +358,7 @@ const UsersKYCTable: React.FC = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              applications.map((app) => (
+              sortApplications(applications).map((app) => (
                 <TableRow key={app._id}>
                   {/* User */}
                   <TableCell className="px-5 py-3 text-start">
@@ -353,13 +403,9 @@ const UsersKYCTable: React.FC = () => {
                   </TableCell>
 
                   <TableCell className="px-5 py-3">
-                    <Badge
-                      color={getBadgeColor(app.status)}
-                      variant="light"
-                      size="sm"
-                    >
-                      {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                    </Badge>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(app.createdAt)}
+                    </span>
                   </TableCell>
 
                   {/* Actions */}

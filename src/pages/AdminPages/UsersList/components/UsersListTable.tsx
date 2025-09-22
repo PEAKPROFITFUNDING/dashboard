@@ -10,6 +10,7 @@ import Badge from "../../../../components/ui/badge/Badge";
 import axiosInstance from "../../../../api/axiosInstance";
 import { User, ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 import { formatDate } from "@fullcalendar/core/index.js";
+import SortableHeader from "../../../../components/SortableHeader";
 
 interface UserData {
   _id: string;
@@ -117,35 +118,6 @@ export default function UsersListTable() {
     });
   };
 
-  const SortableHeader = ({
-    field,
-    label,
-  }: {
-    field: SortField;
-    label: string;
-  }) => (
-    <TableCell
-      isHeader
-      className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-    >
-      <div
-        className="flex items-center gap-1 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
-        onClick={() => handleSort(field)}
-      >
-        {label}
-        {sortField === field ? (
-          sortOrder === "asc" ? (
-            <ArrowUp className="w-4 h-4" />
-          ) : (
-            <ArrowDown className="w-4 h-4" />
-          )
-        ) : (
-          <ArrowUpDown className="w-4 h-4 opacity-50" />
-        )}
-      </div>
-    </TableCell>
-  );
-
   const handleSearch = () => {
     setAppliedSearchQuery(searchQuery);
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
@@ -223,11 +195,41 @@ export default function UsersListTable() {
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
-              <SortableHeader field="name" label="User" />
-              <SortableHeader field="email" label="Email" />
-              <SortableHeader field="role" label="Role" />
-              <SortableHeader field="status" label="Status" />
-              <SortableHeader field="createdAt" label="Created At" />
+              <SortableHeader
+                field="name"
+                label="User"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                field="email"
+                label="Email"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                field="role"
+                label="Role"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                field="status"
+                label="Status"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                field="createdAt"
+                label="Created At"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
             </TableRow>
           </TableHeader>
 
