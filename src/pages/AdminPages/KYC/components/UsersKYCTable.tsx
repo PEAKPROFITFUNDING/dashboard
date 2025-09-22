@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
 import axiosInstance from "../../../../api/axiosInstance";
 import {
@@ -16,65 +16,26 @@ import { SearchBar } from "../../../../components/SearchBar";
 import { Pagination } from "../../../../components/Pagination";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import SortableHeader from "../../../../components/SortableHeader";
+import { useKYCAdmin } from "../../../../context/admin/KYCAdminContext";
 
 type KYCStatus = "pending" | "approved" | "rejected";
 
-type KYCUser = {
-  _id: string;
-  name: string;
-  email: string;
-};
-
-type KYCApplication = {
-  _id: string;
-  user: KYCUser;
-  dateOfBirth: string;
-  socials: string;
-  idFrontImage: string;
-  idBackImage: string;
-  status: KYCStatus;
-  rejectionReason: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type KYCResponse = {
-  result: {
-    data: KYCApplication[];
-    pagination: {
-      currentPage: number;
-      perPage: number;
-      totalItems: number;
-      totalPages: number;
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-    };
-  };
-  message: string;
-};
-
-type SortField = "name" | "socials" | "createdAt" | "status" | "dateOfBirth"; // adjust fields for KYC table
+type SortField = "name" | "socials" | "createdAt" | "status" | "dateOfBirth";
 type SortOrder = "asc" | "desc";
 
 const UsersKYCTable: React.FC = () => {
-  const [applications, setApplications] = useState<KYCApplication[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   // Filters and search
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Pagination data
-  const [paginationData, setPaginationData] = useState({
-    currentPage: 1,
-    perPage: 10,
-    totalItems: 0,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPreviousPage: false,
-  });
+  const {
+    applications,
+    loading,
+    error,
+    paginationData,
+    fetchApplications: fetchKYCApplications,
+  } = useKYCAdmin();
 
   // Counts for filter badges
   const [counts, setCounts] = useState({
@@ -104,7 +65,7 @@ const UsersKYCTable: React.FC = () => {
   };
 
   const sortApplications = (applications) => {
-    return [...applications].sort((a, b) => {
+    return [...applications]?.sort((a, b) => {
       let comparison = 0;
 
       switch (sortField) {
@@ -133,43 +94,6 @@ const UsersKYCTable: React.FC = () => {
     });
   };
 
-  const fetchKYCApplications = async (
-    status?: string,
-    search?: string,
-    page: number = 1
-  ) => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const params = new URLSearchParams();
-      if (status && status !== "all") params.append("status", status);
-      if (search) params.append("search", search);
-      params.append("pageNo", page.toString());
-
-      const response = await axiosInstance.get<KYCResponse>(
-        `/admin/kycApplications?${params.toString()}`
-      );
-
-      setApplications(response.data.result.data);
-      setPaginationData(response.data.result.pagination);
-
-      // Update counts (you might want to get these from a separate endpoint)
-      setCounts((prev) => ({
-        ...prev,
-        all: response.data.result.pagination.totalItems,
-        // These would ideally come from the API
-      }));
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Failed to fetch KYC applications"
-      );
-      console.error("Error fetching KYC applications:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Fetch counts for all statuses
   const fetchCounts = async () => {
     try {
@@ -192,7 +116,7 @@ const UsersKYCTable: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchKYCApplications(activeFilter, searchQuery, currentPage);
+    fetchKYCApplications(activeFilter, searchQuery, currentPage, true);
     fetchCounts();
   }, [activeFilter, currentPage]);
 
@@ -343,7 +267,7 @@ const UsersKYCTable: React.FC = () => {
                   </div>
                 </TableCell>
               </TableRow>
-            ) : applications.length === 0 ? (
+            ) : applications?.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -353,7 +277,7 @@ const UsersKYCTable: React.FC = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              sortApplications(applications).map((app) => (
+              sortApplications(applications || []).map((app) => (
                 <TableRow key={app._id}>
                   {/* User */}
                   <TableCell className="px-5 py-3 text-start">
@@ -422,7 +346,7 @@ const UsersKYCTable: React.FC = () => {
         </Table>
 
         {/* Pagination */}
-        {!loading && applications.length > 0 && (
+        {!loading && applications?.length > 0 && (
           <Pagination
             currentPage={paginationData.currentPage}
             totalPages={paginationData.totalPages}

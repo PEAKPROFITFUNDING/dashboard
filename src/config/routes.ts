@@ -3,6 +3,7 @@ import AdminRedirect from "../components/common/AdminRedirect";
 import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
 import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
 import AffiliateClientRoutesWrapper from "./AffiliateClientRoutesWrapper";
+import AdminKYCWrapper from "./AdminKYCWrapper";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -79,7 +80,7 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/affiliate/*", element: AffiliateRoutesWrapper },
   { path: "/funded-traders", element: FundedTradersPage },
   { path: "/trader-payout-requests", element: TraderPayoutRequests },
-  { path: "/kyc-applications", element: UsersKYC },
+  { path: "/kyc/*", element: AdminKYCWrapper },
 ];
 // User-only Routes
 export const userRoutes: RouteConfig[] = [

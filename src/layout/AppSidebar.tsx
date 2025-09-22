@@ -109,7 +109,7 @@ const adminNavItems: NavItem[] = [
   {
     icon: <Shield />,
     name: "KYC Applications",
-    path: "/kyc-applications",
+    path: "/kyc/applications",
   },
 ];
 const affiliatedUserNavItems: NavItem[] = [

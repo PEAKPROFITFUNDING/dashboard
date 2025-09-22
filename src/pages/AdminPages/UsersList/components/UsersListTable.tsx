@@ -8,7 +8,7 @@ import {
 } from "../../../../components/ui/table";
 import Badge from "../../../../components/ui/badge/Badge";
 import axiosInstance from "../../../../api/axiosInstance";
-import { User, ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
+import { User, Search, X } from "lucide-react";
 import { formatDate } from "@fullcalendar/core/index.js";
 import SortableHeader from "../../../../components/SortableHeader";
 
