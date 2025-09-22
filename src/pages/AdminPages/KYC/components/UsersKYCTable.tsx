@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
 import axiosInstance from "../../../../api/axiosInstance";
 import {
@@ -57,7 +57,6 @@ type SortField = "name" | "socials" | "createdAt" | "status" | "dateOfBirth"; //
 type SortOrder = "asc" | "desc";
 
 const UsersKYCTable: React.FC = () => {
-  const navigate = useNavigate();
   const [applications, setApplications] = useState<KYCApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -215,10 +214,6 @@ const UsersKYCTable: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const handleViewKYC = (id: string) => {
-    navigate(`/kyc/${id}`);
   };
 
   const getBadgeColor = (
@@ -410,14 +405,15 @@ const UsersKYCTable: React.FC = () => {
 
                   {/* Actions */}
                   <TableCell className="px-5 py-3">
-                    <Button
-                      size="sm"
-                      variant="primary"
-                      startIcon={<Eye className="w-4 h-4" />}
-                      onClick={() => handleViewKYC(app._id)}
-                    >
-                      View
-                    </Button>
+                    <Link to={`/kyc-application/${app._id}`}>
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        startIcon={<Eye className="w-4 h-4" />}
+                      >
+                        View
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))

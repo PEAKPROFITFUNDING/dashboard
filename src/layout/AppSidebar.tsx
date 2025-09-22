@@ -14,6 +14,7 @@ import {
   Lock,
   DollarSign,
   Plus,
+  Shield,
 } from "lucide-react";
 
 type NavItem = {
@@ -106,7 +107,7 @@ const adminNavItems: NavItem[] = [
     ],
   },
   {
-    icon: <MessageCircle />,
+    icon: <Shield />,
     name: "KYC Applications",
     path: "/kyc-applications",
   },
@@ -196,7 +197,7 @@ const AppSidebar: React.FC = () => {
 
   const userNavItems: NavItem[] = [
     ...userBasicNavItems,
-    ...userBecomeAffiliateNavItems,
+    ...(isAffiliate ? affiliatedUserNavItems : userBecomeAffiliateNavItems),
   ];
 
   useEffect(() => {
