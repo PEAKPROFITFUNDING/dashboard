@@ -5,6 +5,7 @@ import {
 } from "../../../../services/payoutService";
 import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 // ✅ Lazy imports
 const PayoutRequestsTable = lazy(
@@ -42,7 +43,7 @@ export default function TraderPayoutRequests() {
       <PageBreadcrumb pageTitle="Payout Requests" />
 
       {/* Suspense fallback while loading */}
-      <Suspense fallback={<div>Loading table...</div>}>
+      <Suspense fallback={<LoadingSpinner />}>
         <PayoutRequestsTable
           requests={requests}
           onViewDetails={handleViewDetails}
@@ -50,7 +51,7 @@ export default function TraderPayoutRequests() {
       </Suspense>
 
       {isModalOpen && (
-        <Suspense fallback={<div>Loading details...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <PayoutRequestDetailsModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}

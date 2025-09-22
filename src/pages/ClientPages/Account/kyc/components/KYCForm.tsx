@@ -54,9 +54,9 @@ const KYCForm = () => {
   const frontImageRef = useRef<HTMLInputElement>(null);
   const backImageRef = useRef<HTMLInputElement>(null);
 
-  //   const { kyc, refetchUser } = useUser();
+  const { kyc, refetchUser } = useUser();
 
-  const kyc = null;
+  // const kyc = null;
 
   const validateForm = () => {
     const newErrors: KycFormErrors = {};

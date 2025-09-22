@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { AffiliatesProvider } from "../context/AffiliateContext";
 import { AffiliatesAdminProvider } from "../context/admin/AdminAffiliatesContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 // ✅ Lazy-loaded pages
 const NewRequests = lazy(
@@ -37,7 +38,7 @@ export default function AffiliateRoutesWrapper() {
   return (
     <AffiliatesAdminProvider>
       <AffiliatesProvider>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             <Route path="new-requests" element={<NewRequests />} />
             <Route path="manage-affiliates" element={<ManageAffiliates />} />

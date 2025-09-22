@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 
-// ✅ Lazy load pages
 const Account = lazy(
   () => import("../pages/ClientPages/Affiliate/Account/Account")
 );
@@ -20,7 +20,7 @@ const BecomeAffiliate = lazy(
 
 export default function AffiliateClientRoutesWrapper() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <Routes>
         <Route path="account" element={<Account />} />
         <Route path="earnings" element={<Earnings />} />
