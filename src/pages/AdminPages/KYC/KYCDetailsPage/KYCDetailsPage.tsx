@@ -16,6 +16,7 @@ import { ConfirmationModal } from "../../../../components/ConfirmationModal";
 import { Modal } from "../../../../components/ui/modal";
 import Label from "../../../../components/form/Label";
 import { useKYCAdmin } from "../../../../context/admin/KYCAdminContext";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 const KYCDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -132,20 +133,10 @@ const KYCDetailsPage: React.FC = () => {
     }
   };
 
-  const getImageUrl = (filename: string) => {
-    // Assuming images are served from a specific endpoint
-    return `${import.meta.env.VITE_API_BASE_URL}/uploads/${filename}`;
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-2">
-          <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
-          <span className="text-gray-600 dark:text-gray-400">
-            Loading application...
-          </span>
-        </div>
+        <LoadingSpinner />
       </div>
     );
   }

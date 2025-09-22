@@ -54,7 +54,7 @@ const KYCForm = () => {
   const frontImageRef = useRef<HTMLInputElement>(null);
   const backImageRef = useRef<HTMLInputElement>(null);
 
-  const { kyc, refetchUser } = useUser();
+  const { refetchUser } = useUser();
 
   // const kyc = null;
 
@@ -207,8 +207,8 @@ const KYCForm = () => {
       });
 
       if (response.status === 200 || response.status === 201) {
-        refetchUser();
         setUploadSuccess(true);
+        await refetchUser();
         // Clear form data
         setFormData({
           dateOfBirth: "",
@@ -254,21 +254,6 @@ const KYCForm = () => {
       setLoading(false);
     }
   };
-
-  if (kyc?.status === "pending" || uploadSuccess) {
-    return <KYCPending />;
-  }
-  if (kyc?.status === "approved") {
-    return <KYCApproved />;
-  }
-  if (kyc?.status === "rejected") {
-    return (
-      <KYCRejected
-        rejectionReason={"Rejection reasong is following"}
-        onResubmit={() => console.log("resubmitting")}
-      />
-    );
-  }
 
   return (
     <div className="bg-white dark:border-white/[0.05] dark:bg-white/[0.03] border border-gray-200 rounded-xl shadow-lg">
