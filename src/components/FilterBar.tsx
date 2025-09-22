@@ -17,22 +17,22 @@ export default function FilterBar({
   activeFilter,
   onFilterChange,
   filterOptions,
-  counts,
+  counts = {},
 }: FilterBarProps) {
   return (
     <div className=" flex justify-between items-center">
       <div className="flex flex-wrap gap-2">
-        {filterOptions.map((filter) => (
+        {filterOptions?.map((filter) => (
           <button
-            key={filter.key}
-            onClick={() => onFilterChange(filter.key)}
+            key={filter?.key}
+            onClick={() => onFilterChange(filter?.key)}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               activeFilter === filter.key
                 ? "bg-brand-500 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             }`}
           >
-            {filter.label} ({counts[filter.key] || 0})
+            {filter?.label} ({counts[filter?.key] || 0})
           </button>
         ))}
       </div>

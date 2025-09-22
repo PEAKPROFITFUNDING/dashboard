@@ -25,6 +25,12 @@ export type KYCApplication = {
 export type KYCResponse = {
   result: {
     data: KYCApplication[];
+    counts: {
+      pending: number;
+      approved: number;
+      rejected: number;
+      all: number;
+    };
     pagination: {
       currentPage: number;
       perPage: number;
@@ -42,6 +48,7 @@ export interface KYCAdminContextType {
   loading: boolean;
   error: string | null;
   paginationData: KYCResponse["result"]["pagination"] | null;
+  counts: KYCResponse["result"]["counts"] | null;
   fetchApplications: (
     status?: string,
     search?: string,
@@ -69,6 +76,12 @@ export const KYCAdminProvider = ({
   const [paginationData, setPaginationData] = useState<
     KYCResponse["result"]["pagination"] | null
   >(null);
+  const [counts, setCounts] = useState<KYCResponse["result"]["counts"]>({
+    all: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  });
 
   const fetchApplications = useCallback(
     async (
@@ -96,6 +109,7 @@ export const KYCAdminProvider = ({
 
         setApplications(response.data.result.data);
         setPaginationData(response.data.result.pagination);
+        setCounts(response.data.result.counts);
         setError(null);
       } catch (err) {
         console.error("Error fetching KYC applications:", err);
@@ -114,6 +128,7 @@ export const KYCAdminProvider = ({
   const clearApplications = useCallback(() => {
     setApplications(null);
     setPaginationData(null);
+    setCounts(null);
     setError(null);
   }, []);
 
@@ -122,6 +137,7 @@ export const KYCAdminProvider = ({
     loading,
     error,
     paginationData,
+    counts,
     fetchApplications,
     clearApplications,
     hasData: applications !== null,

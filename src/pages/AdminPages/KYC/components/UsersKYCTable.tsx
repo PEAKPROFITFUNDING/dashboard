@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
-import axiosInstance from "../../../../api/axiosInstance";
 import {
   Table,
   TableBody,
@@ -31,19 +30,12 @@ const UsersKYCTable: React.FC = () => {
 
   const {
     applications,
+    counts,
     loading,
     error,
     paginationData,
     fetchApplications: fetchKYCApplications,
   } = useKYCAdmin();
-
-  // Counts for filter badges
-  const [counts, setCounts] = useState({
-    all: 0,
-    pending: 0,
-    approved: 0,
-    rejected: 0,
-  });
 
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
@@ -94,30 +86,8 @@ const UsersKYCTable: React.FC = () => {
     });
   };
 
-  // Fetch counts for all statuses
-  const fetchCounts = async () => {
-    try {
-      const [allRes, pendingRes, approvedRes, rejectedRes] = await Promise.all([
-        axiosInstance.get("/admin/kycApplications?pageNo=1"),
-        axiosInstance.get("/admin/kycApplications?status=pending&pageNo=1"),
-        axiosInstance.get("/admin/kycApplications?status=approved&pageNo=1"),
-        axiosInstance.get("/admin/kycApplications?status=rejected&pageNo=1"),
-      ]);
-
-      setCounts({
-        all: allRes.data.result.pagination.totalItems,
-        pending: pendingRes.data.result.pagination.totalItems,
-        approved: approvedRes.data.result.pagination.totalItems,
-        rejected: rejectedRes.data.result.pagination.totalItems,
-      });
-    } catch (err) {
-      console.error("Error fetching counts:", err);
-    }
-  };
-
   useEffect(() => {
     fetchKYCApplications(activeFilter, searchQuery, currentPage, true);
-    fetchCounts();
   }, [activeFilter, currentPage]);
 
   const handleFilterChange = (filter: string) => {
