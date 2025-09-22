@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Check,
@@ -17,32 +17,11 @@ import { Modal } from "../../../../components/ui/modal";
 import Label from "../../../../components/form/Label";
 import { useKYCAdmin } from "../../../../context/admin/KYCAdminContext";
 
-type KYCUser = {
-  _id: string;
-  name: string;
-  email: string;
-};
-
-type KYCApplication = {
-  _id: string;
-  user: KYCUser;
-  dateOfBirth: string;
-  socials: string;
-  idFrontImage: string;
-  idBackImage: string;
-  status: "pending" | "approved" | "rejected";
-  rejectionReason: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
 const KYCDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const {
     applications,
-
     loading,
     error,
     fetchApplications: fetchKYCApplications,
@@ -135,10 +114,10 @@ const KYCDetailsPage: React.FC = () => {
         payload.rejectionReason = reason;
       }
 
-      await axiosInstance.put(`/admin/kyc/${id}`, payload);
+      await axiosInstance.put(`/admin/reviewKYCApplication/${id}`, payload);
 
       // Refresh the application data
-      await fetchKYCApplications();
+      await fetchKYCApplications(undefined, undefined, undefined, true);
 
       // Close modals and reset state
       setShowConfirmModal(false);
@@ -207,7 +186,7 @@ const KYCDetailsPage: React.FC = () => {
             Back to Applications
           </Button> */}
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
                 KYC Application Details
@@ -225,13 +204,28 @@ const KYCDetailsPage: React.FC = () => {
                 application.status.slice(1)}
             </Badge>
           </div>
+          {application.status === "rejected" && application.rejectionReason && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="font-medium text-red-900 dark:text-red-200">
+                    Rejection Reason:
+                  </h3>
+                  <p className="text-red-800 dark:text-red-300">
+                    {application.rejectionReason}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* User Information */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.05] p-6">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium text-lg">
                   {getUserInitials(application.user.name)}
@@ -274,77 +268,58 @@ const KYCDetailsPage: React.FC = () => {
             </div>
 
             {/* Document Images */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.05] p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Identity Documents
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white mb-3">
                     Front Side
                   </h4>
-                  <div className="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
-                    <Image
-                      src={getImageUrl(application.idFrontImage)}
-                      alt="ID Front Side"
-                      className="w-full h-48 object-cover"
-                      preview={{
-                        mask: (
-                          <div className="flex items-center justify-center text-white">
-                            <span>Click to preview</span>
-                          </div>
-                        ),
-                      }}
-                    />
-                  </div>
+
+                  <Image
+                    src={application.idFrontImage}
+                    alt="ID Front Side"
+                    className="w-full max-h-48 object-cover border-gray-200 dark:border-white/[0.05] border rounded-lg"
+                    preview={{
+                      mask: (
+                        <div className="flex items-center justify-center text-white ">
+                          <span>Click to preview</span>
+                        </div>
+                      ),
+                    }}
+                  />
                 </div>
 
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white mb-3">
                     Back Side
                   </h4>
-                  <div className="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
-                    <Image
-                      src={getImageUrl(application.idBackImage)}
-                      alt="ID Back Side"
-                      className="w-full h-48 object-cover"
-                      preview={{
-                        mask: (
-                          <div className="flex items-center justify-center text-white">
-                            <span>Click to preview</span>
-                          </div>
-                        ),
-                      }}
-                    />
-                  </div>
+                  <Image
+                    src={application.idBackImage}
+                    alt="ID Back Side"
+                    className="w-full max-h-48 object-top border-gray-200 dark:border-white/[0.05] border rounded-lg"
+                    preview={{
+                      mask: (
+                        <div className="flex items-center justify-center text-white">
+                          <span>Click to preview</span>
+                        </div>
+                      ),
+                    }}
+                  />
                 </div>
               </div>
             </div>
 
             {/* Rejection Reason (if rejected) */}
-            {application.status === "rejected" &&
-              application.rejectionReason && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6">
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-medium text-red-900 dark:text-red-200 mb-2">
-                        Rejection Reason
-                      </h3>
-                      <p className="text-red-800 dark:text-red-300">
-                        {application.rejectionReason}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Application Timeline */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.05] p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Timeline
               </h3>
@@ -388,7 +363,7 @@ const KYCDetailsPage: React.FC = () => {
 
             {/* Actions */}
             {application.status === "pending" && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.05] p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Actions
                 </h3>
@@ -461,7 +436,7 @@ const KYCDetailsPage: React.FC = () => {
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Enter the reason for rejection..."
-              className="w-full h-24 px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white resize-none"
+              className="w-full h-24 px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 dark:bg-gray-900 dark:border-white/[0.05] dark:text-white resize-none"
             />
           </div>
 
