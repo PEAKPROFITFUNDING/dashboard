@@ -87,7 +87,7 @@ export const KYCAdminProvider = ({
     async (
       status?: string,
       search?: string,
-      page: number = 1,
+      page: number = null,
       forceRefresh = false
     ) => {
       if (applications && !forceRefresh) {
@@ -101,7 +101,7 @@ export const KYCAdminProvider = ({
         const params = new URLSearchParams();
         if (status && status !== "all") params.append("status", status);
         if (search) params.append("search", search);
-        params.append("pageNo", page.toString());
+        if (page) params.append("pageNo", page.toString());
 
         const response = await axiosInstance.get<KYCResponse>(
           `/admin/kycApplications?${params.toString()}`

@@ -299,7 +299,7 @@ const UsersKYCTable: React.FC = () => {
 
                   {/* Actions */}
                   <TableCell className="px-5 py-3">
-                    <Link to={`/kyc-application/${app._id}`}>
+                    <Link to={`/kyc/${app._id}`}>
                       <Button
                         size="sm"
                         variant="primary"
