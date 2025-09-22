@@ -9,6 +9,7 @@ import {
 import Badge from "../../../../components/ui/badge/Badge";
 import axiosInstance from "../../../../api/axiosInstance";
 import { User, ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
+import { formatDate } from "@fullcalendar/core/index.js";
 
 interface UserData {
   _id: string;
@@ -113,14 +114,6 @@ export default function UsersListTable() {
       }
 
       return sortOrder === "asc" ? comparison : -comparison;
-    });
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
     });
   };
 
@@ -257,7 +250,7 @@ export default function UsersListTable() {
                       )}
                     </div>
                     <div>
-                      <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                      <span className="block font-medium text-theme-sm text-gray-600 dark:text-white">
                         {user.name}
                       </span>
                     </div>

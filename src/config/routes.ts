@@ -29,6 +29,7 @@ const FundedTradersPage = lazy(
   () => import("../pages/AdminPages/FundedTraders/FundedTradersPage")
 );
 const KYC = lazy(() => import("../pages/ClientPages/Account/kyc/KYC"));
+const UsersKYC = lazy(() => import("../pages/AdminPages/KYC/UsersKYC"));
 
 // UI Elements
 const Alerts = lazy(() => import("../pages/UiElements/Alerts"));
@@ -78,6 +79,7 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/affiliate/*", element: AffiliateRoutesWrapper },
   { path: "/funded-traders", element: FundedTradersPage },
   { path: "/trader-payout-requests", element: TraderPayoutRequests },
+  { path: "/kyc-applications", element: UsersKYC },
 ];
 // User-only Routes
 export const userRoutes: RouteConfig[] = [

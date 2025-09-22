@@ -8,8 +8,8 @@ import {
   SortField,
   SummaryStats,
 } from "./components";
-import FilterBar from "../../../../components/FilterBar";
 import { useAffiliatesAdmin } from "../../../../context/admin/AdminAffiliatesContext";
+import FilterBar from "../../../../components/FilterBar";
 
 export default function ManageAffiliates() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
@@ -169,7 +169,7 @@ export default function ManageAffiliates() {
           />
         </div>
 
-      <AffiliatesTable
+        <AffiliatesTable
           affiliates={filteredAndSortedAffiliates}
           sortField={sortField}
           sortDirection={sortDirection}

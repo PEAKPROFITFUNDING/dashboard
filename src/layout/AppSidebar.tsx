@@ -79,13 +79,11 @@ const adminNavItems: NavItem[] = [
     name: "Users List",
     path: "/users-list",
   },
-
   {
     icon: <MessageCircle />,
     name: "Contact Messages",
     path: "/contact-messages",
   },
-
   {
     icon: <NetworkIcon />,
     name: "Affiliate",
@@ -99,7 +97,6 @@ const adminNavItems: NavItem[] = [
       { name: "Payouts Panel", path: "/affiliate/payouts-panel" },
     ],
   },
-
   {
     icon: <Briefcase />,
     name: "Funded Traders",
@@ -107,6 +104,11 @@ const adminNavItems: NavItem[] = [
       { name: "Traders List", path: "/funded-traders" },
       { name: "Payout Requests", path: "/trader-payout-requests" },
     ],
+  },
+  {
+    icon: <MessageCircle />,
+    name: "KYC Applications",
+    path: "/kyc-applications",
   },
 ];
 const affiliatedUserNavItems: NavItem[] = [
