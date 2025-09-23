@@ -5,9 +5,7 @@ import Input from "../../../../../components/form/input/InputField";
 import Button from "../../../../../components/ui/button/Button";
 import { FileUploadArea } from "./FileUploadArea";
 import { useUser } from "../../../../../context/UserContext";
-import { KYCPending } from "./KYCPending";
-import { KYCApproved } from "./KYCApproved";
-import { KYCRejected } from "./KYCRejected";
+
 import axiosInstance from "../../../../../api/axiosInstance";
 
 export type KycFormData = {
@@ -35,7 +33,7 @@ type FilePreviews = {
   idBackImage: FilePreview | null;
 };
 
-const KYCForm = () => {
+const KYCForm = ({ setShowResubmitForm }) => {
   const [formData, setFormData] = useState<KycFormData>({
     dateOfBirth: "",
     socialSecurityNumber: "",
@@ -46,6 +44,7 @@ const KYCForm = () => {
   const [errors, setErrors] = useState<KycFormErrors>({});
   const [loading, setLoading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [apiError, setApiError] = useState<string>("");
   const [previews, setPreviews] = useState<FilePreviews>({
     idFrontImage: null,
     idBackImage: null,
@@ -53,6 +52,8 @@ const KYCForm = () => {
 
   const frontImageRef = useRef<HTMLInputElement>(null);
   const backImageRef = useRef<HTMLInputElement>(null);
+
+  console.log("apiError", uploadSuccess);
 
   const { refetchUser } = useUser();
 
@@ -111,10 +112,15 @@ const KYCForm = () => {
         [name]: "",
       }));
     }
+
+    // Clear API error when user makes changes
+    if (apiError) {
+      setApiError("");
+    }
   };
 
   const handleFileUpload = (e, fieldName) => {
-    console.log(e);
+    // console.log(e);
 
     const file = e.target.files[0];
     if (!file) return;
@@ -165,6 +171,11 @@ const KYCForm = () => {
       ...prev,
       [fieldName]: "",
     }));
+
+    // Clear API error when user makes changes
+    if (apiError) {
+      setApiError("");
+    }
   };
 
   const removeFile = (fieldName) => {
@@ -189,6 +200,8 @@ const KYCForm = () => {
     if (!validateForm()) return;
 
     setLoading(true);
+    setApiError(""); // Clear any previous API errors
+    setUploadSuccess(false);
 
     try {
       // Create FormData for file upload
@@ -208,6 +221,7 @@ const KYCForm = () => {
 
       if (response.status === 200 || response.status === 201) {
         setUploadSuccess(true);
+        setShowResubmitForm(false);
         await refetchUser();
         // Clear form data
         setFormData({
@@ -237,19 +251,42 @@ const KYCForm = () => {
     } catch (error) {
       console.error("Error submitting KYC:", error);
 
-      if (error.response?.data?.message) {
-        // Handle specific API errors
-        const errorMessage = error.response.data.message;
-        console.log(errorMessage);
+      let errorMessage = "An unexpected error occurred. Please try again.";
 
-        setErrors({
-          ...errors,
-          // You could set specific field errors based on API response
-        });
-      } else {
-        // Handle generic errors
-        console.error("Network or unexpected error occurred");
+      if (error.response?.data?.message) {
+        // Use the specific API error message
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status) {
+        // Handle different HTTP status codes
+        switch (error.response.status) {
+          case 400:
+            errorMessage =
+              "Invalid data submitted. Please check your information and try again.";
+            break;
+          case 401:
+            errorMessage =
+              "Authentication failed. Please log in and try again.";
+            break;
+          case 413:
+            errorMessage = "File size too large. Please upload smaller files.";
+            break;
+          case 422:
+            errorMessage = "Validation failed. Please check your information.";
+            break;
+          case 500:
+            errorMessage = "Server error. Please try again later.";
+            break;
+          default:
+            errorMessage = `Request failed with status ${error.response.status}. Please try again.`;
+        }
+      } else if (error.code === "NETWORK_ERROR") {
+        errorMessage =
+          "Network connection failed. Please check your internet connection.";
+      } else if (error.code === "TIMEOUT") {
+        errorMessage = "Request timed out. Please try again.";
       }
+
+      setApiError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -355,6 +392,39 @@ const KYCForm = () => {
           errors={errors}
           handleFileUpload={handleFileUpload}
         />
+
+        {/* Form Submitted Successfully */}
+        {uploadSuccess && (
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="font-medium text-green-900 dark:text-green-100 mb-1">
+                  KYC details submitted successfully
+                </h3>
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  You will be notified shortly
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* API Error Display */}
+        {apiError && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="font-medium text-red-900 dark:text-red-100 mb-1">
+                  Submission Failed
+                </h3>
+                <p className="text-sm text-red-700 dark:text-red-300">
+                  {apiError}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Submit Button */}
         <div className="pt-4">

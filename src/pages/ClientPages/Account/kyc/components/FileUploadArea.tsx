@@ -43,7 +43,6 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
       <div
         onClick={() => {
           inputRef.current?.click();
-          console.log("clicking");
         }}
         className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
       >
