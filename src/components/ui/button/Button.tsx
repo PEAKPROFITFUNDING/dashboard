@@ -1,15 +1,12 @@
-import { ReactNode } from "react";
+import { ReactNode, ButtonHTMLAttributes } from "react";
 
-interface ButtonProps {
+// Extend all native <button> props
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   size?: "sm" | "md";
   variant?: "primary" | "outline";
   startIcon?: ReactNode;
   endIcon?: ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  className?: string;
-  type?: "button" | "submit" | "reset"; // ✅ Added type
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -18,10 +15,8 @@ const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   startIcon,
   endIcon,
-  onClick,
   className = "",
-  disabled = false,
-  type = "button", // ✅ default to "button"
+  ...props // ✅ capture native props like onClick, type, disabled, etc.
 }) => {
   const sizeClasses = {
     sm: "px-4 py-3 text-sm",
@@ -37,14 +32,12 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      type={type} // ✅ pass it through
-      className={`inline-flex items-center justify-center gap-2 rounded-lg transition 
-  ${sizeClasses[size]} 
-  ${variantClasses[variant]} 
-  ${disabled ? "cursor-not-allowed opacity-50" : ""} 
-  ${className}`}
-      onClick={onClick}
-      disabled={disabled}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg transition
+        ${sizeClasses[size]}
+        ${variantClasses[variant]}
+        ${props.disabled ? "cursor-not-allowed opacity-50" : ""}
+        ${className}`}
+      {...props} // ✅ spread native props here
     >
       {startIcon && <span className="flex items-center">{startIcon}</span>}
       {children}

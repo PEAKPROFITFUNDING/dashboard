@@ -1,15 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../../components/common/PageMeta";
-import {
-  Affiliate,
-  AffiliatesTable,
-  FilterType,
-  SortField,
-  SummaryStats,
-} from "./components";
+
 import { useAffiliatesAdmin } from "../../../../context/admin/AdminAffiliatesContext";
 import FilterBar from "../../../../components/FilterBar";
+import { Affiliate, FilterType, SortField } from "./components/types";
+import SummaryStats from "./components/SummaryStats";
+import AffiliatesTable from "./components/AffiliatesTable";
 
 export default function ManageAffiliates() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");

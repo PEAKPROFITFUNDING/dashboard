@@ -2,11 +2,11 @@ import React, { useState, useRef } from "react";
 import { Calendar, Shield, AlertCircle } from "lucide-react";
 import Label from "../../../../../components/form/Label";
 import Input from "../../../../../components/form/input/InputField";
-import Button from "../../../../../components/ui/button/Button";
 import { FileUploadArea } from "./FileUploadArea";
 import { useUser } from "../../../../../context/UserContext";
 
 import axiosInstance from "../../../../../api/axiosInstance";
+import Button from "../../../../../components/ui/button/Button";
 
 export type KycFormData = {
   dateOfBirth: string;

@@ -110,7 +110,11 @@ const KYCDetailsPage: React.FC = () => {
     try {
       setActionLoading(true);
 
-      const payload: any = { status };
+      const payload: {
+        status: "approved" | "rejected";
+        rejectionReason?: string;
+      } = { status };
+
       if (reason) {
         payload.rejectionReason = reason;
       }
@@ -127,7 +131,6 @@ const KYCDetailsPage: React.FC = () => {
       setActionType(null);
     } catch (err) {
       console.error("Error updating KYC status:", err);
-      //   setError(err.response?.data?.message || "Failed to update KYC status");
     } finally {
       setActionLoading(false);
     }
