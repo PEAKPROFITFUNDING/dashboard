@@ -33,7 +33,7 @@ type FilePreviews = {
   idBackImage: FilePreview | null;
 };
 
-const KYCForm = ({ setShowResubmitForm }) => {
+const KYCForm = ({ setShowResubmitForm, fetchKYCStatus }) => {
   const [formData, setFormData] = useState<KycFormData>({
     dateOfBirth: "",
     socialSecurityNumber: "",
@@ -223,6 +223,7 @@ const KYCForm = ({ setShowResubmitForm }) => {
         setUploadSuccess(true);
         setShowResubmitForm(false);
         await refetchUser();
+        await fetchKYCStatus();
         // Clear form data
         setFormData({
           dateOfBirth: "",

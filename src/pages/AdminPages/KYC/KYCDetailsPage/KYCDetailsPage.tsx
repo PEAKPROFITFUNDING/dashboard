@@ -273,7 +273,7 @@ const KYCDetailsPage: React.FC = () => {
                   <Image
                     src={application.idFrontImage}
                     alt="ID Front Side"
-                    className="w-full max-h-48 object-cover border-gray-200 dark:border-white/[0.05] border rounded-lg"
+                    className="w-full object-cover border-gray-200 dark:border-white/[0.05] border rounded-lg"
                     preview={{
                       mask: (
                         <div className="flex items-center justify-center text-white ">
@@ -291,7 +291,7 @@ const KYCDetailsPage: React.FC = () => {
                   <Image
                     src={application.idBackImage}
                     alt="ID Back Side"
-                    className="w-full max-h-48 object-top border-gray-200 dark:border-white/[0.05] border rounded-lg"
+                    className="w-full object-top border-gray-200 dark:border-white/[0.05] border rounded-lg"
                     preview={{
                       mask: (
                         <div className="flex items-center justify-center text-white">
