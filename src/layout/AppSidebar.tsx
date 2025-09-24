@@ -15,6 +15,7 @@ import {
   DollarSign,
   Plus,
   Shield,
+  MessagesSquare,
 } from "lucide-react";
 
 type NavItem = {
@@ -168,6 +169,11 @@ const othersItems: NavItem[] = [
   //     { name: "Sign Up", path: "/signup", pro: false },
   //   ],
   // },
+  {
+    icon: <MessagesSquare />,
+    name: "Support",
+    path: "/tickets",
+  },
   {
     icon: <MessageCircleQuestion />,
     name: "FAQ",

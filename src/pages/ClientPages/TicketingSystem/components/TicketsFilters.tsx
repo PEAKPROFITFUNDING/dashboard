@@ -60,7 +60,7 @@ const TicketsFilters: FC = () => {
     localFilters.search || localFilters.category || localFilters.status;
 
   return (
-    <div className="p-6">
+    <div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Search Input */}
         <div className="md:col-span-2">
