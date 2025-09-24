@@ -88,6 +88,7 @@ export const userRoutes: RouteConfig[] = [
   { path: "/payouts", element: PayoutsPage },
   { path: "/account/kyc", element: KYC },
   { path: "/affiliate/*", element: AffiliateClientRoutesWrapper },
+  {path: "/tickets", element: lazy(() => import("../pages/ClientPages/TicketingSystem/TicketsPage"))},
 ];
 
 // UI Routes

@@ -123,7 +123,7 @@ export const dummyTraderAccounts: TraderAccount[] = [
   {
     id: "acc-1",
     name: "John Doe Account",
-    challengeType: "FTMO $100K Challenge",
+    challengeType: " $100K Challenge",
     eligible: true,
     nextPayoutDate: new Date(
       Date.now() + 3 * 24 * 60 * 60 * 1000
@@ -133,7 +133,7 @@ export const dummyTraderAccounts: TraderAccount[] = [
   {
     id: "acc-2",
     name: "Alice Smith Account",
-    challengeType: "FTMO $50K Challenge",
+    challengeType: " $50K Challenge",
     eligible: false,
     nextPayoutDate: new Date(
       Date.now() + 10 * 24 * 60 * 60 * 1000
@@ -161,7 +161,7 @@ export interface PayoutEligibility {
 export const dummyChallenges: Challenge[] = [
   {
     id: "ch-1",
-    name: "FTMO $100K Challenge",
+    name: " $100K Challenge",
     profit: 5200,
     drawdown: 1800,
     targetMet: true,
@@ -179,7 +179,7 @@ export const dummyChallenges: Challenge[] = [
   },
   {
     id: "ch-2",
-    name: "FTMO $50K Challenge",
+    name: " $50K Challenge",
     profit: 2100,
     drawdown: 900,
     targetMet: false,
