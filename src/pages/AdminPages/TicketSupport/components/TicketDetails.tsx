@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useTicketsAdmin } from "../../../../context/admin/TicketsAdminContext";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import Badge from "../../../../components/ui/badge/Badge";
@@ -44,7 +44,6 @@ const Avatar = ({ name, size = "md" }) => {
 
 const TicketDetails = () => {
   const { ticketId } = useParams();
-  const navigate = useNavigate();
   const { tickets, fetchTickets } = useTicketsAdmin();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -160,12 +159,12 @@ const TicketDetails = () => {
             The ticket you're looking for doesn't exist or you don't have
             permission to view it.
           </p>
-          <button
-            onClick={() => navigate("/admin/tickets")}
+          <Link
+            to={"/admin/support-tickets"}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600"
           >
             Back to Tickets
-          </button>
+          </Link>
         </div>
       </div>
     );
@@ -178,12 +177,12 @@ const TicketDetails = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           {/* Left side */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate("/admin/tickets")}
+            <Link
+              to={"/admin/support-tickets"}
               className="flex items-center gap-2 p-2 text-gray-600 dark:text-white bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              <ArrowLeft />
-            </button>
+              <ArrowLeft size={20} />
+            </Link>
             <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate max-w-[250px] sm:max-w-none">
               {ticket.subject}
             </h1>

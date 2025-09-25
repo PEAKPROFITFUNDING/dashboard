@@ -115,7 +115,7 @@ const adminNavItems: NavItem[] = [
   {
     icon: <MessagesSquare />,
     name: "Support Tickets",
-    path: "/support-tickets",
+    path: "/admin/support-tickets",
   },
 ];
 const affiliatedUserNavItems: NavItem[] = [

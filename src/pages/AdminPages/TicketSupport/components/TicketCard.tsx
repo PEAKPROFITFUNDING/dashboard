@@ -91,7 +91,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
     <div
       className={`bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.05] p-6 transition-all hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-500/30 `}
     >
-      <Link to={`/support-tickets/${ticket._id}`}>
+      <Link to={`/admin/support-tickets/${ticket._id}`}>
         {/* Header Section */}
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1 min-w-0">
@@ -288,7 +288,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
           )}
 
           <Link
-            to={`/support-tickets/${ticket._id}`}
+            to={`/admin/support-tickets/${ticket._id}`}
             className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
           >
             View details →
