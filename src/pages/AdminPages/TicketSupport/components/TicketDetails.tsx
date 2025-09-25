@@ -4,6 +4,12 @@ import { useTicketsAdmin } from "../../../../context/admin/TicketsAdminContext";
 import axiosInstance from "../../../../api/axiosInstance";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import Badge from "../../../../components/ui/badge/Badge";
+import Button from "../../../../components/ui/button/Button";
+import { Modal } from "../../../../components/ui/modal";
+import FileAttachment from "./FileAttachment";
+import { ArrowLeft, Paperclip } from "lucide-react";
+import { MessageBubble } from "./MessageBubble";
+import { InternalNotes } from "./InternalNotes";
 
 // Icons (simplified inline SVGs)
 const BackIcon = () => (
@@ -38,53 +44,6 @@ const SendIcon = () => (
   </svg>
 );
 
-const PaperclipIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-    />
-  </svg>
-);
-
-const DownloadIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-    />
-  </svg>
-);
-
-// Modal Component
-const Modal = ({ isOpen, onClose, children, className = "" }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div
-        className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}
-      >
-        {children}
-      </div>
-    </div>
-  );
-};
-
 // Avatar Component
 const Avatar = ({ name, size = "md" }) => {
   const sizeClasses = {
@@ -116,84 +75,7 @@ const Avatar = ({ name, size = "md" }) => {
   );
 };
 
-// File Attachment Component
-const FileAttachment = ({ filename, onDownload }) => {
-  return (
-    <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg border">
-      <PaperclipIcon />
-      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
-        {filename}
-      </span>
-      <button
-        onClick={() => onDownload(filename)}
-        className="p-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
-      >
-        <DownloadIcon />
-      </button>
-    </div>
-  );
-};
-
 // Message Bubble Component
-const MessageBubble = ({ reply, isFromSupport }) => {
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString();
-  };
-
-  const handleDownload = (filename) => {
-    // Implementation for file download
-    window.open(`/api/attachments/${filename}`, "_blank");
-  };
-
-  return (
-    <div
-      className={`flex gap-3 mb-4 ${
-        isFromSupport ? "justify-end" : "justify-start"
-      }`}
-    >
-      {!isFromSupport && <Avatar name={reply.user.name} size="sm" />}
-      <div className={`max-w-2xl ${isFromSupport ? "order-first" : ""}`}>
-        <div
-          className={`p-3 rounded-lg ${
-            isFromSupport
-              ? "bg-blue-500 text-white ml-12"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-          }`}
-        >
-          <div className="mb-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="font-medium text-sm">
-                {isFromSupport ? "Support" : reply.user.name}
-              </span>
-              <span
-                className={`text-xs ${
-                  isFromSupport
-                    ? "text-blue-100"
-                    : "text-gray-500 dark:text-gray-400"
-                }`}
-              >
-                {formatDate(reply.createdAt)}
-              </span>
-            </div>
-            <p className="whitespace-pre-wrap">{reply.message}</p>
-          </div>
-          {reply.attachments && reply.attachments.length > 0 && (
-            <div className="space-y-2 mt-3">
-              {reply.attachments.map((attachment, index) => (
-                <FileAttachment
-                  key={index}
-                  filename={attachment}
-                  onDownload={handleDownload}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      {isFromSupport && <Avatar name="Support" size="sm" />}
-    </div>
-  );
-};
 
 // Status Update Modal Component
 const StatusUpdateModal = ({ isOpen, onClose, ticket, onUpdate }) => {
@@ -277,20 +159,22 @@ const StatusUpdateModal = ({ isOpen, onClose, ticket, onUpdate }) => {
         </div>
 
         <div className="flex gap-3 justify-end pt-4">
-          <button
+          <Button
+            size="sm"
             onClick={onClose}
             disabled={loading}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
+            size="sm"
             onClick={handleUpdate}
             disabled={loading}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-50"
           >
             {loading ? "Updating..." : "Update"}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>
@@ -357,8 +241,8 @@ const ReplyForm = ({ ticketId, onReplyAdded }) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your reply... (Ctrl+Enter to send)"
-          rows={4}
-          className="w-full p-3 border border-gray-300 rounded-lg resize-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          rows={2}
+          className="w-full outline-none p-3 border border-gray-300 rounded-lg resize-none bg-white dark:border-white/[0.05] dark:bg-white/[0.03] dark:text-white"
           disabled={loading}
         />
 
@@ -396,109 +280,33 @@ const ReplyForm = ({ ticketId, onReplyAdded }) => {
               multiple
               className="hidden"
             />
-            <button
+            <Button
+              size="sm"
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
               disabled={loading}
             >
-              <PaperclipIcon />
+              <Paperclip size={16} />
               Attach Files
-            </button>
-            <span className="text-xs text-gray-500">
+            </Button>
+            <span className="text-xs text-gray-500 ">
               {message.length}/5000 characters
             </span>
           </div>
 
-          <button
+          <Button
+            size="sm"
             type="submit"
             disabled={!message.trim() || loading}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <SendIcon />
             {loading ? "Sending..." : "Send Reply"}
-          </button>
+          </Button>
         </div>
       </div>
     </form>
-  );
-};
-
-// Internal Notes Component
-const InternalNotes = ({ ticketId, notes, onNoteAdded }) => {
-  const [newNote, setNewNote] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleAddNote = async (e) => {
-    e.preventDefault();
-    if (!newNote.trim()) return;
-
-    setLoading(true);
-    try {
-      await axiosInstance.post(`/admin/ticketNote/${ticketId}`, {
-        note: newNote,
-      });
-      setNewNote("");
-      onNoteAdded();
-    } catch (error) {
-      console.error("Error adding note:", error);
-      alert("Failed to add note");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString();
-  };
-
-  return (
-    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-      <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
-        Internal Notes
-      </h3>
-
-      {notes && notes.length > 0 && (
-        <div className="space-y-3 mb-4">
-          {notes.map((note) => (
-            <div
-              key={note._id}
-              className="bg-white dark:bg-gray-800 p-3 rounded border"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-sm text-gray-700 dark:text-gray-300">
-                  {note.admin.name}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {formatDate(note.createdAt)}
-                </span>
-              </div>
-              <p className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">
-                {note.note}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <form onSubmit={handleAddNote}>
-        <textarea
-          value={newNote}
-          onChange={(e) => setNewNote(e.target.value)}
-          placeholder="Add internal note..."
-          rows={3}
-          className="w-full p-3 border border-gray-300 rounded-lg resize-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-          disabled={loading}
-        />
-        <button
-          type="submit"
-          disabled={!newNote.trim() || loading}
-          className="mt-2 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 disabled:opacity-50"
-        >
-          {loading ? "Adding..." : "Add Note"}
-        </button>
-      </form>
-    </div>
   );
 };
 
@@ -634,22 +442,19 @@ const TicketDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="sticky top-0 z-10 ">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          {/* Left side */}
+          <div className="flex items-center gap-3">
             <button
               onClick={() => navigate("/admin/tickets")}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              className="flex items-center gap-2 p-2 text-gray-600 dark:text-white bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              <BackIcon />
-              Back to Tickets
+              <ArrowLeft />
             </button>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate max-w-[250px] sm:max-w-none">
               {ticket.subject}
             </h1>
-          </div>
-
-          <div className="flex items-center gap-3">
             <Badge color={getStatusBadgeColor(ticket.status)} variant="light">
               {ticket.status}
             </Badge>
@@ -657,129 +462,150 @@ const TicketDetails = () => {
               color={getPriorityBadgeColor(ticket.priority)}
               variant="light"
             >
-              {ticket.priority}
+              {ticket.priority === "not assigned"
+                ? "Priority not assigned"
+                : ticket.priority}
             </Badge>
-            <button
+          </div>
+
+          {/* Right side */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <Button
+              size="sm"
               onClick={() => setShowStatusModal(true)}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+              className="px-3 sm:px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600"
             >
               Update Status
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="mt-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-4">
           {/* Left Sidebar - Ticket Info */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
-                  Customer
-                </h3>
-                <div className="flex items-center gap-3">
-                  <Avatar name={ticket.createdBy.name} />
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {ticket.createdBy.name}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {ticket.createdBy.email}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
-                  Ticket Details
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      ID:
-                    </span>
-                    <p className="text-sm text-gray-900 dark:text-white font-mono">
-                      {ticket._id}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Category:
-                    </span>
-                    <div className="mt-1">
-                      <Badge
-                        color={getCategoryBadgeColor(ticket.category)}
-                        variant="light"
-                        size="sm"
-                      >
-                        {ticket.category}
-                      </Badge>
+          <div className="xl:col-span-1">
+            <div className="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-white/[0.05] dark:bg-white/[0.03]">
+              <div className="p-6 space-y-6">
+                {/* Customer */}
+                <div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+                    Customer
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <Avatar name={ticket.createdBy.name} />
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {ticket.createdBy.name}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {ticket.createdBy.email}
+                      </p>
                     </div>
                   </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Created:
-                    </span>
-                    <p className="text-sm text-gray-900 dark:text-white">
-                      {formatDate(ticket.createdAt)}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Last Updated:
-                    </span>
-                    <p className="text-sm text-gray-900 dark:text-white">
-                      {formatDate(ticket.updatedAt)}
-                    </p>
-                  </div>
                 </div>
-              </div>
 
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                  Description
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                  {ticket.description}
-                </p>
-              </div>
+                <div className="h-px w-full bg-gray-200 dark:bg-gray-700" />
 
-              {ticket.attachments && ticket.attachments.length > 0 && (
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                    Attachments
+                {/* Ticket Details */}
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    Ticket Details
                   </h3>
-                  <div className="space-y-2">
-                    {ticket.attachments.map((attachment, index) => (
-                      <FileAttachment
-                        key={index}
-                        filename={attachment}
-                        onDownload={() =>
-                          window.open(
-                            `/api/attachments/${attachment}`,
-                            "_blank"
-                          )
-                        }
-                      />
-                    ))}
+                  <div className="grid grid-cols-1 gap-2">
+                    <div>
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        ID:
+                      </span>
+                      <p className="text-sm font-mono text-gray-900 dark:text-white break-all">
+                        {ticket._id}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        Category:
+                      </span>
+                      <div className="mt-1">
+                        <Badge
+                          color={getCategoryBadgeColor(ticket.category)}
+                          variant="light"
+                          size="sm"
+                        >
+                          {ticket.category}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        Created At:
+                      </span>
+                      <p className="text-sm text-gray-900 dark:text-white">
+                        {formatDate(ticket.createdAt)}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        Last Updated:
+                      </span>
+                      <p className="text-sm text-gray-900 dark:text-white">
+                        {formatDate(ticket.updatedAt)}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              )}
+
+                {/* Description */}
+                <div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+                    Description
+                  </h3>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                    {ticket.description}
+                  </p>
+                </div>
+
+                {ticket.attachments.length > 0 && (
+                  <div className="h-px w-full bg-gray-200 dark:bg-gray-700" />
+                )}
+
+                {/* Attachments */}
+                {ticket.attachments && ticket.attachments.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+                      Attachments
+                    </h3>
+                    <div className="space-y-2">
+                      {ticket.attachments.map((attachment, index) => (
+                        <FileAttachment
+                          key={index}
+                          filename={
+                            attachment.originalName || attachment.filename
+                          }
+                          onDownload={() =>
+                            window.open(
+                              `/api/attachments/${attachment}`,
+                              "_blank"
+                            )
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Center - Conversation */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="xl:col-span-2">
+            <div className="bg-white dark:border-white/[0.05] dark:bg-white/[0.03] rounded-lg border border-gray-200  overflow-hidden">
+              <div className="p-4 border-b  dark:border-white/[0.05]">
                 <h3 className="font-semibold text-gray-900 dark:text-white">
                   Conversation
                 </h3>
               </div>
 
-              <div className="max-h-96 overflow-y-auto p-6">
+              <div className="max-h-96 overflow-y-auto p-4">
                 {ticket.replies && ticket.replies.length > 0 ? (
                   <div className="space-y-1">
                     {ticket.replies.map((reply) => (
@@ -806,7 +632,7 @@ const TicketDetails = () => {
           </div>
 
           {/* Right Sidebar - Internal Notes */}
-          <div className="lg:col-span-1">
+          <div className="xl:col-span-1">
             <InternalNotes
               ticketId={ticket._id}
               notes={ticket.internalNotes}
