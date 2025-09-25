@@ -96,10 +96,10 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-3 mb-2">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                {ticket.subject}
-              </h3>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex gap-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                  {ticket.subject}
+                </h3>
                 <Badge
                   variant="light"
                   color={getStatusColor(ticket.status)}
@@ -107,8 +107,11 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
                 >
                   {ticket.status}
                 </Badge>
+              </div>
+
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <Badge
-                  variant="light"
+                  variant="solid"
                   color={getPriorityColor(ticket.priority)}
                   size="sm"
                   startIcon={
@@ -117,7 +120,9 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
                     ) : undefined
                   }
                 >
-                  {ticket.priority}
+                  {ticket.priority === "not assigned"
+                    ? "Priority not assigned"
+                    : ticket.priority}
                 </Badge>
               </div>
             </div>
@@ -204,7 +209,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
           <div className="grid grid-cols-2 gap-4 sm:flex-2/3 justify-around">
             <div className="flex items-center gap-2">
               <Badge
-                variant="light"
+                variant="solid"
                 color={getCategoryColor(ticket.category)}
                 size="sm"
               >
