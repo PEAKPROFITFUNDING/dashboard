@@ -131,13 +131,6 @@ const TicketsList: React.FC = () => {
     fetchTickets({ pageNo: page, forceRefresh: true });
   };
 
-  // Handle ticket card click
-  const handleTicketClick = (ticketId: string) => {
-    // Navigate to ticket detail page
-    console.log("Navigate to ticket:", ticketId);
-    // You can implement navigation logic here
-  };
-
   if (error) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
@@ -186,11 +179,7 @@ const TicketsList: React.FC = () => {
         ) : tickets && tickets.length > 0 ? (
           <>
             {tickets.map((ticket) => (
-              <TicketCard
-                key={ticket._id}
-                ticket={ticket}
-                onCardClick={handleTicketClick}
-              />
+              <TicketCard key={ticket._id} ticket={ticket} />
             ))}
 
             {/* Pagination */}
