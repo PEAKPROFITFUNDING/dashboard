@@ -2,6 +2,7 @@ import { useState } from "react";
 import axiosInstance from "../../../../api/axiosInstance";
 import Button from "../../../../components/ui/button/Button";
 import { Modal } from "../../../../components/ui/modal";
+import toast from "react-hot-toast";
 
 export const StatusUpdateModal = ({ isOpen, onClose, ticket, onUpdate }) => {
   const [status, setStatus] = useState(ticket?.status || "");
@@ -34,7 +35,7 @@ export const StatusUpdateModal = ({ isOpen, onClose, ticket, onUpdate }) => {
       onClose();
     } catch (error) {
       console.error("Error updating ticket:", error);
-      alert("Failed to update ticket");
+      toast.error("Failed to update ticket");
     } finally {
       setLoading(false);
     }

@@ -4,6 +4,7 @@ import Input from "../../../../components/form/input/InputField";
 import Select from "../../../../components/form/Select";
 import Button from "../../../../components/ui/button/Button";
 import KYCCard from "./KYCCard";
+import toast from "react-hot-toast";
 
 export default function MakePayout() {
   const [payoutAmount, setPayoutAmount] = useState("");
@@ -22,7 +23,7 @@ export default function MakePayout() {
 
   const handleRequestPayout = () => {
     if (!payoutAmount || !payoutMethod) {
-      alert("Please enter amount and select a payout method");
+      toast("Please enter amount and select a payout method");
       return;
     }
     console.log("Requesting payout:", {

@@ -8,6 +8,7 @@ import { AffiliateRequest, Comment } from "./components/types";
 import axiosInstance from "../../../../api/axiosInstance";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import FilterBar from "../../../../components/FilterBar";
+import toast from "react-hot-toast";
 
 // Define the API response interface
 interface ApiAffiliateApplication {
@@ -219,7 +220,7 @@ export default function NewRequests() {
         successMessage += ` Platinum Tier status has been set with ${commissionPercentage}% commission.`;
       }
 
-      alert(successMessage);
+      toast.success(successMessage);
 
       // Refresh the current page data and counts
       await Promise.all([
@@ -229,7 +230,7 @@ export default function NewRequests() {
     } catch (err) {
       console.error("Error updating status:", err);
       setConfirmationModal((prev) => ({ ...prev, loading: false }));
-      alert(err.response?.data?.message || "Failed to update status");
+      toast.error(err.response?.data?.message || "Failed to update status");
     }
   };
 

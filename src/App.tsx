@@ -7,6 +7,7 @@ import PrivateRoute from "./components/auth/PrivateRoute";
 import { useUser } from "./context/UserContext";
 import { LazyRoute } from "./components/common/LazyRoute";
 import { RouteDebugger } from "./components/common/RouteDebugger";
+import { Toaster } from "react-hot-toast";
 import {
   publicRoutes,
   getRoutesForRole,
@@ -14,6 +15,7 @@ import {
   fallbackRoute,
 } from "./config/routes";
 import { AffiliateProfileProvider } from "./context/user/UserAffiliatesContext";
+import { useTheme } from "./context/ThemeContext";
 
 // Initialize user data fetching
 const AppInitializer = () => {
@@ -23,6 +25,7 @@ const AppInitializer = () => {
 // Create a separate component for the routes
 const AppRoutes = () => {
   const { userRole, isUserLoaded } = useUser();
+  const { theme } = useTheme();
 
   // Memoize route calculations to prevent unnecessary re-renders
   const { indexRoute, roleBasedRoutes } = useMemo(() => {
@@ -47,6 +50,21 @@ const AppRoutes = () => {
 
   return (
     <Router>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: theme === "dark" ? "#1f2937" : "#fff",
+            color: theme === "dark" ? "#f9fafb" : "#111827",
+            border:
+              theme === "dark" ? "1px solid #374151" : "1px solid #d1d5db",
+            borderRadius: "0.5rem",
+            padding: "12px 16px",
+            fontSize: "14px",
+          },
+        }}
+      />
       <ScrollToTop />
       <AffiliateProfileProvider>
         <Routes>

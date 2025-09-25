@@ -1,4 +1,5 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -33,9 +34,9 @@ axiosInstance.interceptors.response.use(
     }
 
     if (status === 401 && !originalRequest._retry) {
-      alert("Unauthorized access. Please log in again.");
+      toast.error("Unauthorized access. Please log in again.");
     } else if (status >= 500) {
-      alert("Server error. Try again later.");
+      toast.error("Server error. Try again later.");
     }
 
     return Promise.reject(error);

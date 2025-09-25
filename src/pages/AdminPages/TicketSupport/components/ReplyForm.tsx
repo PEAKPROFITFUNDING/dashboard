@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import axiosInstance from "../../../../api/axiosInstance";
 import Button from "../../../../components/ui/button/Button";
 import { Paperclip, Send } from "lucide-react";
+import toast from "react-hot-toast";
 
 export const ReplyForm = ({ ticketId, onReplyAdded }) => {
   const [message, setMessage] = useState("");
@@ -30,7 +31,7 @@ export const ReplyForm = ({ ticketId, onReplyAdded }) => {
       onReplyAdded();
     } catch (error) {
       console.error("Error sending reply:", error);
-      alert("Failed to send reply");
+      toast.error("Failed to send reply");
     } finally {
       setLoading(false);
     }

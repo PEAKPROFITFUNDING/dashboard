@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axiosInstance from "../../../../api/axiosInstance";
 import Button from "../../../../components/ui/button/Button";
+import toast from "react-hot-toast";
 
 // Internal Notes Component
 export const InternalNotes = ({ ticketId, notes, onNoteAdded }) => {
@@ -20,7 +21,7 @@ export const InternalNotes = ({ ticketId, notes, onNoteAdded }) => {
       onNoteAdded();
     } catch (error) {
       console.error("Error adding note:", error);
-      alert("Failed to add note");
+      toast.error("Failed to add note");
     } finally {
       setLoading(false);
     }
