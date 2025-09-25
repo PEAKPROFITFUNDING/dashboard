@@ -94,7 +94,7 @@ const TicketsFilterSection: React.FC<TicketsFilterSectionProps> = ({
           placeholder={searchPlaceholder}
         />
 
-        <div className="flex justify-between">
+        <div className="flex justify-between flex-col-reverse gap-4 xl:flex-row">
           {/* Status Filter Bar */}
           <FilterBar
             activeFilter={activeStatus}
@@ -103,7 +103,7 @@ const TicketsFilterSection: React.FC<TicketsFilterSectionProps> = ({
             counts={statusCounts}
           />
           {/* Filters Row */}
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Category Dropdown */}
             <div className="relative">
               <button

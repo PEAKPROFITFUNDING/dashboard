@@ -95,11 +95,11 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
         {/* Header Section */}
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-3 mb-2">
-              <div className="flex gap-2">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                  {ticket.subject}
-                </h3>
+            <div className="flex sm:flex-row flex-col items-start sm:items-center justify-between gap-3 mb-3">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                {ticket.subject}
+              </h3>
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <Badge
                   variant="light"
                   color={getStatusColor(ticket.status)}
@@ -107,11 +107,8 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
                 >
                   {ticket.status}
                 </Badge>
-              </div>
-
-              <div className="flex items-center gap-2 flex-shrink-0">
                 <Badge
-                  variant="solid"
+                  variant="light"
                   color={getPriorityColor(ticket.priority)}
                   size="sm"
                   startIcon={
@@ -183,7 +180,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
       </div> */}
 
         {/* User + Details Section in one row */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 p-3 bg-gray-50 dark:bg-white/[0.02] rounded-lg">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 p-4 bg-gray-50 dark:bg-white/[0.02] rounded-xl">
           {/* User Info */}
           <div className="flex items-center gap-4 sm:flex-1/3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium text-sm">
