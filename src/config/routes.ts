@@ -80,7 +80,7 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/affiliate/*", element: AffiliateRoutesWrapper },
   { path: "/funded-traders", element: FundedTradersPage },
   { path: "/trader-payout-requests", element: TraderPayoutRequests },
-  { path: "/support-tickets", element: AdminTicketSupportWrapper },
+  { path: "/support-tickets/*", element: AdminTicketSupportWrapper },
   { path: "/kyc/*", element: AdminKYCWrapper },
 ];
 // User-only Routes
