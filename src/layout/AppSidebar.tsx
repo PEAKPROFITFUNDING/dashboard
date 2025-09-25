@@ -15,6 +15,7 @@ import {
   DollarSign,
   Plus,
   Shield,
+  MessagesSquare,
 } from "lucide-react";
 
 type NavItem = {
@@ -110,6 +111,11 @@ const adminNavItems: NavItem[] = [
     icon: <Shield />,
     name: "KYC Applications",
     path: "/kyc/applications",
+  },
+  {
+    icon: <MessagesSquare />,
+    name: "Support Tickets",
+    path: "/support-tickets",
   },
 ];
 const affiliatedUserNavItems: NavItem[] = [
