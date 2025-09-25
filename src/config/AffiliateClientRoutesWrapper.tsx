@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import NotFound from "../pages/OtherPage/NotFound";
 
 const Account = lazy(
   () => import("../pages/ClientPages/Affiliate/Account/Account")
@@ -27,6 +28,7 @@ export default function AffiliateClientRoutesWrapper() {
         <Route path="withdrawal" element={<Withdrawals />} />
         <Route path="tier" element={<TierStatus />} />
         <Route path="become-affiliate" element={<BecomeAffiliate />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   );

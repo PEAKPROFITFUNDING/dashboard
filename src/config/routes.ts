@@ -4,6 +4,7 @@ import AffiliateRoutesWrapper from "./AffiliatesRouteWrapper";
 import TraderPayoutRequests from "../pages/AdminPages/FundedTraders/TraderPayoutRequests";
 import AffiliateClientRoutesWrapper from "./AffiliateClientRoutesWrapper";
 import AdminKYCWrapper from "./AdminKYCWrapper";
+import AdminTicketSupportWrapper from "./AdminTicketSupportWrapper";
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import("../pages/AuthPages/SignIn"));
@@ -30,7 +31,6 @@ const FundedTradersPage = lazy(
   () => import("../pages/AdminPages/FundedTraders/FundedTradersPage")
 );
 const KYC = lazy(() => import("../pages/ClientPages/Account/kyc/KYC"));
-const UsersKYC = lazy(() => import("../pages/AdminPages/KYC/UsersKYC"));
 
 // UI Elements
 const Alerts = lazy(() => import("../pages/UiElements/Alerts"));
@@ -80,6 +80,7 @@ export const adminRoutes: RouteConfig[] = [
   { path: "/affiliate/*", element: AffiliateRoutesWrapper },
   { path: "/funded-traders", element: FundedTradersPage },
   { path: "/trader-payout-requests", element: TraderPayoutRequests },
+  { path: "/support-tickets", element: AdminTicketSupportWrapper },
   { path: "/kyc/*", element: AdminKYCWrapper },
 ];
 // User-only Routes
